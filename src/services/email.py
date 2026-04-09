@@ -41,13 +41,16 @@ class EmailService:
 
     @staticmethod
     async def send_account_activation(email: str, token: str):
+        # Base URL should ideally come from settings (e.g., settings.FRONTEND_URL)
+        activation_link = f"https://nemsas.gov.ng/activate?token={token}"
         body = f"""
         <html>
             <body>
                 <h2>Welcome to NEMSAS</h2>
-                <p>Your account has been created. Use the verification token below to activate your account and set your password.</p>
-                <h3>Verification Token: <strong>{token}</strong></h3>
-                <p>This token will expire in 60 minutes.</p>
+                <p>Your account has been created. Click the link below to activate your account and set your password:</p>
+                <p><a href="{activation_link}">{activation_link}</a></p>
+                <p>Alternatively, you can use this verification token: <strong>{token}</strong></p>
+                <p>This link and token will expire in <strong>48 hours</strong>.</p>
             </body>
         </html>
         """
