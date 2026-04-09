@@ -1,6 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, update
 from src.db.models.user import User, Role
+from src.db.models.auth import UserToken
 from src.schemas.user import UserCreate, UserUpdate
 from src.core.security import get_password_hash, verify_password
 from typing import Optional, List
@@ -47,6 +48,8 @@ class UserService:
         db: AsyncSession, 
         role_id: Optional[int] = None, 
         state_id: Optional[int] = None,
+        provider_id: Optional[int] = None,
+        is_active: Optional[bool] = None,
         skip: int = 0, 
         limit: int = 100
     ) -> List[User]:
@@ -55,6 +58,10 @@ class UserService:
             query = query.where(User.role_id == role_id)
         if state_id:
             query = query.where(User.state_id == state_id)
+        if provider_id:
+            query = query.where(User.provider_id == provider_id)
+        if is_active is not None:
+            query = query.where(User.is_active == is_active)
         
         result = await db.execute(query.offset(skip).limit(limit))
         return result.scalars().all()
@@ -72,8 +79,32 @@ class UserService:
     @staticmethod
     async def deactivate(db: AsyncSession, db_obj: User) -> User:
         db_obj.is_active = False
+        # Invalidate existing activation/reset tokens for security (Criterion 51)
+        await db.execute(
+            update(UserToken)
+            .where(UserToken.user_id == db_obj.id)
+            .values(is_used=True)
+        )
         await db.commit()
         await db.refresh(db_obj)
         return db_obj
+
+    @staticmethod
+    async def reactivate(db: AsyncSession, db_obj: User) -> User:
+        db_obj.is_active = True
+        await db.commit()
+        await db.refresh(db_obj)
+        return db_obj
+    
+    @staticmethod
+    async def create_activation_token(db: AsyncSession, user_id: int) -> str:
+        from src.services.auth import auth_service
+        from src.db.models.auth import TokenType
+        
+        # 48 hours = 2880 minutes
+        token_obj = await auth_service.create_token(
+            db, user_id=user_id, token_type=TokenType.ACTIVATION, expires_in_minutes=2880
+        )
+        return token_obj.token
 
 user_service = UserService()

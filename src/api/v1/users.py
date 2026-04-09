@@ -16,14 +16,25 @@ async def read_users(
     skip: int = 0,
     limit: int = 100,
     role_id: Optional[int] = None,
+    provider_id: Optional[int] = None,
+    is_active: Optional[bool] = None,
     current_user: DBUser = Depends(deps.get_current_active_user),
     _: Any = Depends(deps.PermissionChecker([PermissionEnum.USER_READ])),
     state_id: Optional[int] = Depends(deps.get_state_scope),
 ) -> Any:
     """
     Retrieve users. (Admins only)
+    Supports filtering by role, provider, and status. Automatically scoped to state for SEMSAS Admins.
     """
-    return await user_service.list(db, role_id=role_id, state_id=state_id, skip=skip, limit=limit)
+    return await user_service.list(
+        db, 
+        role_id=role_id, 
+        state_id=state_id, 
+        provider_id=provider_id, 
+        is_active=is_active, 
+        skip=skip, 
+        limit=limit
+    )
 
 @router.post("/", response_model=User)
 async def create_user(
@@ -36,8 +47,9 @@ async def create_user(
 ) -> Any:
     """
     Create a new user. (Admins only)
+    Automatically triggers an activation email with a secure link.
     """
-    # SEMSAS Admin can only create users in their own state
+    # SEMSAS Admin isolation
     if state_id and user_in.state_id != state_id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
