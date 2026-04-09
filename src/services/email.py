@@ -41,8 +41,8 @@ class EmailService:
 
     @staticmethod
     async def send_account_activation(email: str, token: str):
-        # Base URL should ideally come from settings (e.g., settings.FRONTEND_URL)
-        activation_link = f"https://nemsas.gov.ng/activate?token={token}"
+        from src.core.config import settings
+        activation_link = f"{settings.FRONTEND_URL}/activate?token={token}"
         body = f"""
         <html>
             <body>

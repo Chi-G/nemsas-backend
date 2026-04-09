@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     
     # External Integrations
+    FRONTEND_URL: str = "https://nemsas.gov.ng"
     GOOGLE_MAPS_API_KEY: Optional[str] = None
     SMS_GATEWAY_API_KEY: Optional[str] = None
     USSD_GATEWAY_API_KEY: Optional[str] = None
