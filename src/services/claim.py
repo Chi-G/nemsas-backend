@@ -7,14 +7,26 @@ from typing import List, Optional, Any
 
 class ClaimService:
     @staticmethod
-    async def get_run_sheet(db: AsyncSession, incident_id: int) -> Optional[RunSheet]:
-        result = await db.execute(select(RunSheet).where(RunSheet.incident_id == incident_id))
+    async def get_run_sheet(db: AsyncSession, incident_id: int, state_id: Optional[int] = None) -> Optional[RunSheet]:
+        from src.db.models.incident import Incident
+        stmt = select(RunSheet).where(RunSheet.incident_id == incident_id)
+        if state_id:
+            stmt = stmt.join(Incident).where(Incident.state_id == state_id)
+        result = await db.execute(stmt)
         return result.scalars().first()
 
     @staticmethod
     async def create_or_update_run_sheet(
-        db: AsyncSession, incident_id: int, obj_in: RunSheetUpdate, user_id: int
+        db: AsyncSession, incident_id: int, obj_in: RunSheetUpdate, user_id: int, state_id: Optional[int] = None
     ) -> RunSheet:
+        from src.db.models.incident import Incident
+        incident = await db.get(Incident, incident_id)
+        if not incident:
+            raise Exception("Incident not found")
+        
+        if state_id and incident.state_id != state_id:
+            raise Exception("Access denied: Incident belongs to another state")
+
         run_sheet = await ClaimService.get_run_sheet(db, incident_id=incident_id)
         if not run_sheet:
             run_sheet = RunSheet(incident_id=incident_id)
@@ -62,9 +74,14 @@ class ClaimService:
 
     @staticmethod
     async def process_claim(
-        db: AsyncSession, claim_id: int, status: ClaimStatus, processor_id: int, reason: str = None
+        db: AsyncSession, claim_id: int, status: ClaimStatus, processor_id: int, state_id: Optional[int] = None, reason: str = None
     ) -> Optional[Claim]:
-        result = await db.execute(select(Claim).where(Claim.id == claim_id))
+        from src.db.models.incident import Incident
+        stmt = select(Claim).where(Claim.id == claim_id)
+        if state_id:
+            stmt = stmt.join(Incident).where(Incident.state_id == state_id)
+        
+        result = await db.execute(stmt)
         claim = result.scalars().first()
         if not claim:
             return None

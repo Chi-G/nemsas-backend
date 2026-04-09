@@ -25,15 +25,18 @@ class AmbulanceService:
         return db_obj
 
     @staticmethod
-    async def get_by_id(db: AsyncSession, ambulance_id: int) -> Optional[Ambulance]:
-        result = await db.execute(select(Ambulance).where(Ambulance.id == ambulance_id))
+    async def get_by_id(db: AsyncSession, ambulance_id: int, state_id: Optional[int] = None) -> Optional[Ambulance]:
+        stmt = select(Ambulance).where(Ambulance.id == ambulance_id)
+        if state_id:
+            stmt = stmt.where(Ambulance.state_id == state_id)
+        result = await db.execute(stmt)
         return result.scalars().first()
 
     @staticmethod
     async def update_gps(
-        db: AsyncSession, ambulance_id: int, obj_in: GPSHistoryCreate
+        db: AsyncSession, ambulance_id: int, obj_in: GPSHistoryCreate, state_id: Optional[int] = None
     ) -> Ambulance:
-        ambulance = await AmbulanceService.get_by_id(db, ambulance_id=ambulance_id)
+        ambulance = await AmbulanceService.get_by_id(db, ambulance_id=ambulance_id, state_id=state_id)
         if not ambulance:
             return None
         

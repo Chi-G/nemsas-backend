@@ -6,6 +6,7 @@ from src.db.base import get_db
 from src.schemas.partner import Partner, PartnerCreate, Pledge, PledgeBase, PledgeCreate, FacilityRequest, FacilityRequestBase, FacilityRequestCreate
 from src.services.partner import partner_service
 from src.db.models.user import User
+from src.core.rbac import Permission as PermissionEnum
 
 router = APIRouter()
 
@@ -14,10 +15,11 @@ async def register_partner(
     *,
     db: AsyncSession = Depends(get_db),
     partner_in: PartnerCreate,
-    current_user: User = Depends(deps.get_current_user),
+    current_active_user: User = Depends(deps.get_current_active_user),
+    _: Any = Depends(deps.PermissionChecker([PermissionEnum.PARTNER_MANAGE])),
 ) -> Any:
     """
-    Register an organisation as a partner.
+    Register an organisation as a partner. (Admins only)
     """
     return await partner_service.create_partner(db, obj_in=partner_in)
 
@@ -26,7 +28,8 @@ async def create_pledge(
     *,
     db: AsyncSession = Depends(get_db),
     pledge_in: PledgeBase,
-    current_user: User = Depends(deps.get_current_user),
+    current_user: User = Depends(deps.get_current_active_user),
+    _: Any = Depends(deps.PermissionChecker([PermissionEnum.FLEET_MANAGE])),
 ) -> Any:
     """
     Create a new ambulance pledge. (Partners only)
@@ -43,7 +46,8 @@ async def create_facility_request(
     *,
     db: AsyncSession = Depends(get_db),
     request_in: FacilityRequestBase,
-    current_user: User = Depends(deps.get_current_user),
+    current_user: User = Depends(deps.get_current_active_user),
+    _: Any = Depends(deps.PermissionChecker([PermissionEnum.FLEET_MANAGE])),
 ) -> Any:
     """
     Submit a request for a new health facility. (Partners only)
@@ -60,10 +64,10 @@ async def approve_facility_request(
     *,
     db: AsyncSession = Depends(get_db),
     id: int,
-    current_user: User = Depends(deps.get_current_user),
+    current_user: User = Depends(deps.get_current_active_user),
+    _: Any = Depends(deps.PermissionChecker([PermissionEnum.PARTNER_MANAGE])),
 ) -> Any:
     """
     Approve a facility request and add to the registry. (Admins only)
     """
-    # Role check would be in deps
     return await partner_service.approve_facility_request(db, request_id=id)
