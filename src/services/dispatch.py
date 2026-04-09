@@ -11,15 +11,16 @@ import math
 class DispatchService:
     @staticmethod
     async def get_nearest_ambulances(
-        db: AsyncSession, latitude: float, longitude: float, limit: int = 5
+        db: AsyncSession, latitude: float, longitude: float, limit: int = 5, state_id: Optional[int] = None
     ) -> List[Ambulance]:
         # In a real implementation, this would use PostGIS or a Google Maps Distance Matrix API call.
         # For now, we perform a simple Euclidean distance approximation in the database query.
         # Since I'm using a simple relational DB, I'll fetch and sort in Python or use a basic SQL formula.
         
-        result = await db.execute(
-            select(Ambulance).where(Ambulance.status == AmbulanceStatus.ACTIVE)
-        )
+        stmt = select(Ambulance).where(Ambulance.status == AmbulanceStatus.ACTIVE)
+        if state_id:
+            stmt = stmt.where(Ambulance.state_id == state_id)
+        result = await db.execute(stmt)
         ambulances = result.scalars().all()
         
         # Sort by simple distance
@@ -34,16 +35,23 @@ class DispatchService:
 
     @staticmethod
     async def assign_ambulances(
-        db: AsyncSession, incident_id: int, ambulance_ids: List[int], current_user_id: int
+        db: AsyncSession, incident_id: int, ambulance_ids: List[int], current_user_id: int, state_id: Optional[int] = None
     ) -> List[Dispatch]:
         incident = await db.get(Incident, incident_id)
         if not incident:
             raise Exception("Incident not found")
+        
+        if state_id and incident.state_id != state_id:
+            raise Exception("Access denied: Incident belongs to another state")
             
         dispatches = []
         for amb_id in ambulance_ids:
             ambulance = await ambulance_service.get_by_id(db, ambulance_id=amb_id)
             if not ambulance or ambulance.status != AmbulanceStatus.ACTIVE:
+                continue
+            
+            if state_id and ambulance.state_id != state_id:
+                # Silently skip ambulances from other states or raise error
                 continue
                 
             dispatch = Dispatch(

@@ -39,8 +39,27 @@ class IncidentService:
         return db_obj
 
     @staticmethod
-    async def get_by_uuid(db: AsyncSession, uuid_str: str) -> Optional[Incident]:
-        result = await db.execute(select(Incident).where(Incident.uuid == uuid_str))
+    async def get_by_uuid(db: AsyncSession, uuid_str: str, state_id: Optional[int] = None) -> Optional[Incident]:
+        stmt = select(Incident).where(Incident.uuid == uuid_str)
+        if state_id:
+            stmt = stmt.where(Incident.state_id == state_id)
+        result = await db.execute(stmt)
+        return result.scalars().first()
+
+    @staticmethod
+    async def get_by_uuid_or_id(
+        db: AsyncSession, uuid_str: str = None, id: int = None, state_id: Optional[int] = None
+    ) -> Optional[Incident]:
+        if uuid_str:
+            stmt = select(Incident).where(Incident.uuid == uuid_str)
+        elif id:
+            stmt = select(Incident).where(Incident.id == id)
+        else:
+            return None
+            
+        if state_id:
+            stmt = stmt.where(Incident.state_id == state_id)
+        result = await db.execute(stmt)
         return result.scalars().first()
 
     @staticmethod

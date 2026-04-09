@@ -8,12 +8,15 @@ from typing import List, Optional, Any
 class QAService:
     @staticmethod
     async def create_finding(
-        db: AsyncSession, obj_in: QAFindingCreate, officer_id: int
+        db: AsyncSession, obj_in: QAFindingCreate, officer_id: int, state_id: Optional[int] = None
     ) -> QAFinding:
         # Check if incident exists
         incident = await db.get(Incident, obj_in.incident_id)
         if not incident:
             raise Exception("Incident not found")
+        
+        if state_id and incident.state_id != state_id:
+            raise Exception("Access denied: Incident belongs to another state")
             
         # Enforce mandatory findings for Non-Compliant
         if obj_in.compliance_rating == "Non-Compliant" and not obj_in.findings_text:
@@ -31,8 +34,11 @@ class QAService:
         return db_obj
 
     @staticmethod
-    async def get_findings_by_incident(db: AsyncSession, incident_id: int) -> List[QAFinding]:
-        result = await db.execute(select(QAFinding).where(QAFinding.incident_id == incident_id))
+    async def get_findings_by_incident(db: AsyncSession, incident_id: int, state_id: Optional[int] = None) -> List[QAFinding]:
+        stmt = select(QAFinding).where(QAFinding.incident_id == incident_id)
+        if state_id:
+            stmt = stmt.join(Incident).where(Incident.state_id == state_id)
+        result = await db.execute(stmt)
         return result.scalars().all()
 
 qa_service = QAService()
