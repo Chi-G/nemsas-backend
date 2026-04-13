@@ -60,7 +60,11 @@ jobs:
             echo "Using STAGING secrets for dev environment"
             echo "SERVER_IP=${{ secrets.STAGE_SERVER_IP }}" >> $GITHUB_ENV
             echo "SSH_USER=root" >> $GITHUB_ENV
-            echo "SSH_PRIVATE_KEY=${{ secrets.STAGE_SSH_KEY }}" >> $GITHUB_ENV
+            {
+              echo "SSH_PRIVATE_KEY<<EOF"
+              echo "${{ secrets.STAGE_SSH_KEY }}"
+              echo "EOF"
+            } >> $GITHUB_ENV
             echo "SSH_PASSPHRASE=${{ secrets.STAGE_SSH_KEY_PASSPHRASE }}" >> $GITHUB_ENV
             echo "DEPLOY_PATH=/var/www/nemsas-backend" >> $GITHUB_ENV
             echo "DEPLOY_PORT=8000" >> $GITHUB_ENV
@@ -68,7 +72,11 @@ jobs:
             echo "Using PRODUCTION secrets for prod environment"
             echo "SERVER_IP=${{ secrets.PROD_SERVER_IP }}" >> $GITHUB_ENV
             echo "SSH_USER=root" >> $GITHUB_ENV
-            echo "SSH_PRIVATE_KEY=${{ secrets.PROD_SSH_KEY }}" >> $GITHUB_ENV
+            {
+              echo "SSH_PRIVATE_KEY<<EOF"
+              echo "${{ secrets.PROD_SSH_KEY }}"
+              echo "EOF"
+            } >> $GITHUB_ENV
             echo "SSH_PASSPHRASE=" >> $GITHUB_ENV
             echo "DEPLOY_PATH=/var/www/nemsas-backend" >> $GITHUB_ENV
             echo "DEPLOY_PORT=8000" >> $GITHUB_ENV
