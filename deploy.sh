@@ -20,7 +20,9 @@ NC='\033[0m' # No Color
 # ============================================================================
 DEPLOY_USER="${DEPLOY_USER:-$(whoami)}"
 DEPLOY_PATH="${PWD}"
-DEPLOY_PORT="${DEPLOY_PORT:-8000}"
+DEPLOY_PORT="${DEPLOY_PORT:-9000}"
+NGINX_HTTP_PORT="${NGINX_HTTP_PORT:-9080}"
+NGINX_HTTPS_PORT="${NGINX_HTTPS_PORT:-9443}"
 PROJECT_NAME="nemsas-backend"
 CONTAINER_NAME="nemsas-backend"
 DOCKER_COMPOSE_FILE="${DEPLOY_PATH}/docker-compose.yml"
@@ -29,7 +31,9 @@ echo -e "${BLUE}========================================${NC}"
 echo -e "${BLUE}🚀 NEMSAS FASTAPI DEPLOYMENT${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo "Deploy Path: ${DEPLOY_PATH}"
-echo "Port: ${DEPLOY_PORT}"
+echo "App Port: ${DEPLOY_PORT}"
+echo "Nginx HTTP Port: ${NGINX_HTTP_PORT}"
+echo "Nginx HTTPS Port: ${NGINX_HTTPS_PORT}"
 echo "User: ${DEPLOY_USER}"
 echo "Timestamp: $(date)"
 echo -e "${BLUE}========================================${NC}"
@@ -124,7 +128,7 @@ echo -e "${GREEN}✅ Images built successfully${NC}"
 # ============================================================================
 echo -e "\n${YELLOW}[6/8] Starting containers...${NC}"
 
-docker compose up -d
+DEPLOY_PORT=${DEPLOY_PORT} NGINX_HTTP_PORT=${NGINX_HTTP_PORT} NGINX_HTTPS_PORT=${NGINX_HTTPS_PORT} docker compose up -d
 
 sleep 3  # Give services time to start
 
