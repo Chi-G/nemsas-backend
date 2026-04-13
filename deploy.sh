@@ -135,7 +135,7 @@ set +a
 
 # Use values from .env or defaults
 DB_USER=${DB_USER:-nemsas}
-DB_PASSWORD=${DB_PASSWORD:-$(openssl rand -base64 12)}
+DB_PASSWORD=${DB_PASSWORD:-nemsas_password}
 DB_NAME=${DB_NAME:-nemsas_db}
 
 DEPLOY_PORT=${DEPLOY_PORT} NGINX_HTTP_PORT=${NGINX_HTTP_PORT} NGINX_HTTPS_PORT=${NGINX_HTTPS_PORT} \
