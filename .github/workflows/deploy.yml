@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to deploy (e.g., main, development)'
+        description: 'Branch to deploy (e.g., master, development)'
         required: true
-        default: 'main'
+        default: 'master'
         type: string
       environment:
         description: 'Deployment environment'
@@ -60,8 +60,8 @@ jobs:
             echo "Using STAGING secrets for dev environment"
             echo "SERVER_IP=${{ secrets.STAGE_SERVER_IP }}" >> $GITHUB_ENV
             echo "SSH_USER=${{ secrets.STAGE_SSH_USER }}" >> $GITHUB_ENV
-            echo "SSH_PRIVATE_KEY=${{ secrets.STAGE_SSH_PRIVATE_KEY }}" >> $GITHUB_ENV
-            echo "SSH_PASSPHRASE=${{ secrets.STAGE_SSH_PASSPHRASE }}" >> $GITHUB_ENV
+            echo "SSH_PRIVATE_KEY=${{ secrets.STAGE_SSH_KEY }}" >> $GITHUB_ENV
+            echo "SSH_PASSPHRASE=${{ secrets.STAGE_SSH_KEY_PASSPHRASE }}" >> $GITHUB_ENV
             echo "DEPLOY_PATH=/var/www/nemsas-backend" >> $GITHUB_ENV
             echo "DEPLOY_PORT=8000" >> $GITHUB_ENV
           elif [ "${ENVIRONMENT}" == "prod" ]; then
