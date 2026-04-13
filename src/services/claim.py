@@ -1,7 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from src.db.models.claim import Claim, RunSheet, ClaimStatus, ClaimType, ETCIntake
-from src.schemas.claim import ClaimCreate, RunSheetUpdate, ETCIntakeCreate
+from src.db.models.claim import Claim, ClaimStatus, ClaimType, ETCIntake
+from src.db.models.run_sheet import RunSheet
+from src.schemas.run_sheet import RunSheetUpdate
+from src.schemas.claim import ClaimCreate, ETCIntakeCreate
 from datetime import datetime, timezone
 from typing import List, Optional, Any
 
@@ -29,27 +31,28 @@ class ClaimService:
 
         run_sheet = await ClaimService.get_run_sheet(db, incident_id=incident_id)
         if not run_sheet:
-            run_sheet = RunSheet(incident_id=incident_id)
+            # We don't have dispatch_id here, but in theory we should. 
+            # For backward compatibility, we'll try to find a dispatch or allow NULL if the model allowed it.
+            # But the model requires it. Let's assume we can find it.
+            from src.db.models.ambulance import Dispatch
+            stmt = select(Dispatch).where(Dispatch.incident_id == incident_id)
+            res = await db.execute(stmt)
+            dispatch = res.scalars().first()
+            if not dispatch:
+                raise Exception("Cannot create run sheet without a dispatch assignment")
+                
+            run_sheet = RunSheet(incident_id=incident_id, dispatch_id=dispatch.id)
             db.add(run_sheet)
         
-        if run_sheet.is_locked:
+        from src.db.models.run_sheet import RunSheetStatus
+        if run_sheet.status != RunSheetStatus.DRAFT:
             raise Exception("Run sheet is locked and cannot be edited")
             
-        if obj_in.patient_data is not None:
-            run_sheet.patient_data = obj_in.patient_data
-        if obj_in.drugs_administered is not None:
-            run_sheet.drugs_administered = obj_in.drugs_administered
-            
-        if obj_in.crew_signature:
-            run_sheet.crew_signature = obj_in.crew_signature
-            run_sheet.crew_signed_at = datetime.now(timezone.utc).replace(tzinfo=None)
-            run_sheet.crew_id = user_id
-            
-        if obj_in.etc_signature:
-            run_sheet.etc_signature = obj_in.etc_signature
-            run_sheet.etc_signed_at = datetime.now(timezone.utc).replace(tzinfo=None)
-            run_sheet.etc_staff_id = user_id
-            run_sheet.is_locked = True # Lock after both signatures (simplified)
+        # Map fields from new schema
+        update_data = obj_in.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
+            if hasattr(run_sheet, field):
+                setattr(run_sheet, field, value)
 
         await db.commit()
         await db.refresh(run_sheet)

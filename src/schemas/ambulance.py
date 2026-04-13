@@ -34,6 +34,10 @@ class Ambulance(AmbulanceBase):
     
     model_config = ConfigDict(from_attributes=True)
 
+class AmbulanceSearchResult(BaseModel):
+    ambulance: Ambulance
+    distance_meters: float
+
 class DispatchBase(BaseModel):
     incident_id: int
     ambulance_id: int
@@ -47,6 +51,7 @@ class Dispatch(DispatchBase):
     dispatch_timestamp: datetime
     accepted_timestamp: Optional[datetime] = None
     completed_timestamp: Optional[datetime] = None
+    total_distance: float = 0.0
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -56,3 +61,4 @@ class GPSHistoryCreate(BaseModel):
     latitude: float
     longitude: float
     is_paused: bool = False
+    incident_leg: Optional[str] = None # 'dispatch_to_scene', 'scene_to_etc', 'offline'

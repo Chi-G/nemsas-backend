@@ -12,6 +12,11 @@ class AmbulanceStatus(str, enum.Enum):
     DECOMMISSIONED = "Decommissioned"
     ON_DUTY = "On Duty" # Currently assigned to an incident
 
+class IncidentLeg(str, enum.Enum):
+    DISPATCH_TO_SCENE = "dispatch_to_scene"
+    SCENE_TO_ETC = "scene_to_etc"
+    OFFLINE = "offline"
+
 class AccreditationType(str, enum.Enum):
     BLS = "BLS"
     ALS = "ALS"
@@ -56,6 +61,8 @@ class Dispatch(Base):
     accepted_timestamp: Mapped[Optional[datetime]] = mapped_column(DateTime)
     completed_timestamp: Mapped[Optional[datetime]] = mapped_column(DateTime)
     
+    total_distance: Mapped[float] = mapped_column(Float, default=0.0)
+    
     incident: Mapped["Incident"] = relationship(back_populates="dispatches")
     ambulance: Mapped[Ambulance] = relationship()
 
@@ -69,3 +76,6 @@ class GPSHistory(Base):
     longitude: Mapped[float] = mapped_column(Float)
     timestamp: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
     is_paused: Mapped[bool] = mapped_column(default=False)
+    
+    incident_leg: Mapped[Optional[IncidentLeg]] = mapped_column(SQLAlchemyEnum(IncidentLeg))
+    delta_distance: Mapped[float] = mapped_column(Float, default=0.0)

@@ -47,9 +47,9 @@ This document tracks the implementation status of the backend requirements as de
 
 ## PENDING MODULES
 - [x] **Integrate USSD and SMS emergency channels** (Criteria 71-81)
-- [ ] **Ambulance Dispatch API** (Google Maps Integration) (Criteria 82-95)
-- [ ] **Ambulance Run Sheet API** (Criteria 97-109)
-- [ ] **ETC API (Intake & Co-Signature)** (Criteria 110-122)
+- [x] **Ambulance Dispatch API** (Google Maps Integration) (Criteria 82-95)
+- [x] **Ambulance Run Sheet API** (Criteria 97-109)
+- [x] **ETC API (Intake & Co-Signature)** (Criteria 110-122)
 - [ ] **Claims Processing API** (Criteria 123-136)
 - [ ] **QA Module API** (Criteria 138-149)
 - [ ] **Fleet Management API** (Criteria 150-163)

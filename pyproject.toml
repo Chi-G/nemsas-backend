@@ -10,6 +10,7 @@ dependencies = [
     "bcrypt>=5.0.0",
     "email-validator>=2.3.0",
     "fastapi>=0.135.2",
+    "googlemaps>=4.10.0",
     "gunicorn>=25.1.0",
     "passlib[bcrypt]>=1.7.4",
     "pydantic-settings>=2.13.1",

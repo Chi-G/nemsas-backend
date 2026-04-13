@@ -58,6 +58,8 @@ class Incident(Base):
     channel: Mapped[IncidentChannel] = mapped_column(SQLAlchemyEnum(IncidentChannel), default=IncidentChannel.APP)
     location_confirmed: Mapped[bool] = mapped_column(Boolean, default=True)
     
+    destination_facility_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"), index=True)
+    
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
     updated_at: Mapped[datetime] = mapped_column(
         default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), 

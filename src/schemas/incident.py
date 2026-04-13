@@ -36,6 +36,7 @@ class IncidentUpdate(BaseModel):
     status: Optional[IncidentStatus] = None
     severity: Optional[str] = None
     notes: Optional[str] = None
+    destination_facility_id: Optional[int] = None
 
 class Incident(IncidentBase):
     id: int
@@ -43,6 +44,7 @@ class Incident(IncidentBase):
     status: IncidentStatus
     caller_name: Optional[str] = None
     caller_phone: Optional[str] = None
+    destination_facility_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime
     
