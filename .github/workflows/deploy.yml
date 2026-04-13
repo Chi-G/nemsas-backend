@@ -15,6 +15,11 @@ on:
         options:
           - dev
           - prod
+      port:
+        description: 'Port to expose (default: 8000)'
+        required: false
+        default: '8000'
+        type: string
 
 jobs:
   deploy:
@@ -67,7 +72,7 @@ jobs:
             } >> $GITHUB_ENV
             echo "SSH_PASSPHRASE=${{ secrets.STAGE_SSH_KEY_PASSPHRASE }}" >> $GITHUB_ENV
             echo "DEPLOY_PATH=/var/www/nemsas-backend" >> $GITHUB_ENV
-            echo "DEPLOY_PORT=8000" >> $GITHUB_ENV
+            echo "DEPLOY_PORT=${{ github.event.inputs.port }}" >> $GITHUB_ENV
           elif [ "${ENVIRONMENT}" == "prod" ]; then
             echo "Using PRODUCTION secrets for prod environment"
             echo "SERVER_IP=${{ secrets.PROD_SERVER_IP }}" >> $GITHUB_ENV
@@ -79,7 +84,7 @@ jobs:
             } >> $GITHUB_ENV
             echo "SSH_PASSPHRASE=" >> $GITHUB_ENV
             echo "DEPLOY_PATH=/var/www/nemsas-backend" >> $GITHUB_ENV
-            echo "DEPLOY_PORT=8000" >> $GITHUB_ENV
+            echo "DEPLOY_PORT=${{ github.event.inputs.port }}" >> $GITHUB_ENV
           fi
           
           echo "=========================================="
