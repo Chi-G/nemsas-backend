@@ -61,6 +61,7 @@ class RoleName(str, Enum):
     PARTNER = "Partner"
     ACCOUNTS_STAFF = "Accounts Staff"
     VIEW_ONLY = "View-Only User"
+    CITIZEN = "Citizen"
 
 # Role to Permission Mapping
 ROLE_PERMISSIONS: Dict[str, Set[Permission]] = {
@@ -111,6 +112,10 @@ ROLE_PERMISSIONS: Dict[str, Set[Permission]] = {
     RoleName.VIEW_ONLY: {
         Permission.INCIDENT_READ, Permission.AMBULANCE_READ, Permission.PARTNER_READ, 
         Permission.FLEET_READ, Permission.REFERENCE_READ
+    },
+    
+    RoleName.CITIZEN: {
+        Permission.INCIDENT_CREATE, Permission.INCIDENT_READ
     }
 }
 

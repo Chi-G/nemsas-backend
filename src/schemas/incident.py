@@ -1,7 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
 from datetime import datetime
-from src.db.models.incident import IncidentStatus, EmergencyType
+from src.db.models.incident import IncidentStatus, EmergencyType, IncidentChannel
 
 class IncidentStatusHistoryBase(BaseModel):
     status: IncidentStatus
@@ -17,14 +17,16 @@ class IncidentStatusHistory(IncidentStatusHistoryBase):
 
 class IncidentBase(BaseModel):
     location_label: str
-    latitude: float
-    longitude: float
-    state_id: int
-    lga_id: int
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    state_id: Optional[int] = None
+    lga_id: Optional[int] = None
     emergency_type: EmergencyType
     severity: Optional[str] = None
     patient_count: int = 1
     notes: Optional[str] = None
+    channel: IncidentChannel = IncidentChannel.APP
+    location_confirmed: bool = True
 
 class IncidentCreate(IncidentBase):
     caller_name: Optional[str] = None
