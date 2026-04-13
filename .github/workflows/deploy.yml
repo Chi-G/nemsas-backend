@@ -16,9 +16,9 @@ on:
           - dev
           - prod
       port:
-        description: 'Port to expose (default: 8000)'
+        description: 'Port to expose (default: 9000)'
         required: false
-        default: '8000'
+        default: '9000'
         type: string
 
 jobs:
@@ -73,6 +73,8 @@ jobs:
             echo "SSH_PASSPHRASE=${{ secrets.STAGE_SSH_KEY_PASSPHRASE }}" >> $GITHUB_ENV
             echo "DEPLOY_PATH=/var/www/nemsas-backend" >> $GITHUB_ENV
             echo "DEPLOY_PORT=${{ github.event.inputs.port }}" >> $GITHUB_ENV
+            echo "NGINX_HTTP_PORT=9080" >> $GITHUB_ENV
+            echo "NGINX_HTTPS_PORT=9443" >> $GITHUB_ENV
           elif [ "${ENVIRONMENT}" == "prod" ]; then
             echo "Using PRODUCTION secrets for prod environment"
             echo "SERVER_IP=${{ secrets.PROD_SERVER_IP }}" >> $GITHUB_ENV
@@ -85,6 +87,8 @@ jobs:
             echo "SSH_PASSPHRASE=" >> $GITHUB_ENV
             echo "DEPLOY_PATH=/var/www/nemsas-backend" >> $GITHUB_ENV
             echo "DEPLOY_PORT=${{ github.event.inputs.port }}" >> $GITHUB_ENV
+            echo "NGINX_HTTP_PORT=9081" >> $GITHUB_ENV
+            echo "NGINX_HTTPS_PORT=9444" >> $GITHUB_ENV
           fi
           
           echo "=========================================="
@@ -295,7 +299,7 @@ jobs:
             chmod +x deploy.sh
             
             # Run deployment with environment variables
-            DEPLOY_PORT="${DEPLOY_PORT}" bash deploy.sh
+            DEPLOY_PORT="${DEPLOY_PORT}" NGINX_HTTP_PORT="${NGINX_HTTP_PORT}" NGINX_HTTPS_PORT="${NGINX_HTTPS_PORT}" bash deploy.sh
             
             DEPLOYMENT_RESULT=$?
             
