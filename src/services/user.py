@@ -12,7 +12,14 @@ class UserService:
         result = await db.execute(select(User).where(User.email == email))
         return result.scalars().first()
     @staticmethod
-    async def authenticate(db: AsyncSession, email: str, password: str) -> Optional[User]:
+    async def get_by_phone(db: AsyncSession, phone: str) -> Optional[User]:
+        result = await db.execute(select(User).where(User.phone_number == phone))
+        return result.scalars().first()
+
+    @staticmethod
+    async def get_role_by_name(db: AsyncSession, name: str) -> Optional[Role]:
+        result = await db.execute(select(Role).where(Role.name == name))
+        return result.scalars().first()
         user = await UserService.get_by_email(db, email=email)
         if not user:
             return None
@@ -43,6 +50,35 @@ class UserService:
         await db.refresh(db_obj)
         return db_obj
 
+    @staticmethod
+    async def get_or_create_public_user(db: AsyncSession, phone: str, name: str = "Public Citizen") -> User:
+        user = await UserService.get_by_phone(db, phone)
+        if user:
+            return user
+            
+        from src.core.rbac import RoleName
+        role = await UserService.get_role_by_name(db, RoleName.CITIZEN)
+        if not role:
+            # Fallback if roles not seeded properly or in tests
+            role_obj = Role(name=RoleName.CITIZEN, description="Public reporter via USSD/SMS")
+            db.add(role_obj)
+            await db.flush()
+            role_id = role_obj.id
+        else:
+            role_id = role.id
+
+        db_obj = User(
+            email=f"{phone}@nemsas.gov.ng", # Placeholder email
+            phone_number=phone,
+            name=name,
+            hashed_password="!!!AUTHENTICATED_VIA_PHONE!!!", # Non-loginable placeholder
+            role_id=role_id,
+            is_active=True,
+        )
+        db.add(db_obj)
+        await db.commit()
+        await db.refresh(db_obj)
+        return db_obj
     @staticmethod
     async def list(
         db: AsyncSession, 

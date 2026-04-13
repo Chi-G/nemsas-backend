@@ -1,4 +1,4 @@
-import os
+from pydantic import computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import Optional
 
@@ -8,7 +8,19 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     
     # Database
-    DATABASE_URL: str
+    POSTGRES_USER: str = "root"
+    POSTGRES_PASSWORD: str = "chibuike4u"
+    POSTGRES_SERVER: str = "localhost"
+    POSTGRES_PORT: int = 5432
+    POSTGRES_DB: str = "nemsas"
+
+    @computed_field
+    @property
+    def DATABASE_URL(self) -> str:
+        return f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.POSTGRES_SERVER}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+    
+    # API Access
+    API_URL: str = "https://nemsas-api.65.108.209.25.sslip.io/"
     
     # Security
     SECRET_KEY: str

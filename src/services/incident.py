@@ -25,6 +25,8 @@ class IncidentService:
             notes=obj_in.notes,
             caller_name=obj_in.caller_name,
             caller_phone=obj_in.caller_phone,
+            channel=obj_in.channel,
+            location_confirmed=obj_in.location_confirmed,
             status=IncidentStatus.CREATED,
         )
         db.add(db_obj)

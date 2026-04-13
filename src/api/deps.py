@@ -2,13 +2,15 @@ from fastapi import Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer
 import jwt
 from pydantic import ValidationError
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload, selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
 
 from src.core.config import settings
 from src.core.rbac import RoleName, is_read_only_role
 from src.db.base import get_db
-from src.db.models.user import User
+from src.db.models.user import User, Role
 from src.schemas.user import TokenPayload
 from src.services.user import user_service
 
@@ -32,9 +34,16 @@ async def get_current_user(
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    user = await user_service.get_by_id(db, user_id=int(token_data.sub))
+    user_result = await db.execute(
+        select(User)
+        .options(joinedload(User.role).selectinload(Role.permissions))
+        .where(User.id == int(token_data.sub))
+    )
+    user = user_result.scalars().first()
+    
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    
     return user
 
 async def get_current_active_user(
@@ -59,7 +68,7 @@ class RoleChecker:
         self.allowed_roles = allowed_roles
 
     def __call__(self, current_user: User = Depends(get_current_active_user)):
-        if current_user.role.name == RoleName.NEMSAS_ADMIN:
+        if str(current_user.role.name) == str(RoleName.NEMSAS_ADMIN):
             return current_user
         if current_user.role.name not in self.allowed_roles:
             raise HTTPException(
@@ -73,9 +82,13 @@ class PermissionChecker:
         self.required_permissions = required_permissions
 
     def __call__(self, current_user: User = Depends(get_current_active_user)):
-        if current_user.role.name == RoleName.NEMSAS_ADMIN:
-            return current_user
+        if not current_user.role:
+            raise HTTPException(status_code=403, detail="User has no role assigned")
             
+        role_name = str(current_user.role.name)
+        if role_name == "NEMSAS Admin" or role_name == str(RoleName.NEMSAS_ADMIN):
+            return current_user
+        
         user_permissions = [p.name for p in current_user.role.permissions]
         for perm in self.required_permissions:
             if perm not in user_permissions:

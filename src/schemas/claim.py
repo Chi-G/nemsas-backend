@@ -3,30 +3,7 @@ from typing import Optional, List, Any
 from datetime import datetime
 from src.db.models.claim import ClaimStatus, ClaimType
 
-class RunSheetBase(BaseModel):
-    incident_id: int
-    patient_data: Optional[dict] = None
-    drugs_administered: Optional[list] = None
-
-class RunSheetUpdate(BaseModel):
-    patient_data: Optional[dict] = None
-    drugs_administered: Optional[list] = None
-    crew_signature: Optional[str] = None
-    etc_signature: Optional[str] = None
-
-class RunSheet(RunSheetBase):
-    id: int
-    crew_signature: Optional[str] = None
-    crew_signed_at: Optional[datetime] = None
-    crew_id: Optional[int] = None
-    etc_signature: Optional[str] = None
-    etc_signed_at: Optional[datetime] = None
-    etc_staff_id: Optional[int] = None
-    is_locked: bool
-    created_at: datetime
-    updated_at: datetime
-    
-    model_config = ConfigDict(from_attributes=True)
+from src.schemas.run_sheet import RunSheet, RunSheetUpdate
 
 class ClaimBase(BaseModel):
     incident_id: int

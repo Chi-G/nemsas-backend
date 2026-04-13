@@ -1,8 +1,10 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from src.db.models.ambulance import Ambulance, GPSHistory, AmbulanceStatus
+from src.db.models.ambulance import Ambulance, GPSHistory, AmbulanceStatus, Dispatch, IncidentLeg
 from src.schemas.ambulance import AmbulanceCreate, AmbulanceUpdate, GPSHistoryCreate
 from typing import List, Optional, Any
+import math
+from datetime import datetime, timezone
 
 class AmbulanceService:
     @staticmethod
@@ -33,12 +35,30 @@ class AmbulanceService:
         return result.scalars().first()
 
     @staticmethod
+    def _calculate_distance(lat1, lon1, lat2, lon2):
+        """Haversine formula to calculate distance between two points in km."""
+        R = 6371  # Earth radius in km
+        dlat = math.radians(lat2 - lat1)
+        dlon = math.radians(lon2 - lon1)
+        a = math.sin(dlat / 2)**2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(dlon / 2)**2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        return R * c
+
+    @staticmethod
     async def update_gps(
         db: AsyncSession, ambulance_id: int, obj_in: GPSHistoryCreate, state_id: Optional[int] = None
     ) -> Ambulance:
         ambulance = await AmbulanceService.get_by_id(db, ambulance_id=ambulance_id, state_id=state_id)
         if not ambulance:
             return None
+        
+        # Calculate distance delta since last update
+        delta = 0.0
+        if ambulance.last_latitude and ambulance.last_longitude:
+            delta = AmbulanceService._calculate_distance(
+                ambulance.last_latitude, ambulance.last_longitude,
+                obj_in.latitude, obj_in.longitude
+            )
         
         # Update last known position
         ambulance.last_latitude = obj_in.latitude
@@ -51,8 +71,24 @@ class AmbulanceService:
             latitude=obj_in.latitude,
             longitude=obj_in.longitude,
             is_paused=obj_in.is_paused,
+            incident_leg=obj_in.incident_leg,
+            delta_distance=delta
         )
         db.add(history)
+        
+        # Update total distance for the active dispatch if applicable
+        if obj_in.incident_id:
+            # Find active dispatch for this incident and ambulance
+            stmt = select(Dispatch).where(
+                Dispatch.incident_id == obj_in.incident_id,
+                Dispatch.ambulance_id == ambulance_id,
+                Dispatch.completed_timestamp == None
+            )
+            result = await db.execute(stmt)
+            dispatch = result.scalars().first()
+            if dispatch:
+                dispatch.total_distance += delta
+
         await db.commit()
         await db.refresh(ambulance)
         return ambulance

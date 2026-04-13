@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.api.v1 import auth, incidents, ambulances, claims, dispatch, partners, me, qa, users, reference
+from src.api.v1 import auth, incidents, ambulances, claims, dispatch, partners, me, qa, users, reference, ussd_sms, run_sheets, etc
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -12,3 +12,6 @@ api_router.include_router(me.router, prefix="/m-e", tags=["m-e"])
 api_router.include_router(qa.router, prefix="/qa", tags=["qa"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
 api_router.include_router(reference.router, prefix="/reference", tags=["reference"])
+api_router.include_router(ussd_sms.router, prefix="/ussd-sms", tags=["ussd-sms"])
+api_router.include_router(run_sheets.router, prefix="/run-sheets", tags=["run-sheets"])
+api_router.include_router(etc.router, prefix="/etc", tags=["etc"])

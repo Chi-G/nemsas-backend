@@ -15,34 +15,8 @@ class ClaimType(str, enum.Enum):
     AMBULANCE = "Ambulance"
     ETC = "ETC"
 
-class RunSheet(Base):
-    __tablename__ = "run_sheets"
-    
-    id: Mapped[int] = mapped_column(primary_key=True)
-    incident_id: Mapped[int] = mapped_column(ForeignKey("incidents.id"), unique=True)
-    
-    # Patient Data (Structured JSON for flexibility in care forms)
-    patient_data: Mapped[Optional[dict]] = mapped_column(JSON)
-    
-    # Drugs Administered (List of dicts: {"drug_id": 1, "name": "...", "dose": "..."})
-    drugs_administered: Mapped[Optional[list]] = mapped_column(JSON)
-    
-    # Signatures
-    crew_signature: Mapped[Optional[str]] = mapped_column(String(255)) # Authenticated signature ID/Hash
-    crew_signed_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
-    crew_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"))
-    
-    etc_signature: Mapped[Optional[str]] = mapped_column(String(255))
-    etc_signed_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
-    etc_staff_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"))
-    
-    is_locked: Mapped[bool] = mapped_column(default=False)
-    
-    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
-    updated_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), 
-        onupdate=lambda: datetime.now(timezone.utc).replace(tzinfo=None)
-    )
+# RunSheet moved to src/db/models/run_sheet.py
+
 
 class ETCIntake(Base):
     __tablename__ = "etc_intakes"

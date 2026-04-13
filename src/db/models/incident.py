@@ -24,6 +24,13 @@ class EmergencyType(str, enum.Enum):
     PEDIATRIC = "Pediatric"
     OTHER = "Other"
 
+class IncidentChannel(str, enum.Enum):
+    APP = "App"
+    USSD = "USSD"
+    SMS = "SMS"
+    CALL = "Call"
+    DISPATCHER = "Dispatcher"
+
 class Incident(Base):
     __tablename__ = "incidents"
     
@@ -32,10 +39,10 @@ class Incident(Base):
     
     # Location
     location_label: Mapped[str] = mapped_column(String(255))
-    latitude: Mapped[float] = mapped_column(Float)
-    longitude: Mapped[float] = mapped_column(Float)
-    state_id: Mapped[int] = mapped_column(index=True)
-    lga_id: Mapped[int] = mapped_column(index=True)
+    latitude: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    longitude: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    state_id: Mapped[Optional[int]] = mapped_column(index=True, nullable=True)
+    lga_id: Mapped[Optional[int]] = mapped_column(index=True, nullable=True)
     
     # Caller Info
     caller_name: Mapped[Optional[str]] = mapped_column(String(255))
@@ -48,6 +55,10 @@ class Incident(Base):
     notes: Mapped[Optional[str]] = mapped_column(String(1000))
     
     status: Mapped[IncidentStatus] = mapped_column(SQLAlchemyEnum(IncidentStatus), default=IncidentStatus.CREATED)
+    channel: Mapped[IncidentChannel] = mapped_column(SQLAlchemyEnum(IncidentChannel), default=IncidentChannel.APP)
+    location_confirmed: Mapped[bool] = mapped_column(Boolean, default=True)
+    
+    destination_facility_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"), index=True)
     
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
     updated_at: Mapped[datetime] = mapped_column(
