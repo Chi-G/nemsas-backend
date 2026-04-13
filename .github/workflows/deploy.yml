@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       branch:
-        description: 'Branch to deploy (e.g., main, development)'
+        description: 'Branch to deploy (e.g., master, development)'
         required: true
-        default: 'main'
+        default: 'master'
         type: string
       environment:
         description: 'Deployment environment'
