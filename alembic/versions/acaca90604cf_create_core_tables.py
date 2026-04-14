@@ -1,6 +1,6 @@
 """Create core incident, ambulance, and claim tables
 
-Revision ID: 3_create_core_tables
+Revision ID: acaca90604cf
 Revises: 302d96555d23
 Create Date: 2026-04-14 12:00:00.000000
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '3_create_core_tables'
+revision: str = 'acaca90604cf'
 down_revision: Union[str, Sequence[str], None] = '302d96555d23'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
