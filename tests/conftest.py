@@ -24,6 +24,15 @@ TestingSessionLocal = async_sessionmaker(bind=test_engine, class_=AsyncSession, 
 async def setup_test_db():
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    
+    # Seed roles
+    async with TestingSessionLocal() as db:
+        for role_name in RoleName:
+            result = await db.execute(select(Role).where(Role.name == role_name))
+            if not result.scalars().first():
+                db.add(Role(name=role_name))
+        await db.commit()
+        
     yield
     async with test_engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -32,6 +41,24 @@ async def setup_test_db():
 async def db() -> AsyncGenerator[AsyncSession, None]:
     async with TestingSessionLocal() as session:
         yield session
+
+@pytest_asyncio.fixture(autouse=True)
+async def cleanup_db(db: AsyncSession):
+    yield
+    # Cleanup logic
+    from sqlalchemy import delete
+    from src.db.models.user import User, Role
+    from src.db.models.partner import Partner, Pledge, FacilityRequest, Facility
+    from src.db.models.auth import UserToken
+    from src.db.models.reference import SystemAuditLog
+    
+    await db.execute(delete(Pledge))
+    await db.execute(delete(FacilityRequest))
+    await db.execute(delete(Partner))
+    await db.execute(delete(UserToken))
+    await db.execute(delete(SystemAuditLog))
+    await db.execute(delete(User).where(User.email != "admin@test.com")) # Keep admin seeded for speed
+    await db.commit()
 
 @pytest_asyncio.fixture
 async def client(db: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
