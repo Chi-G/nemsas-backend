@@ -31,6 +31,11 @@ class IncidentChannel(str, enum.Enum):
     CALL = "Call"
     DISPATCHER = "Dispatcher"
 
+class ComplianceRating(str, enum.Enum):
+    COMPLIANT = "Compliant"
+    PARTIALLY_COMPLIANT = "Partially Compliant"
+    NON_COMPLIANT = "Non-Compliant"
+
 class Incident(Base):
     __tablename__ = "incidents"
     
@@ -87,7 +92,7 @@ class QAFinding(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     incident_id: Mapped[int] = mapped_column(ForeignKey("incidents.id"))
-    compliance_rating: Mapped[str] = mapped_column(String(50)) # Compliant, Partially Compliant, Non-Compliant
+    compliance_rating: Mapped[ComplianceRating] = mapped_column(SQLAlchemyEnum(ComplianceRating))
     findings_text: Mapped[str] = mapped_column(String(1000))
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
     qa_officer_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
