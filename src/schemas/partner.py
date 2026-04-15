@@ -1,5 +1,5 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List, Any
+from pydantic import BaseModel, EmailStr, ConfigDict
+from typing import Optional, List
 from datetime import datetime
 from src.db.models.partner import PledgeStatus, FacilityRequestStatus
 
@@ -9,8 +9,12 @@ class PartnerBase(BaseModel):
     contact_phone: str
     address: str
 
-class PartnerCreate(PartnerBase):
-    user_id: int
+class PartnerRegister(PartnerBase):
+    email: EmailStr
+
+class PartnerVerifyOTP(BaseModel):
+    email: EmailStr
+    otp: str
 
 class PartnerUpdate(BaseModel):
     organisation_name: Optional[str] = None
@@ -18,12 +22,11 @@ class PartnerUpdate(BaseModel):
     contact_phone: Optional[str] = None
     address: Optional[str] = None
 
-class Partner(PartnerBase):
+class PartnerRead(PartnerBase):
     id: int
     user_id: int
     is_verified: bool
     created_at: datetime
-    
     model_config = ConfigDict(from_attributes=True)
 
 class PledgeBase(BaseModel):
@@ -32,15 +35,17 @@ class PledgeBase(BaseModel):
     target_lga_id: Optional[int] = None
 
 class PledgeCreate(PledgeBase):
-    partner_id: int
+    pass
 
-class Pledge(PledgeBase):
+class PledgeStatusUpdate(BaseModel):
+    status: PledgeStatus
+
+class PledgeRead(PledgeBase):
     id: int
     partner_id: int
     status: PledgeStatus
     fulfilled_count: int
     created_at: datetime
-    
     model_config = ConfigDict(from_attributes=True)
 
 class FacilityRequestBase(BaseModel):
@@ -53,13 +58,18 @@ class FacilityRequestBase(BaseModel):
     lga_id: int
 
 class FacilityRequestCreate(FacilityRequestBase):
-    partner_id: int
+    pass
 
-class FacilityRequest(FacilityRequestBase):
+class FacilityRequestRead(FacilityRequestBase):
     id: int
     partner_id: int
     status: FacilityRequestStatus
     rejection_reason: Optional[str] = None
     created_at: datetime
-    
     model_config = ConfigDict(from_attributes=True)
+
+class PartnerApproval(BaseModel):
+    reason: Optional[str] = None
+
+class PartnerRejection(BaseModel):
+    reason: str
