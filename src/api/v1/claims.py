@@ -1,13 +1,15 @@
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Response
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime
 from src.api import deps
 from src.db.base import get_db
-from src.schemas.claim import Claim, ClaimCreate, ClaimUpdate, RunSheet, RunSheetUpdate, ETCIntake, ETCIntakeCreate
+from src.schemas.claim import Claim, ClaimCreate, ClaimUpdate, RunSheet, RunSheetUpdate, ETCIntake, ETCIntakeCreate, ClaimFilter, ClaimPair, ClaimDetail
 from src.services.claim import claim_service
 from src.db.models.user import User
 from src.db.models.claim import ClaimStatus, ClaimType
 from src.core.rbac import Permission as PermissionEnum
+from fastapi.responses import Response
 
 router = APIRouter()
 
@@ -75,7 +77,61 @@ async def submit_claim(
         distance_km=claim_in.distance_km
     )
 
-@router.patch("/claims/{id}/process", response_model=Claim)
+@router.get("/", response_model=List[ClaimPair])
+async def list_claims(
+    *,
+    db: AsyncSession = Depends(get_db),
+    filters: ClaimFilter = Depends(),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User = Depends(deps.get_current_active_user),
+    _: Any = Depends(deps.PermissionChecker([PermissionEnum.CLAIM_READ])),
+    state_id: Optional[int] = Depends(deps.get_state_scope),
+) -> Any:
+    """
+    List all claims (returned in pairs per incident).
+    """
+    return await claim_service.get_claims_paginated(
+        db, filters=filters, skip=skip, limit=limit, state_id=state_id
+    )
+
+@router.get("/export")
+async def export_claims(
+    *,
+    db: AsyncSession = Depends(get_db),
+    filters: ClaimFilter = Depends(),
+    current_user: User = Depends(deps.get_current_active_user),
+    _: Any = Depends(deps.PermissionChecker([PermissionEnum.CLAIM_READ])),
+    state_id: Optional[int] = Depends(deps.get_state_scope),
+) -> Response:
+    """
+    Export claims as CSV.
+    """
+    csv_content = await claim_service.export_claims_csv(db, filters=filters, state_id=state_id)
+    return Response(
+        content=csv_content,
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=claims_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"}
+    )
+
+@router.get("/{id}", response_model=ClaimDetail)
+async def read_claim(
+    *,
+    db: AsyncSession = Depends(get_db),
+    id: int,
+    current_user: User = Depends(deps.get_current_active_user),
+    _: Any = Depends(deps.PermissionChecker([PermissionEnum.CLAIM_READ])),
+    state_id: Optional[int] = Depends(deps.get_state_scope),
+) -> Any:
+    """
+    Get detailed claim information.
+    """
+    claim = await claim_service.get_claim_detail(db, claim_id=id, state_id=state_id)
+    if not claim:
+        raise HTTPException(status_code=404, detail="Claim not found")
+    return claim
+
+@router.patch("/{id}/process", response_model=Claim)
 async def process_claim(
     *,
     db: AsyncSession = Depends(get_db),
@@ -88,15 +144,17 @@ async def process_claim(
     """
     Approve or Reject a claim. (Claims Staff, Admins)
     """
-    # Assuming role check is handled by deps.check_permissions in a real scenario
-    claim = await claim_service.process_claim(
-        db, 
-        claim_id=id, 
-        status=process_in.status, 
-        processor_id=current_user.id, 
-        state_id=state_id,
-        reason=process_in.rejection_reason
-    )
-    if not claim:
-        raise HTTPException(status_code=404, detail="Claim not found")
-    return claim
+    try:
+        claim = await claim_service.process_claim(
+            db, 
+            claim_id=id, 
+            status=process_in.status, 
+            processor_id=current_user.id, 
+            state_id=state_id,
+            reason=process_in.rejection_reason
+        )
+        if not claim:
+            raise HTTPException(status_code=404, detail="Claim not found")
+        return claim
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

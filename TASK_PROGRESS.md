@@ -50,7 +50,7 @@ This document tracks the implementation status of the backend requirements as de
 - [x] **Ambulance Dispatch API** (Google Maps Integration) (Criteria 82-95)
 - [x] **Ambulance Run Sheet API** (Criteria 97-109)
 - [x] **ETC API (Intake & Co-Signature)** (Criteria 110-122)
-- [ ] **Claims Processing API** (Criteria 123-136)
+- [x] **Claims Processing API** (Criteria 123-136)
 - [ ] **QA Module API** (Criteria 138-149)
 - [ ] **Fleet Management API** (Criteria 150-163)
 - [ ] **Reference Data Management** (Criteria 164-173)
