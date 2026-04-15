@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional, List
-from datetime import datetime
+from datetime import datetime, date
 from src.db.models.ambulance import AmbulanceStatus, AccreditationType
 
 class AmbulanceBase(BaseModel):
@@ -12,6 +12,11 @@ class AmbulanceBase(BaseModel):
     capacity: int = 1
     state_id: int
     lga_id: int
+    
+    # Fleet Management Fields
+    equipment: Optional[str] = None
+    roadworthiness_expiry: Optional[date] = None
+    insurance_expiry: Optional[date] = None
 
 class AmbulanceCreate(AmbulanceBase):
     partner_id: Optional[int] = None
@@ -21,6 +26,10 @@ class AmbulanceUpdate(BaseModel):
     is_paused: Optional[bool] = None
     last_latitude: Optional[float] = None
     last_longitude: Optional[float] = None
+    equipment: Optional[str] = None
+    roadworthiness_expiry: Optional[date] = None
+    insurance_expiry: Optional[date] = None
+    facility_id: Optional[int] = None
 
 class Ambulance(AmbulanceBase):
     id: int
@@ -29,10 +38,35 @@ class Ambulance(AmbulanceBase):
     last_latitude: Optional[float] = None
     last_longitude: Optional[float] = None
     partner_id: Optional[int] = None
+    facility_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime
     
     model_config = ConfigDict(from_attributes=True)
+
+class FleetFilter(BaseModel):
+    accreditation_type: Optional[AccreditationType] = None
+    status: Optional[AmbulanceStatus] = None
+    state_id: Optional[int] = None
+    lga_id: Optional[int] = None
+    partner_id: Optional[int] = None
+    facility_id: Optional[int] = None
+
+class BulkUploadRowReport(BaseModel):
+    row_number: int
+    plate_number: str
+    is_valid: bool
+    errors: List[str] = []
+    data: Optional[dict] = None
+
+class BulkUploadReport(BaseModel):
+    total_rows: int
+    passed_rows: int
+    failed_rows: int
+    reports: List[BulkUploadRowReport]
+
+class AmbulanceAllocation(BaseModel):
+    facility_id: int
 
 class AmbulanceSearchResult(BaseModel):
     ambulance: Ambulance

@@ -1,4 +1,4 @@
-from sqlalchemy import String, Integer, Boolean, ForeignKey, DateTime, Float, Enum as SQLAlchemyEnum
+from sqlalchemy import String, Integer, Boolean, ForeignKey, DateTime, Float, Date, Enum as SQLAlchemyEnum
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.db.base import Base
 from datetime import datetime, timezone
@@ -42,6 +42,14 @@ class Ambulance(Base):
     lga_id: Mapped[int] = mapped_column(index=True)
     
     partner_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id")) # Fleet Owner / ETP / Partner
+    
+    # Fleet Management Fields
+    equipment: Mapped[Optional[str]] = mapped_column(String(500))
+    roadworthiness_expiry: Mapped[Optional[datetime]] = mapped_column(Date)
+    insurance_expiry: Mapped[Optional[datetime]] = mapped_column(Date)
+    
+    # Allocation
+    facility_id: Mapped[Optional[int]] = mapped_column(ForeignKey("facilities.id"))
     
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
     updated_at: Mapped[datetime] = mapped_column(
