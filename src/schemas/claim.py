@@ -29,6 +29,30 @@ class Claim(ClaimBase):
     
     model_config = ConfigDict(from_attributes=True)
 
+class ClaimFilter(BaseModel):
+    claim_type: Optional[ClaimType] = None
+    status: Optional[ClaimStatus] = None
+    state_id: Optional[int] = None
+    lga_id: Optional[int] = None
+    start_date: Optional[datetime] = None
+    end_date: Optional[datetime] = None
+
+class ClaimDetail(Claim):
+    incident_uuid: str
+    ambulance_plate: Optional[str] = None
+    ambulance_type: Optional[str] = None
+    run_sheet_status: Optional[str] = None
+    is_fully_signed: bool = False
+    patient_name: Optional[str] = None
+    drug_list: List[str] = []
+    calculation_logic: str = "" # Metadata about how fee was derived
+
+class ClaimPair(BaseModel):
+    incident_id: int
+    incident_uuid: str
+    ambulance_claim: Optional[Claim] = None
+    etc_claim: Optional[Claim] = None
+
 class ETCIntakeBase(BaseModel):
     incident_id: int
     arrival_time: datetime

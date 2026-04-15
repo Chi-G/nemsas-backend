@@ -15,6 +15,10 @@ class ClaimType(str, enum.Enum):
     AMBULANCE = "Ambulance"
     ETC = "ETC"
 
+class ClaimAction(str, enum.Enum):
+    APPROVE = "Approve"
+    REJECT = "Reject"
+
 # RunSheet moved to src/db/models/run_sheet.py
 
 
@@ -54,3 +58,16 @@ class Claim(Base):
         default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), 
         onupdate=lambda: datetime.now(timezone.utc).replace(tzinfo=None)
     )
+
+class ClaimAuditLog(Base):
+    __tablename__ = "claim_audit_logs"
+    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    claim_id: Mapped[int] = mapped_column(ForeignKey("claims.id"))
+    action: Mapped[ClaimAction] = mapped_column(SQLAlchemyEnum(ClaimAction))
+    processed_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    rejection_reason: Mapped[Optional[str]] = mapped_column(String(255))
+    timestamp: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
+    
+    claim: Mapped[Claim] = relationship()
+    processor: Mapped["User"] = relationship(foreign_keys=[processed_by_id])

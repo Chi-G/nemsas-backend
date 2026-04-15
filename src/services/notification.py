@@ -21,4 +21,12 @@ class NotificationService:
         logger.info(f"NOTIFICATION: Status of Incident {incident_id} changed to {status}. Notifying User {recipient_id}")
         return True
 
+    @staticmethod
+    async def send_claim_status_notification(recipient_id: int, claim_id: int, status: str):
+        """
+        Notify the submitting party about claim status changes.
+        """
+        logger.info(f"NOTIFICATION: Claim {claim_id} status changed to {status}. Notifying User {recipient_id}")
+        return True
+
 notification_service = NotificationService()
