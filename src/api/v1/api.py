@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from src.api.v1 import (
     auth, users, incidents, ambulances, dispatch, run_sheets, 
-    etc, claims, qa, reference, partners, me, ussd_sms
+    etc, claims, qa, reference, partners, me, ussd_sms, gap_analysis
 )
 
 api_router = APIRouter()
@@ -18,3 +18,4 @@ api_router.include_router(reference.router, prefix="/reference", tags=["referenc
 api_router.include_router(partners.router, prefix="/partners", tags=["partners"])
 api_router.include_router(me.router, prefix="/m-e", tags=["m-e"])
 api_router.include_router(ussd_sms.router, prefix="/ussd-sms", tags=["ussd-sms"])
+api_router.include_router(gap_analysis.router, prefix="/gap-analysis", tags=["gap-analysis"])

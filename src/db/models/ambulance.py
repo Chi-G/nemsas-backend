@@ -7,6 +7,7 @@ import enum
 
 class AmbulanceStatus(str, enum.Enum):
     ACTIVE = "Active"
+    PENDING_VERIFICATION = "Pending Verification"
     UNDER_MAINTENANCE = "Under Maintenance"
     OFFLINE = "Offline"
     DECOMMISSIONED = "Decommissioned"

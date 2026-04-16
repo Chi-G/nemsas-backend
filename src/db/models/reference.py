@@ -23,6 +23,7 @@ class LGA(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     state_id: Mapped[int] = mapped_column(ForeignKey("states.id"))
     name: Mapped[str] = mapped_column(String(100), index=True)
+    population: Mapped[int] = mapped_column(Integer, default=0)
     updated_at: Mapped[datetime] = mapped_column(
         default=lambda: datetime.now(timezone.utc).replace(tzinfo=None), 
         onupdate=lambda: datetime.now(timezone.utc).replace(tzinfo=None)
