@@ -151,17 +151,13 @@ MAX_ATTEMPTS=30
 ATTEMPT=0
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-    if docker compose ps | grep -q "${CONTAINER_NAME}"; then
-        CONTAINER_STATUS=$(docker compose ps ${APP_SERVICE_NAME} | tail -1 | awk '{print $NF}')
-        
-        if [[ "${CONTAINER_STATUS}" == "Up"* ]]; then
-            echo -e "${GREEN}✅ Container is running${NC}"
-            
-            # Wait for API to be ready
-            if curl -f -s http://localhost:${DEPLOY_PORT}/health > /dev/null 2>&1; then
-                echo -e "${GREEN}✅ API is responding${NC}"
-                break
-            fi
+    if docker compose ps --services --status running | grep -qx "${APP_SERVICE_NAME}"; then
+        echo -e "${GREEN}✅ Container is running${NC}"
+
+        # Wait for API to be ready on the published host port.
+        if curl -f -s http://localhost:${DEPLOY_PORT}/health > /dev/null 2>&1; then
+            echo -e "${GREEN}✅ API is responding${NC}"
+            break
         fi
     fi
     
@@ -197,7 +193,7 @@ echo -e "${GREEN}✅ DEPLOYMENT SUCCESSFUL${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo "Service:      ${PROJECT_NAME}"
 echo "Port:         ${DEPLOY_PORT}"
-echo "Status:       $(docker compose ps ${APP_SERVICE_NAME} | tail -1 | awk '{print $NF}')"
+echo "Status:       $(docker compose ps --services --status running | grep -x "${APP_SERVICE_NAME}" || echo "not-running")"
 echo "Deployed at:  $(date)"
 echo ""
 echo "🔗 Access URL: http://localhost:${DEPLOY_PORT}"
