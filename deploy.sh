@@ -162,7 +162,7 @@ while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
             echo -e "${GREEN}✅ Container is running${NC}"
             
             # Wait for API to be ready
-            if curl -f -s http://localhost:${DEPLOY_PORT}/api/v1/health > /dev/null 2>&1; then
+            if curl -f -s http://localhost:${DEPLOY_PORT}/health > /dev/null 2>&1; then
                 echo -e "${GREEN}✅ API is responding${NC}"
                 break
             fi
