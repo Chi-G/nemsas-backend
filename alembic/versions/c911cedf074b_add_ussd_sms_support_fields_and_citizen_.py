@@ -1,7 +1,7 @@
 """Add USSD/SMS support fields and CITIZEN role
 
 Revision ID: c911cedf074b
-Revises: 302d96555d23
+Revises: acaca90604cf
 Create Date: 2026-04-13 13:55:48.522877
 
 """
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision: str = 'c911cedf074b'
-down_revision: Union[str, Sequence[str], None] = '302d96555d23'
+down_revision: Union[str, Sequence[str], None] = 'acaca90604cf'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 

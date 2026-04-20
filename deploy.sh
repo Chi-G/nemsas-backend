@@ -21,9 +21,8 @@ NC='\033[0m' # No Color
 DEPLOY_USER="${DEPLOY_USER:-$(whoami)}"
 DEPLOY_PATH="${PWD}"
 DEPLOY_PORT="${DEPLOY_PORT:-9000}"
-NGINX_HTTP_PORT="${NGINX_HTTP_PORT:-9080}"
-NGINX_HTTPS_PORT="${NGINX_HTTPS_PORT:-9443}"
 PROJECT_NAME="nemsas-backend"
+APP_SERVICE_NAME="app"
 CONTAINER_NAME="nemsas-backend"
 DOCKER_COMPOSE_FILE="${DEPLOY_PATH}/docker-compose.yml"
 
@@ -32,8 +31,6 @@ echo -e "${BLUE}🚀 NEMSAS FASTAPI DEPLOYMENT${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo "Deploy Path: ${DEPLOY_PATH}"
 echo "App Port: ${DEPLOY_PORT}"
-echo "Nginx HTTP Port: ${NGINX_HTTP_PORT}"
-echo "Nginx HTTPS Port: ${NGINX_HTTPS_PORT}"
 echo "User: ${DEPLOY_USER}"
 echo "Timestamp: $(date)"
 echo -e "${BLUE}========================================${NC}"
@@ -135,11 +132,10 @@ set +a
 
 # Use values from .env or defaults
 DB_USER=${DB_USER:-nemsas}
-DB_PASSWORD=${DB_PASSWORD:-$(openssl rand -base64 12)}
+DB_PASSWORD=${DB_PASSWORD:-nemsas_password}
 DB_NAME=${DB_NAME:-nemsas_db}
 
-DEPLOY_PORT=${DEPLOY_PORT} NGINX_HTTP_PORT=${NGINX_HTTP_PORT} NGINX_HTTPS_PORT=${NGINX_HTTPS_PORT} \
-DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME} \
+DEPLOY_PORT=${DEPLOY_PORT} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME} \
 docker compose up -d
 
 sleep 3  # Give services time to start
@@ -155,17 +151,13 @@ MAX_ATTEMPTS=30
 ATTEMPT=0
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-    if docker compose ps | grep -q "${CONTAINER_NAME}"; then
-        CONTAINER_STATUS=$(docker compose ps ${CONTAINER_NAME} | grep -oP '(?<=\s{2})\S*$' | tail -1)
-        
-        if [[ "${CONTAINER_STATUS}" == "Up"* ]]; then
-            echo -e "${GREEN}✅ Container is running${NC}"
-            
-            # Wait for API to be ready
-            if curl -f -s http://localhost:${DEPLOY_PORT}/api/v1/health > /dev/null 2>&1; then
-                echo -e "${GREEN}✅ API is responding${NC}"
-                break
-            fi
+    if docker compose ps --services --status running | grep -qx "${APP_SERVICE_NAME}"; then
+        echo -e "${GREEN}✅ Container is running${NC}"
+
+        # Wait for API to be ready on the published host port.
+        if curl -f -s http://localhost:${DEPLOY_PORT}/health > /dev/null 2>&1; then
+            echo -e "${GREEN}✅ API is responding${NC}"
+            break
         fi
     fi
     
@@ -201,7 +193,7 @@ echo -e "${GREEN}✅ DEPLOYMENT SUCCESSFUL${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo "Service:      ${PROJECT_NAME}"
 echo "Port:         ${DEPLOY_PORT}"
-echo "Status:       $(docker compose ps ${CONTAINER_NAME} | tail -1 | awk '{print $NF}')"
+echo "Status:       $(docker compose ps --services --status running | grep -x "${APP_SERVICE_NAME}" || echo "not-running")"
 echo "Deployed at:  $(date)"
 echo ""
 echo "🔗 Access URL: http://localhost:${DEPLOY_PORT}"
