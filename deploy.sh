@@ -21,8 +21,6 @@ NC='\033[0m' # No Color
 DEPLOY_USER="${DEPLOY_USER:-$(whoami)}"
 DEPLOY_PATH="${PWD}"
 DEPLOY_PORT="${DEPLOY_PORT:-9000}"
-NGINX_HTTP_PORT="${NGINX_HTTP_PORT:-9080}"
-NGINX_HTTPS_PORT="${NGINX_HTTPS_PORT:-9443}"
 PROJECT_NAME="nemsas-backend"
 CONTAINER_NAME="nemsas-backend"
 DOCKER_COMPOSE_FILE="${DEPLOY_PATH}/docker-compose.yml"
@@ -32,8 +30,6 @@ echo -e "${BLUE}🚀 NEMSAS FASTAPI DEPLOYMENT${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo "Deploy Path: ${DEPLOY_PATH}"
 echo "App Port: ${DEPLOY_PORT}"
-echo "Nginx HTTP Port: ${NGINX_HTTP_PORT}"
-echo "Nginx HTTPS Port: ${NGINX_HTTPS_PORT}"
 echo "User: ${DEPLOY_USER}"
 echo "Timestamp: $(date)"
 echo -e "${BLUE}========================================${NC}"
@@ -138,8 +134,7 @@ DB_USER=${DB_USER:-nemsas}
 DB_PASSWORD=${DB_PASSWORD:-nemsas_password}
 DB_NAME=${DB_NAME:-nemsas_db}
 
-DEPLOY_PORT=${DEPLOY_PORT} NGINX_HTTP_PORT=${NGINX_HTTP_PORT} NGINX_HTTPS_PORT=${NGINX_HTTPS_PORT} \
-DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME} \
+DEPLOY_PORT=${DEPLOY_PORT} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME} \
 docker compose up -d
 
 sleep 3  # Give services time to start
