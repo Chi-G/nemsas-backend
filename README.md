@@ -85,8 +85,8 @@ If you have run **both** seeding scripts locally, the following test accounts ar
 uv run uvicorn src.main:app --reload
 ```
 
-The API will be accessible at `http://localhost:8000`.
-Documentation is available at `http://localhost:8000/docs`.
+The API will be accessible at `http://localhost:9000`.
+Documentation is available at `http://localhost:9000/docs`.
 
 ### Running Tests
 
