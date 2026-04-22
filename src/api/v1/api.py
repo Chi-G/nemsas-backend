@@ -2,8 +2,8 @@ from fastapi import APIRouter
 from src.api.v1 import (
     auth, users, incidents, ambulances, dispatch, run_sheets,
     etc, claims, qa, reference, partners, me, ussd_sms,
+    gap_analysis,
 )
-from src.api.v1.endpoints import gap_analysis
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
