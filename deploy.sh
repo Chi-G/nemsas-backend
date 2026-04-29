@@ -38,7 +38,7 @@ echo -e "${BLUE}========================================${NC}"
 # ============================================================================
 # VALIDATION
 # ============================================================================
-echo -e "\n${YELLOW}[1/7] Validating environment...${NC}"
+echo -e "\n${YELLOW}[1/6] Validating environment...${NC}"
 
 if [ ! -f "${DOCKER_COMPOSE_FILE}" ]; then
     echo -e "${RED}❌ ERROR: docker-compose.yml not found at ${DOCKER_COMPOSE_FILE}${NC}"
@@ -69,7 +69,7 @@ echo -e "${GREEN}✅ Docker Compose available${NC}"
 # ============================================================================
 # PRE-DEPLOYMENT
 # ============================================================================
-echo -e "\n${YELLOW}[2/7] Backing up current state...${NC}"
+echo -e "\n${YELLOW}[2/6] Backing up current state...${NC}"
 
 BACKUP_DIR="${DEPLOY_PATH}/.backups/$(date +%Y%m%d_%H%M%S)"
 mkdir -p "${BACKUP_DIR}"
@@ -83,44 +83,23 @@ fi
 # ============================================================================
 # STOP EXISTING CONTAINERS
 # ============================================================================
-echo -e "\n${YELLOW}[3/7] Stopping existing containers...${NC}"
+echo -e "\n${YELLOW}[3/6] Stopping existing containers...${NC}"
 
 cd "${DEPLOY_PATH}"
+docker compose down || true
+sleep 2
 
-if docker compose ps | grep -q "${CONTAINER_NAME}"; then
-    docker compose down
-    sleep 2
-    echo -e "${GREEN}✅ Containers stopped${NC}"
-else
-    echo -e "${YELLOW}⚠️  No running containers found${NC}"
-fi
+echo -e "${GREEN}✅ Containers stopped (or none were running)${NC}"
 
 # ============================================================================
 # BUILD AND START CONTAINERS
 # ============================================================================
-echo -e "\n${YELLOW}[4/7] Building and starting containers...${NC}"
+echo -e "\n${YELLOW}[4/6] Building and starting containers...${NC}"
 
 # Using all-in-one command to let Docker Compose handle the build orchestration
 docker compose up -d --build --no-cache
 
 echo -e "${GREEN}✅ Containers started and built successfully${NC}"
-
-# Source .env to get DB variables
-set -a
-source .env 2>/dev/null || true
-set +a
-
-# Use values from .env or defaults
-DB_USER=${DB_USER:-nemsas}
-DB_PASSWORD=${DB_PASSWORD:-nemsas_password}
-DB_NAME=${DB_NAME:-nemsas_db}
-
-DEPLOY_PORT=${DEPLOY_PORT} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME} \
-docker compose up -d
-
-sleep 3  # Give services time to start
-
-echo -e "${GREEN}✅ Containers started${NC}"
 
 # ============================================================================
 # HEALTH CHECK
@@ -158,7 +137,7 @@ fi
 # ============================================================================
 # CLEANUP
 # ============================================================================
-echo -e "\n${YELLOW}[7/7] Cleaning up...${NC}"
+echo -e "\n${YELLOW}[6/6] Cleaning up...${NC}"
 
 # Prune unused images (keep last 5)
 docker image prune -a -f --filter "until=240h" > /dev/null 2>&1
