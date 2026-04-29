@@ -13,11 +13,12 @@ from src.schemas.auth import ForgotPasswordRequest, ResetPasswordRequest, Activa
 from src.services.user import user_service
 from src.services.auth import auth_service
 from src.services.email import email_service
+from src.schemas.response import BaseResponse
 import jwt
 
 router = APIRouter()
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=BaseResponse[Token])
 async def login_access_token(
     request: Request,
     db: AsyncSession = Depends(get_db), 
@@ -60,13 +61,23 @@ async def login_access_token(
     await auth_service.log_audit(db, AuthAction.LOGIN_SUCCESS, user_id=user.id, email_attempted=user.email, ip_address=ip_addr)
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return {
-        "access_token": security.create_access_token(user.id, expires_delta=access_token_expires),
-        "refresh_token": security.create_refresh_token(user.id),
-        "token_type": "bearer",
-    }
+    refresh_token_str = security.create_refresh_token(user.id)
+    # We use days=7 for refresh token expiry if not set
+    refresh_expiry = (datetime.now(timezone.utc) + timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%S")
 
-@router.post("/refresh", response_model=Token)
+    return BaseResponse(
+        success=True,
+        message="Login successful",
+        data=Token(
+            access_token=security.create_access_token(user.id, expires_delta=access_token_expires),
+            refresh_token=refresh_token_str,
+            token_type="bearer"
+        ),
+        refreshToken=refresh_token_str,
+        refreshTokenExpiryTime=refresh_expiry
+    )
+
+@router.post("/refresh", response_model=BaseResponse[Token])
 async def refresh_token(
     refresh_token: str, db: AsyncSession = Depends(get_db)
 ) -> Any:
@@ -86,13 +97,22 @@ async def refresh_token(
         raise HTTPException(status_code=403, detail="Could not validate credentials")
     
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
-    return {
-        "access_token": security.create_access_token(user.id, expires_delta=access_token_expires),
-        "refresh_token": security.create_refresh_token(user.id), # Refresh token rotation
-        "token_type": "bearer",
-    }
+    new_refresh_token = security.create_refresh_token(user.id)
+    refresh_expiry = (datetime.now(timezone.utc) + timedelta(days=7)).strftime("%Y-%m-%dT%H:%M:%S")
 
-@router.post("/forgot-password", response_model=MessageResponse)
+    return BaseResponse(
+        success=True,
+        message="Token refreshed successfully",
+        data=Token(
+            access_token=security.create_access_token(user.id, expires_delta=access_token_expires),
+            refresh_token=new_refresh_token,
+            token_type="bearer"
+        ),
+        refreshToken=new_refresh_token,
+        refreshTokenExpiryTime=refresh_expiry
+    )
+
+@router.post("/forgot-password", response_model=BaseResponse[MessageResponse])
 async def forgot_password(
     request: Request,
     body: ForgotPasswordRequest,
@@ -111,9 +131,13 @@ async def forgot_password(
         # Send actual email
         await email_service.send_password_reset_otp(user.email, token.token)
     
-    return {"message": "If the email is registered and active, a password reset OTP has been sent."}
+    return BaseResponse(
+        success=True,
+        message="Forgot password processed",
+        data=MessageResponse(message="If the email is registered and active, a password reset OTP has been sent.")
+    )
 
-@router.post("/reset-password", response_model=MessageResponse)
+@router.post("/reset-password", response_model=BaseResponse[MessageResponse])
 async def reset_password(
     request: Request,
     body: ResetPasswordRequest,
@@ -134,9 +158,13 @@ async def reset_password(
 
     await auth_service.log_audit(db, AuthAction.PASSWORD_RESET_SUCCESS, user_id=user.id, email_attempted=user.email, ip_address=ip_addr)
 
-    return {"message": "Password has been successfully reset. Please log in again."}
+    return BaseResponse(
+        success=True,
+        message="Password reset successfully",
+        data=MessageResponse(message="Password has been successfully reset. Please log in again.")
+    )
 
-@router.post("/activate", response_model=MessageResponse)
+@router.post("/activate", response_model=BaseResponse[MessageResponse])
 async def activate_account(
     request: Request,
     body: ActivateAccountRequest,
@@ -157,9 +185,13 @@ async def activate_account(
 
     await auth_service.log_audit(db, AuthAction.ACCOUNT_ACTIVATION, user_id=user.id, email_attempted=user.email, ip_address=ip_addr)
 
-    return {"message": "Account activated successfully. You may now log in."}
+    return BaseResponse(
+        success=True,
+        message="Account activated successfully",
+        data=MessageResponse(message="Account activated successfully. You may now log in.")
+    )
 
-@router.post("/verify-partner-2fa", response_model=MessageResponse)
+@router.post("/verify-partner-2fa", response_model=BaseResponse[MessageResponse])
 async def verify_partner_2fa(
     body: Verify2FARequest,
     db: AsyncSession = Depends(get_db)
@@ -175,4 +207,8 @@ async def verify_partner_2fa(
     user.is_active = True
     await db.commit()
     
-    return {"message": "2FA verification successful. Account is now completely registered."}
+    return BaseResponse(
+        success=True,
+        message="2FA verification successful",
+        data=MessageResponse(message="2FA verification successful. Account is now completely registered.")
+    )

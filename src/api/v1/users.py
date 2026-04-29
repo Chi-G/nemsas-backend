@@ -4,13 +4,15 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.api import deps
 from src.db.base import get_db
 from src.schemas.user import User, UserCreate, UserUpdate
+from src.schemas.response import BaseResponse, PaginatedData
+import math
 from src.services.user import user_service
 from src.db.models.user import User as DBUser
 from src.core.rbac import Permission as PermissionEnum
 
 router = APIRouter()
 
-@router.get("/", response_model=List[User])
+@router.get("/", response_model=BaseResponse[PaginatedData[User]])
 async def read_users(
     db: AsyncSession = Depends(get_db),
     skip: int = 0,
@@ -26,7 +28,7 @@ async def read_users(
     Retrieve users. (Admins only)
     Supports filtering by role, provider, and status. Automatically scoped to state for SEMSAS Admins.
     """
-    return await user_service.list(
+    items = await user_service.list(
         db, 
         role_id=role_id, 
         state_id=state_id, 
@@ -35,8 +37,31 @@ async def read_users(
         skip=skip, 
         limit=limit
     )
+    total = await user_service.count(
+        db, 
+        role_id=role_id, 
+        state_id=state_id, 
+        provider_id=provider_id, 
+        is_active=is_active
+    )
+    
+    total_pages = math.ceil(total / limit) if limit > 0 else 1
+    page = (skip // limit) + 1 if limit > 0 else 1
 
-@router.post("/", response_model=User)
+    return BaseResponse(
+        success=True,
+        message="Users successfully fetched",
+        data=PaginatedData(
+            items=items,
+            totalCount=total,
+            page=page,
+            pageSize=limit,
+            totalPages=total_pages
+        ),
+        totalCount=total
+    )
+
+@router.post("/", response_model=BaseResponse[User])
 async def create_user(
     *,
     db: AsyncSession = Depends(get_db),
@@ -60,9 +85,14 @@ async def create_user(
     user = await user_service.get_by_email(db, email=user_in.email)
     if user:
         raise HTTPException(status_code=400, detail="User already exists")
-    return await user_service.create(db, obj_in=user_in, password="temporary_password_to_be_reset")
+    created_user = await user_service.create(db, obj_in=user_in, password="temporary_password_to_be_reset")
+    return BaseResponse(
+        success=True,
+        message="User created successfully",
+        data=created_user
+    )
 
-@router.patch("/{id}", response_model=User)
+@router.patch("/{id}", response_model=BaseResponse[User])
 async def update_user(
     *,
     db: AsyncSession = Depends(get_db),
@@ -83,9 +113,14 @@ async def update_user(
     if state_id and user.state_id != state_id:
         raise HTTPException(status_code=403, detail="Access denied: User belongs to another state")
         
-    return await user_service.update(db, db_obj=user, obj_in=user_in)
+    updated_user = await user_service.update(db, db_obj=user, obj_in=user_in)
+    return BaseResponse(
+        success=True,
+        message="User updated successfully",
+        data=updated_user
+    )
 
-@router.delete("/{id}", response_model=User)
+@router.delete("/{id}", response_model=BaseResponse[User])
 async def deactivate_user(
     *,
     db: AsyncSession = Depends(get_db),
@@ -105,4 +140,9 @@ async def deactivate_user(
     if state_id and user.state_id != state_id:
         raise HTTPException(status_code=403, detail="Access denied: User belongs to another state")
         
-    return await user_service.deactivate(db, db_obj=user)
+    deactivated_user = await user_service.deactivate(db, db_obj=user)
+    return BaseResponse(
+        success=True,
+        message="User deactivated successfully",
+        data=deactivated_user
+    )

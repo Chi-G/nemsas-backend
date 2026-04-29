@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func
 from src.db.models.user import User, Role
 from src.db.models.auth import UserToken
 from src.schemas.user import UserCreate, UserUpdate
@@ -68,10 +68,10 @@ class UserService:
             role_id = role.id
 
         db_obj = User(
-            email=f"{phone}@nemsas.gov.ng", # Placeholder email
+            email=f"{phone}@nemsas.gov.ng",
             phone_number=phone,
             name=name,
-            hashed_password="!!!AUTHENTICATED_VIA_PHONE!!!", # Non-loginable placeholder
+            hashed_password="!!!AUTHENTICATED_VIA_PHONE!!!",
             role_id=role_id,
             is_active=True,
         )
@@ -100,7 +100,28 @@ class UserService:
             query = query.where(User.is_active == is_active)
         
         result = await db.execute(query.offset(skip).limit(limit))
-        return result.scalars().all()
+        return list(result.scalars().all())
+
+    @staticmethod
+    async def count(
+        db: AsyncSession, 
+        role_id: Optional[int] = None, 
+        state_id: Optional[int] = None,
+        provider_id: Optional[int] = None,
+        is_active: Optional[bool] = None,
+    ) -> int:
+        query = select(func.count(User.id))
+        if role_id:
+            query = query.where(User.role_id == role_id)
+        if state_id:
+            query = query.where(User.state_id == state_id)
+        if provider_id:
+            query = query.where(User.provider_id == provider_id)
+        if is_active is not None:
+            query = query.where(User.is_active == is_active)
+        
+        result = await db.execute(query)
+        return result.scalar() or 0
 
     @staticmethod
     async def update(db: AsyncSession, db_obj: User, obj_in: UserUpdate) -> User:
