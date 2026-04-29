@@ -1,9 +1,13 @@
 #!/bin/bash
 set -e
 
-# Wait for database if needed (though depends_on with condition should handle it)
+# Run database migrations
 echo "Running database migrations..."
 alembic upgrade head
+
+# Seed base data (idempotent)
+echo "Seeding database..."
+python -m scripts.seed
 
 echo "Starting application server..."
 # Start Gunicorn
