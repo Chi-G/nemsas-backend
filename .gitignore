@@ -15,10 +15,9 @@ env/
 # Environment variables
 .env
 
-# User requested to hide specific documents and scripts
+# User requested to hide specific documents
 *.docx
 *_text.txt
-scripts/
 
 # UV and Python specific 
 .python-version
