@@ -96,9 +96,12 @@ echo -e "${GREEN}✅ Containers stopped (or none were running)${NC}"
 # ============================================================================
 echo -e "\n${YELLOW}[4/6] Building and starting containers...${NC}"
 
-# Simplified deployment to handle environment-specific Docker builder configs
-# --progress=plain ensures we see all output in CI logs
-docker compose up -d --build --progress=plain
+# Split build and up steps for better error tracking and compatibility
+echo "Building images..."
+docker compose build --progress=plain
+
+echo "Starting containers..."
+docker compose up -d
 
 echo -e "${GREEN}✅ Containers started and built successfully${NC}"
 
