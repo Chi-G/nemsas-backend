@@ -119,15 +119,20 @@ async def seed_data():
         admin_email = "admin@nemsas.gov.ng"
         stmt = select(User).where(User.email == admin_email)
         existing_admin = await db.execute(stmt)
-        if not existing_admin.scalar_one_or_none():
+        admin_obj = existing_admin.scalar_one_or_none()
+        
+        if not admin_obj:
+            print(f"Creating default admin user: {admin_email}...")
             admin_user = User(
                 email=admin_email,
-                name="System Administrator", # Updated to match model
+                name="System Administrator",
                 hashed_password=get_password_hash("chibuike4u"),
                 is_active=True,
                 role_id=roles["NEMSAS Admin"].id
             )
             db.add(admin_user)
+        else:
+            print(f"Admin user {admin_email} already exists. skipping creation.")
         
         await db.commit()
         print("✅ Database successfully initialized and seeded with National Data (Idempotently)!")
