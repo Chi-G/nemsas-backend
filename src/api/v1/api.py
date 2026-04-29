@@ -20,3 +20,4 @@ api_router.include_router(partners.router, prefix="/partners", tags=["partners"]
 api_router.include_router(me.router, prefix="/m-e", tags=["m-e"])
 api_router.include_router(ussd_sms.router, prefix="/ussd-sms", tags=["ussd-sms"])
 api_router.include_router(gap_analysis.router, prefix="/gap-analysis", tags=["gap-analysis"])
+ 

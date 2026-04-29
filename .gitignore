@@ -25,3 +25,4 @@ scripts/
 .pytest_cache/
 .ruff_cache/
 TASK_PROGRESS.md
+json-data/

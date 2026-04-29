@@ -1,5 +1,5 @@
 from fastapi import Depends, HTTPException, status, Request
-from fastapi.security import OAuth2PasswordBearer
+from fastapi.security import OAuth2PasswordBearer, HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 from pydantic import ValidationError
 from sqlalchemy import select
@@ -14,13 +14,13 @@ from src.db.models.user import User, Role
 from src.schemas.user import TokenPayload
 from src.services.user import user_service
 
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/auth/login"
-)
+security_scheme = HTTPBearer()
 
 async def get_current_user(
-    db: AsyncSession = Depends(get_db), token: str = Depends(reusable_oauth2)
+    db: AsyncSession = Depends(get_db), 
+    auth: HTTPAuthorizationCredentials = Depends(security_scheme)
 ) -> User:
+    token = auth.credentials
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
