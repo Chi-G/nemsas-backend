@@ -100,7 +100,8 @@ fi
 # ============================================================================
 echo -e "\n${YELLOW}[4/7] Building Docker images...${NC}"
 
-docker compose build --no-cache
+# Use direct docker build for maximum stability
+docker build -t nemsas-backend-app . --no-cache
 
 echo -e "${GREEN}✅ Images built successfully${NC}"
 
