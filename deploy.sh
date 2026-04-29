@@ -100,7 +100,7 @@ fi
 # ============================================================================
 echo -e "\n${YELLOW}[4/7] Building Docker images...${NC}"
 
-docker compose build
+docker compose build --progress=plain
 
 echo -e "${GREEN}✅ Images built successfully${NC}"
 

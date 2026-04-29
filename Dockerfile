@@ -40,4 +40,4 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()" || exit 1
 
 # Run migrations and then start the server
-CMD ["sh", "-c", "alembic upgrade head && gunicorn src.main:app --workers=3 --worker-class=uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000 --timeout=60 --keep-alive=5 --graceful-timeout=30 --access-logfile=- --error-logfile=-"]
+CMD alembic upgrade head && gunicorn src.main:app --workers=3 --worker-class=uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000 --timeout=60 --keep-alive=5 --graceful-timeout=30 --access-logfile=- --error-logfile=-
