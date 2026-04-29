@@ -2,12 +2,14 @@
 set -e
 
 # Run database migrations
-echo "Running database migrations..."
+echo "[$(date)] 🚀 Running database migrations..."
 alembic upgrade head
 
 # Seed base data (idempotent)
-echo "Seeding database..."
+echo "[$(date)] 🌱 Seeding database (this may take a minute)..."
 python -m scripts.seed
+
+echo "[$(date)] ✨ Startup sequence complete. Starting Gunicorn..."
 
 echo "Starting application server..."
 # Start Gunicorn

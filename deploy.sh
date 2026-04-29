@@ -110,7 +110,7 @@ echo -e "${GREEN}✅ Containers started and built successfully${NC}"
 # ============================================================================
 echo -e "\n${YELLOW}[5/6] Checking container health...${NC}"
 
-MAX_ATTEMPTS=30
+MAX_ATTEMPTS=60
 ATTEMPT=0
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
