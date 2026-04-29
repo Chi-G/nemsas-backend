@@ -96,19 +96,14 @@ else
 fi
 
 # ============================================================================
-# BUILD IMAGES
+# BUILD AND START CONTAINERS
 # ============================================================================
-echo -e "\n${YELLOW}[4/7] Building Docker images...${NC}"
+echo -e "\n${YELLOW}[4/7] Building and starting containers...${NC}"
 
-# Use direct docker build for maximum stability
-docker build -t nemsas-backend-app . --no-cache
+# Using all-in-one command to let Docker Compose handle the build orchestration
+docker compose up -d --build --no-cache
 
-echo -e "${GREEN}✅ Images built successfully${NC}"
-
-# ============================================================================
-# START CONTAINERS
-# ============================================================================
-echo -e "\n${YELLOW}[5/8] Starting containers...${NC}"
+echo -e "${GREEN}✅ Containers started and built successfully${NC}"
 
 # Source .env to get DB variables
 set -a
@@ -130,7 +125,7 @@ echo -e "${GREEN}✅ Containers started${NC}"
 # ============================================================================
 # HEALTH CHECK
 # ============================================================================
-echo -e "\n${YELLOW}[6/7] Checking container health...${NC}"
+echo -e "\n${YELLOW}[5/6] Checking container health...${NC}"
 
 MAX_ATTEMPTS=30
 ATTEMPT=0
@@ -173,9 +168,9 @@ echo -e "${GREEN}✅ Cleanup completed${NC}"
 # ============================================================================
 # POST-DEPLOYMENT SUMMARY
 # ============================================================================
-echo -e "\n${BLUE}========================================${NC}"
-echo -e "${GREEN}✅ DEPLOYMENT SUCCESSFUL${NC}"
-echo -e "${BLUE}========================================${NC}"
+echo -e "\n${GREEN}========================================${NC}"
+echo -e "${GREEN}🚀 DEPLOYMENT SUCCESSFUL (6/6)${NC}"
+echo -e "${GREEN}========================================${NC}"
 echo "Service:      ${PROJECT_NAME}"
 echo "Port:         ${DEPLOY_PORT}"
 echo "Status:       $(docker compose ps --services --status running | grep -x "${APP_SERVICE_NAME}" || echo "not-running")"
