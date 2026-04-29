@@ -38,7 +38,7 @@ echo -e "${BLUE}========================================${NC}"
 # ============================================================================
 # VALIDATION
 # ============================================================================
-echo -e "\n${YELLOW}[1/8] Validating environment...${NC}"
+echo -e "\n${YELLOW}[1/7] Validating environment...${NC}"
 
 if [ ! -f "${DOCKER_COMPOSE_FILE}" ]; then
     echo -e "${RED}❌ ERROR: docker-compose.yml not found at ${DOCKER_COMPOSE_FILE}${NC}"
@@ -69,7 +69,7 @@ echo -e "${GREEN}✅ Docker Compose available${NC}"
 # ============================================================================
 # PRE-DEPLOYMENT
 # ============================================================================
-echo -e "\n${YELLOW}[2/8] Backing up current state...${NC}"
+echo -e "\n${YELLOW}[2/7] Backing up current state...${NC}"
 
 BACKUP_DIR="${DEPLOY_PATH}/.backups/$(date +%Y%m%d_%H%M%S)"
 mkdir -p "${BACKUP_DIR}"
@@ -83,7 +83,7 @@ fi
 # ============================================================================
 # STOP EXISTING CONTAINERS
 # ============================================================================
-echo -e "\n${YELLOW}[3/8] Stopping existing containers...${NC}"
+echo -e "\n${YELLOW}[3/7] Stopping existing containers...${NC}"
 
 cd "${DEPLOY_PATH}"
 
@@ -96,25 +96,9 @@ else
 fi
 
 # ============================================================================
-# DATABASE MIGRATIONS
-# ============================================================================
-echo -e "\n${YELLOW}[4/8] Running database migrations...${NC}"
-
-# Build if needed (lightweight check)
-docker compose build --no-cache 2>/dev/null || docker compose build
-
-# Run migrations with docker compose
-docker compose run --rm app alembic upgrade head || {
-    echo -e "${RED}❌ Migration failed, rolling back...${NC}"
-    exit 1
-}
-
-echo -e "${GREEN}✅ Database migrations completed${NC}"
-
-# ============================================================================
 # BUILD IMAGES
 # ============================================================================
-echo -e "\n${YELLOW}[5/8] Building Docker images...${NC}"
+echo -e "\n${YELLOW}[4/7] Building Docker images...${NC}"
 
 docker compose build
 
@@ -123,7 +107,7 @@ echo -e "${GREEN}✅ Images built successfully${NC}"
 # ============================================================================
 # START CONTAINERS
 # ============================================================================
-echo -e "\n${YELLOW}[6/8] Starting containers...${NC}"
+echo -e "\n${YELLOW}[5/8] Starting containers...${NC}"
 
 # Source .env to get DB variables
 set -a
@@ -145,7 +129,7 @@ echo -e "${GREEN}✅ Containers started${NC}"
 # ============================================================================
 # HEALTH CHECK
 # ============================================================================
-echo -e "\n${YELLOW}[7/8] Checking container health...${NC}"
+echo -e "\n${YELLOW}[6/7] Checking container health...${NC}"
 
 MAX_ATTEMPTS=30
 ATTEMPT=0
@@ -178,7 +162,7 @@ fi
 # ============================================================================
 # CLEANUP
 # ============================================================================
-echo -e "\n${YELLOW}[8/8] Cleaning up...${NC}"
+echo -e "\n${YELLOW}[7/7] Cleaning up...${NC}"
 
 # Prune unused images (keep last 5)
 docker image prune -a -f --filter "until=240h" > /dev/null 2>&1
