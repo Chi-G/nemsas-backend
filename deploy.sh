@@ -97,11 +97,21 @@ echo -e "${GREEN}✅ Containers stopped (or none were running)${NC}"
 echo -e "\n${YELLOW}[4/6] Building and starting containers...${NC}"
 
 # Split build and up steps for better error tracking and compatibility
-echo "Building images..."
-docker compose build --progress=plain
+echo "Building images (this may take a while)..."
+if ! docker compose build --progress=plain > build.log 2>&1; then
+    echo -e "${RED}❌ Build failed!${NC}"
+    cat build.log
+    exit 1
+fi
+rm build.log
 
 echo "Starting containers..."
-docker compose up -d
+if ! docker compose up -d > up.log 2>&1; then
+    echo -e "${RED}❌ Container startup failed!${NC}"
+    cat up.log
+    exit 1
+fi
+rm up.log
 
 echo -e "${GREEN}✅ Containers started and built successfully${NC}"
 
