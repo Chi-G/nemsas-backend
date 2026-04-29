@@ -30,6 +30,11 @@ COPY . .
 RUN useradd -m -u 1000 appuser && \
     chown -R appuser:appuser /app
 
+# Ensure start.sh is executable and fix potential line ending issues
+RUN sed -i 's/\r$//' scripts/start.sh && \
+    chmod +x scripts/start.sh && \
+    chown appuser:appuser scripts/start.sh
+
 USER appuser
 
 # Expose port
@@ -38,9 +43,6 @@ EXPOSE 8000
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()" || exit 1
-
-# Ensure start.sh is executable
-RUN chmod +x scripts/start.sh
 
 # Run migrations, seed, and then start the server via start script
 CMD ["/bin/bash", "scripts/start.sh"]
