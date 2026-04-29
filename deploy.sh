@@ -97,7 +97,7 @@ echo -e "${GREEN}✅ Containers stopped (or none were running)${NC}"
 echo -e "\n${YELLOW}[4/6] Building and starting containers...${NC}"
 
 # Using all-in-one command to let Docker Compose handle the build orchestration
-docker compose up -d --build --no-cache
+docker compose up -d --build
 
 echo -e "${GREEN}✅ Containers started and built successfully${NC}"
 
