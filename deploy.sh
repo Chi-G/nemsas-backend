@@ -96,15 +96,9 @@ echo -e "${GREEN}✅ Containers stopped (or none were running)${NC}"
 # ============================================================================
 echo -e "\n${YELLOW}[4/6] Building and starting containers...${NC}"
 
-# Forcing legacy build engine to avoid 'Bake' and 'Buildx' issues on this server
-export DOCKER_BUILDKIT=0
-export COMPOSE_DOCKER_CLI_BUILD=0
-
-echo "Building images..."
-docker compose build --no-cache
-
-echo "Starting containers..."
-docker compose up -d
+# Simplified deployment to handle environment-specific Docker builder configs
+# --progress=plain ensures we see all output in CI logs
+docker compose up -d --build --progress=plain
 
 echo -e "${GREEN}✅ Containers started and built successfully${NC}"
 
