@@ -39,5 +39,8 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()" || exit 1
 
-# Run migrations and then start the server
-CMD alembic upgrade head && gunicorn src.main:app --workers=3 --worker-class=uvicorn.workers.UvicornWorker --bind=0.0.0.0:8000 --timeout=60 --keep-alive=5 --graceful-timeout=30 --access-logfile=- --error-logfile=-
+# Ensure start.sh is executable
+RUN chmod +x scripts/start.sh
+
+# Run migrations, seed, and then start the server via start script
+CMD ["/bin/bash", "scripts/start.sh"]

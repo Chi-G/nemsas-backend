@@ -133,10 +133,15 @@ done
 
 if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
     echo -e "${RED}❌ Container failed to start properly${NC}"
-    echo -e "${YELLOW}Logs:${NC}"
-    docker compose logs -n 20
+    echo -e "${YELLOW}Final Logs:${NC}"
+    docker compose logs --tail 100
     exit 1
 fi
+
+echo -e "${BLUE}========================================${NC}"
+echo -e "${YELLOW}📡 STARTUP LOGS (Check Seeding Status):${NC}"
+docker compose logs --tail 50 ${APP_SERVICE_NAME}
+echo -e "${BLUE}========================================${NC}"
 
 # ============================================================================
 # CLEANUP
