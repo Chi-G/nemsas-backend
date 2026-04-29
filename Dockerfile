@@ -30,8 +30,9 @@ COPY . .
 RUN useradd -m -u 1000 appuser && \
     chown -R appuser:appuser /app
 
-# Ensure start.sh is executable and fix potential line ending issues
-RUN sed -i 's/\r$//' scripts/start.sh && \
+# Fix potential line ending issues and ensure start.sh is executable
+RUN ls -la scripts/start.sh && \
+    python3 -c "import os; f='scripts/start.sh'; c=open(f,'rb').read().replace(b'\r\n',b'\n'); open(f,'wb').write(c)" && \
     chmod +x scripts/start.sh && \
     chown appuser:appuser scripts/start.sh
 
