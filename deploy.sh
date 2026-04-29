@@ -100,8 +100,7 @@ fi
 # ============================================================================
 echo -e "\n${YELLOW}[4/7] Building Docker images...${NC}"
 
-# Disable BuildKit temporarily to ensure maximum compatibility with the server's Docker setup
-DOCKER_BUILDKIT=0 docker compose build --no-cache
+docker compose build --no-cache
 
 echo -e "${GREEN}✅ Images built successfully${NC}"
 
