@@ -98,20 +98,16 @@ echo -e "\n${YELLOW}[4/6] Building and starting containers...${NC}"
 
 # Split build and up steps for better error tracking and compatibility
 echo "Building images (this may take a while)..."
-if ! docker compose build --progress=plain > build.log 2>&1; then
+if ! docker compose build --progress=plain; then
     echo -e "${RED}❌ Build failed!${NC}"
-    cat build.log
     exit 1
 fi
-rm build.log
 
 echo "Starting containers..."
-if ! docker compose up -d > up.log 2>&1; then
+if ! docker compose up -d; then
     echo -e "${RED}❌ Container startup failed!${NC}"
-    cat up.log
     exit 1
 fi
-rm up.log
 
 echo -e "${GREEN}✅ Containers started and built successfully${NC}"
 
@@ -120,7 +116,7 @@ echo -e "${GREEN}✅ Containers started and built successfully${NC}"
 # ============================================================================
 echo -e "\n${YELLOW}[5/6] Checking container health...${NC}"
 
-MAX_ATTEMPTS=60
+MAX_ATTEMPTS=15
 ATTEMPT=0
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
