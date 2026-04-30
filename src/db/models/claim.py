@@ -42,12 +42,12 @@ class Claim(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     incident_id: Mapped[int] = mapped_column(ForeignKey("incidents.id"))
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id")) # Submitting user (Crew or ETC)
-    claim_type: Mapped[ClaimType] = mapped_column(SQLAlchemyEnum(ClaimType))
+    claim_type: Mapped[ClaimType] = mapped_column(SQLAlchemyEnum(ClaimType, native_enum=False))
     
     amount: Mapped[float] = mapped_column(Float)
     distance_km: Mapped[Optional[float]] = mapped_column(Float)
     
-    status: Mapped[ClaimStatus] = mapped_column(SQLAlchemyEnum(ClaimStatus), default=ClaimStatus.PENDING)
+    status: Mapped[ClaimStatus] = mapped_column(SQLAlchemyEnum(ClaimStatus, native_enum=False), default=ClaimStatus.PENDING)
     rejection_reason: Mapped[Optional[str]] = mapped_column(String(255))
     
     processed_at: Mapped[Optional[datetime]] = mapped_column(DateTime)
@@ -64,7 +64,7 @@ class ClaimAuditLog(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     claim_id: Mapped[int] = mapped_column(ForeignKey("claims.id"))
-    action: Mapped[ClaimAction] = mapped_column(SQLAlchemyEnum(ClaimAction))
+    action: Mapped[ClaimAction] = mapped_column(SQLAlchemyEnum(ClaimAction, native_enum=False))
     processed_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     rejection_reason: Mapped[Optional[str]] = mapped_column(String(255))
     timestamp: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))

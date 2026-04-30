@@ -38,7 +38,7 @@ echo -e "${BLUE}========================================${NC}"
 # ============================================================================
 # VALIDATION
 # ============================================================================
-echo -e "\n${YELLOW}[1/8] Validating environment...${NC}"
+echo -e "\n${YELLOW}[1/6] Validating environment...${NC}"
 
 if [ ! -f "${DOCKER_COMPOSE_FILE}" ]; then
     echo -e "${RED}❌ ERROR: docker-compose.yml not found at ${DOCKER_COMPOSE_FILE}${NC}"
@@ -60,16 +60,21 @@ if ! command -v docker &> /dev/null; then
 fi
 echo -e "${GREEN}✅ Docker installed: $(docker --version)${NC}"
 
-if ! docker compose version &> /dev/null && ! command -v docker-compose &> /dev/null; then
-    echo -e "${RED}❌ ERROR: Docker Compose not installed${NC}"
-    exit 1
+DOCKER_COMPOSE_CMD="docker compose"
+if ! $DOCKER_COMPOSE_CMD version &> /dev/null; then
+    if command -v docker-compose &> /dev/null; then
+        DOCKER_COMPOSE_CMD="docker-compose"
+    else
+        echo -e "${RED}❌ ERROR: Docker Compose not installed${NC}"
+        exit 1
+    fi
 fi
-echo -e "${GREEN}✅ Docker Compose available${NC}"
+echo -e "${GREEN}✅ Docker Compose available: $($DOCKER_COMPOSE_CMD version)${NC}"
 
 # ============================================================================
 # PRE-DEPLOYMENT
 # ============================================================================
-echo -e "\n${YELLOW}[2/8] Backing up current state...${NC}"
+echo -e "\n${YELLOW}[2/6] Backing up current state...${NC}"
 
 BACKUP_DIR="${DEPLOY_PATH}/.backups/$(date +%Y%m%d_%H%M%S)"
 mkdir -p "${BACKUP_DIR}"
@@ -83,75 +88,49 @@ fi
 # ============================================================================
 # STOP EXISTING CONTAINERS
 # ============================================================================
-echo -e "\n${YELLOW}[3/8] Stopping existing containers...${NC}"
+echo -e "\n${YELLOW}[3/6] Stopping existing containers...${NC}"
 
 cd "${DEPLOY_PATH}"
+$DOCKER_COMPOSE_CMD down || true
+sleep 2
 
-if docker compose ps | grep -q "${CONTAINER_NAME}"; then
-    docker compose down
-    sleep 2
-    echo -e "${GREEN}✅ Containers stopped${NC}"
-else
-    echo -e "${YELLOW}⚠️  No running containers found${NC}"
+echo -e "${GREEN}✅ Containers stopped (or none were running)${NC}"
+
+# ============================================================================
+# BUILD AND START CONTAINERS
+# ============================================================================
+echo -e "\n${YELLOW}[4/6] Building and starting containers...${NC}"
+
+# Check disk space before building
+echo "Checking disk space..."
+df -h /
+
+# Split build and up steps for better error tracking and compatibility
+echo "Building images (this may take a while)..."
+if ! $DOCKER_COMPOSE_CMD build --no-cache --progress=plain; then
+    echo -e "${RED}❌ Build failed! Checking Docker system info...${NC}"
+    docker info | grep -E "Storage|Space|Disk"
+    exit 1
 fi
 
-# ============================================================================
-# DATABASE MIGRATIONS
-# ============================================================================
-echo -e "\n${YELLOW}[4/8] Running database migrations...${NC}"
-
-# Build if needed (lightweight check)
-docker compose build --no-cache 2>/dev/null || docker compose build
-
-# Run migrations with docker compose
-docker compose run --rm app alembic upgrade head || {
-    echo -e "${RED}❌ Migration failed, rolling back...${NC}"
+echo "Starting containers..."
+if ! $DOCKER_COMPOSE_CMD up -d; then
+    echo -e "${RED}❌ Container startup failed!${NC}"
     exit 1
-}
+fi
 
-echo -e "${GREEN}✅ Database migrations completed${NC}"
-
-# ============================================================================
-# BUILD IMAGES
-# ============================================================================
-echo -e "\n${YELLOW}[5/8] Building Docker images...${NC}"
-
-docker compose build
-
-echo -e "${GREEN}✅ Images built successfully${NC}"
-
-# ============================================================================
-# START CONTAINERS
-# ============================================================================
-echo -e "\n${YELLOW}[6/8] Starting containers...${NC}"
-
-# Source .env to get DB variables
-set -a
-source .env 2>/dev/null || true
-set +a
-
-# Use values from .env or defaults
-DB_USER=${DB_USER:-nemsas}
-DB_PASSWORD=${DB_PASSWORD:-nemsas_password}
-DB_NAME=${DB_NAME:-nemsas_db}
-
-DEPLOY_PORT=${DEPLOY_PORT} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME} \
-docker compose up -d
-
-sleep 3  # Give services time to start
-
-echo -e "${GREEN}✅ Containers started${NC}"
+echo -e "${GREEN}✅ Containers started and built successfully${NC}"
 
 # ============================================================================
 # HEALTH CHECK
 # ============================================================================
-echo -e "\n${YELLOW}[7/8] Checking container health...${NC}"
+echo -e "\n${YELLOW}[5/6] Checking container health...${NC}"
 
-MAX_ATTEMPTS=30
+MAX_ATTEMPTS=15
 ATTEMPT=0
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-    if docker compose ps --services --status running | grep -qx "${APP_SERVICE_NAME}"; then
+    if $DOCKER_COMPOSE_CMD ps --services --status running | grep -qx "${APP_SERVICE_NAME}"; then
         echo -e "${GREEN}✅ Container is running${NC}"
 
         # Wait for API to be ready on the published host port.
@@ -170,15 +149,20 @@ done
 
 if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
     echo -e "${RED}❌ Container failed to start properly${NC}"
-    echo -e "${YELLOW}Logs:${NC}"
-    docker compose logs -n 20
+    echo -e "${YELLOW}Final Logs:${NC}"
+    $DOCKER_COMPOSE_CMD logs --tail 100
     exit 1
 fi
+
+echo -e "${BLUE}========================================${NC}"
+echo -e "${YELLOW}📡 STARTUP LOGS (Check Seeding Status):${NC}"
+$DOCKER_COMPOSE_CMD logs --tail 50 ${APP_SERVICE_NAME}
+echo -e "${BLUE}========================================${NC}"
 
 # ============================================================================
 # CLEANUP
 # ============================================================================
-echo -e "\n${YELLOW}[8/8] Cleaning up...${NC}"
+echo -e "\n${YELLOW}[6/6] Cleaning up...${NC}"
 
 # Prune unused images (keep last 5)
 docker image prune -a -f --filter "until=240h" > /dev/null 2>&1
@@ -188,12 +172,12 @@ echo -e "${GREEN}✅ Cleanup completed${NC}"
 # ============================================================================
 # POST-DEPLOYMENT SUMMARY
 # ============================================================================
-echo -e "\n${BLUE}========================================${NC}"
-echo -e "${GREEN}✅ DEPLOYMENT SUCCESSFUL${NC}"
-echo -e "${BLUE}========================================${NC}"
+echo -e "\n${GREEN}========================================${NC}"
+echo -e "${GREEN}🚀 DEPLOYMENT SUCCESSFUL (6/6)${NC}"
+echo -e "${GREEN}========================================${NC}"
 echo "Service:      ${PROJECT_NAME}"
 echo "Port:         ${DEPLOY_PORT}"
-echo "Status:       $(docker compose ps --services --status running | grep -x "${APP_SERVICE_NAME}" || echo "not-running")"
+echo "Status:       $($DOCKER_COMPOSE_CMD ps --services --status running | grep -x "${APP_SERVICE_NAME}" || echo "not-running")"
 echo "Deployed at:  $(date)"
 echo ""
 echo "🔗 Access URL: http://localhost:${DEPLOY_PORT}"
@@ -201,9 +185,9 @@ echo "📚 API Docs:   http://localhost:${DEPLOY_PORT}/docs"
 echo ""
 echo -e "${BLUE}========================================${NC}"
 echo "Useful commands:"
-echo "  View logs:      docker compose logs -f app"
-echo "  Check status:   docker compose ps"
-echo "  Restart:        docker compose restart"
+echo "  View logs:      $DOCKER_COMPOSE_CMD logs -f app"
+echo "  Check status:   $DOCKER_COMPOSE_CMD ps"
+echo "  Restart:        $DOCKER_COMPOSE_CMD restart"
 echo -e "${BLUE}========================================${NC}"
 
 exit 0

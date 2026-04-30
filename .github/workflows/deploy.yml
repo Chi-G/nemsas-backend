@@ -296,12 +296,12 @@ jobs:
             # Run deployment with environment variables
             DEPLOY_PORT="${DEPLOY_PORT}" bash deploy.sh
             
-            DEPLOYMENT_RESULT=$?
+            DEPLOYMENT_RESULT=\$?
             
-            if [ $DEPLOYMENT_RESULT -eq 0 ]; then
+            if [ \$DEPLOYMENT_RESULT -eq 0 ]; then
               echo "✅ Deployment completed successfully"
             else
-              echo "❌ Deployment failed with exit code: $DEPLOYMENT_RESULT"
+              echo "❌ Deployment failed with exit code: \$DEPLOYMENT_RESULT"
               exit 1
             fi
           ENDSSH

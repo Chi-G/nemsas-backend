@@ -54,13 +54,13 @@ class Incident(Base):
     caller_phone: Mapped[Optional[str]] = mapped_column(String(20))
     
     # Emergency Details
-    emergency_type: Mapped[EmergencyType] = mapped_column(SQLAlchemyEnum(EmergencyType))
+    emergency_type: Mapped[EmergencyType] = mapped_column(SQLAlchemyEnum(EmergencyType, native_enum=False))
     severity: Mapped[Optional[str]] = mapped_column(String(50))
     patient_count: Mapped[int] = mapped_column(default=1)
     notes: Mapped[Optional[str]] = mapped_column(String(1000))
     
-    status: Mapped[IncidentStatus] = mapped_column(SQLAlchemyEnum(IncidentStatus), default=IncidentStatus.CREATED)
-    channel: Mapped[IncidentChannel] = mapped_column(SQLAlchemyEnum(IncidentChannel), default=IncidentChannel.APP)
+    status: Mapped[IncidentStatus] = mapped_column(SQLAlchemyEnum(IncidentStatus, native_enum=False), default=IncidentStatus.CREATED)
+    channel: Mapped[IncidentChannel] = mapped_column(SQLAlchemyEnum(IncidentChannel, native_enum=False), default=IncidentChannel.APP)
     location_confirmed: Mapped[bool] = mapped_column(Boolean, default=True)
     
     destination_facility_id: Mapped[Optional[int]] = mapped_column(ForeignKey("users.id"), index=True)
@@ -80,7 +80,7 @@ class IncidentStatusHistory(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     incident_id: Mapped[int] = mapped_column(ForeignKey("incidents.id"))
-    status: Mapped[IncidentStatus] = mapped_column(SQLAlchemyEnum(IncidentStatus))
+    status: Mapped[IncidentStatus] = mapped_column(SQLAlchemyEnum(IncidentStatus, native_enum=False))
     changed_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
     changed_by_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     notes: Mapped[Optional[str]] = mapped_column(String(255))
@@ -92,7 +92,7 @@ class QAFinding(Base):
     
     id: Mapped[int] = mapped_column(primary_key=True)
     incident_id: Mapped[int] = mapped_column(ForeignKey("incidents.id"))
-    compliance_rating: Mapped[ComplianceRating] = mapped_column(SQLAlchemyEnum(ComplianceRating))
+    compliance_rating: Mapped[ComplianceRating] = mapped_column(SQLAlchemyEnum(ComplianceRating, native_enum=False))
     findings_text: Mapped[str] = mapped_column(String(1000))
     created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now(timezone.utc).replace(tzinfo=None))
     qa_officer_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
