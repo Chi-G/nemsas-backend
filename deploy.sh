@@ -60,11 +60,16 @@ if ! command -v docker &> /dev/null; then
 fi
 echo -e "${GREEN}✅ Docker installed: $(docker --version)${NC}"
 
-if ! docker compose version &> /dev/null && ! command -v docker-compose &> /dev/null; then
-    echo -e "${RED}❌ ERROR: Docker Compose not installed${NC}"
-    exit 1
+DOCKER_COMPOSE_CMD="docker compose"
+if ! $DOCKER_COMPOSE_CMD version &> /dev/null; then
+    if command -v docker-compose &> /dev/null; then
+        DOCKER_COMPOSE_CMD="docker-compose"
+    else
+        echo -e "${RED}❌ ERROR: Docker Compose not installed${NC}"
+        exit 1
+    fi
 fi
-echo -e "${GREEN}✅ Docker Compose available${NC}"
+echo -e "${GREEN}✅ Docker Compose available: $($DOCKER_COMPOSE_CMD version)${NC}"
 
 # ============================================================================
 # PRE-DEPLOYMENT
@@ -86,7 +91,7 @@ fi
 echo -e "\n${YELLOW}[3/6] Stopping existing containers...${NC}"
 
 cd "${DEPLOY_PATH}"
-docker compose down || true
+$DOCKER_COMPOSE_CMD down || true
 sleep 2
 
 echo -e "${GREEN}✅ Containers stopped (or none were running)${NC}"
@@ -96,15 +101,20 @@ echo -e "${GREEN}✅ Containers stopped (or none were running)${NC}"
 # ============================================================================
 echo -e "\n${YELLOW}[4/6] Building and starting containers...${NC}"
 
+# Check disk space before building
+echo "Checking disk space..."
+df -h /
+
 # Split build and up steps for better error tracking and compatibility
 echo "Building images (this may take a while)..."
-if ! docker compose build --progress=plain; then
-    echo -e "${RED}❌ Build failed!${NC}"
+if ! $DOCKER_COMPOSE_CMD build --no-cache --progress=plain; then
+    echo -e "${RED}❌ Build failed! Checking Docker system info...${NC}"
+    docker info | grep -E "Storage|Space|Disk"
     exit 1
 fi
 
 echo "Starting containers..."
-if ! docker compose up -d; then
+if ! $DOCKER_COMPOSE_CMD up -d; then
     echo -e "${RED}❌ Container startup failed!${NC}"
     exit 1
 fi
@@ -120,7 +130,7 @@ MAX_ATTEMPTS=15
 ATTEMPT=0
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-    if docker compose ps --services --status running | grep -qx "${APP_SERVICE_NAME}"; then
+    if $DOCKER_COMPOSE_CMD ps --services --status running | grep -qx "${APP_SERVICE_NAME}"; then
         echo -e "${GREEN}✅ Container is running${NC}"
 
         # Wait for API to be ready on the published host port.
@@ -140,13 +150,13 @@ done
 if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
     echo -e "${RED}❌ Container failed to start properly${NC}"
     echo -e "${YELLOW}Final Logs:${NC}"
-    docker compose logs --tail 100
+    $DOCKER_COMPOSE_CMD logs --tail 100
     exit 1
 fi
 
 echo -e "${BLUE}========================================${NC}"
 echo -e "${YELLOW}📡 STARTUP LOGS (Check Seeding Status):${NC}"
-docker compose logs --tail 50 ${APP_SERVICE_NAME}
+$DOCKER_COMPOSE_CMD logs --tail 50 ${APP_SERVICE_NAME}
 echo -e "${BLUE}========================================${NC}"
 
 # ============================================================================
@@ -167,7 +177,7 @@ echo -e "${GREEN}🚀 DEPLOYMENT SUCCESSFUL (6/6)${NC}"
 echo -e "${GREEN}========================================${NC}"
 echo "Service:      ${PROJECT_NAME}"
 echo "Port:         ${DEPLOY_PORT}"
-echo "Status:       $(docker compose ps --services --status running | grep -x "${APP_SERVICE_NAME}" || echo "not-running")"
+echo "Status:       $($DOCKER_COMPOSE_CMD ps --services --status running | grep -x "${APP_SERVICE_NAME}" || echo "not-running")"
 echo "Deployed at:  $(date)"
 echo ""
 echo "🔗 Access URL: http://localhost:${DEPLOY_PORT}"
@@ -175,9 +185,9 @@ echo "📚 API Docs:   http://localhost:${DEPLOY_PORT}/docs"
 echo ""
 echo -e "${BLUE}========================================${NC}"
 echo "Useful commands:"
-echo "  View logs:      docker compose logs -f app"
-echo "  Check status:   docker compose ps"
-echo "  Restart:        docker compose restart"
+echo "  View logs:      $DOCKER_COMPOSE_CMD logs -f app"
+echo "  Check status:   $DOCKER_COMPOSE_CMD ps"
+echo "  Restart:        $DOCKER_COMPOSE_CMD restart"
 echo -e "${BLUE}========================================${NC}"
 
 exit 0
