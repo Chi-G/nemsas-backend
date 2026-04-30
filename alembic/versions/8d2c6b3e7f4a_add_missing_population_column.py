@@ -26,61 +26,43 @@ def column_exists(table, column):
 
 
 def upgrade() -> None:
-    # States
-    if not column_exists('states', 'population'):
-        op.add_column('states', sa.Column('population', sa.Integer(), nullable=False, server_default='0'))
-    if not column_exists('states', 'updated_at'):
-        op.add_column('states', sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')))
+    # Use raw SQL with IF NOT EXISTS for maximum reliability on the live server
+    # This bypasses any issues with SQLAlchemy inspection on the existing schema
     
-    # LGAs
-    if not column_exists('lgas', 'population'):
-        op.add_column('lgas', sa.Column('population', sa.Integer(), nullable=False, server_default='0'))
-    if not column_exists('lgas', 'updated_at'):
-        op.add_column('lgas', sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')))
-        
-    # Drugs
-    if not column_exists('drugs', 'dosage_form'):
-        op.add_column('drugs', sa.Column('dosage_form', sa.String(length=100), nullable=True))
-    if not column_exists('drugs', 'is_nhia_approved'):
-        op.add_column('drugs', sa.Column('is_nhia_approved', sa.Boolean(), nullable=False, server_default='true'))
-    if not column_exists('drugs', 'is_active'):
-        op.add_column('drugs', sa.Column('is_active', sa.Boolean(), nullable=False, server_default='true'))
-    if not column_exists('drugs', 'updated_at'):
-        op.add_column('drugs', sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')))
+    # States table
+    op.execute("ALTER TABLE states ADD COLUMN IF NOT EXISTS population INTEGER DEFAULT 0")
+    op.execute("ALTER TABLE states ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()")
+    
+    # LGAs table
+    op.execute("ALTER TABLE lgas ADD COLUMN IF NOT EXISTS population INTEGER DEFAULT 0")
+    op.execute("ALTER TABLE lgas ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()")
+    
+    # Drugs table
+    op.execute("ALTER TABLE drugs ADD COLUMN IF NOT EXISTS dosage_form VARCHAR(100)")
+    op.execute("ALTER TABLE drugs ADD COLUMN IF NOT EXISTS is_nhia_approved BOOLEAN DEFAULT true")
+    op.execute("ALTER TABLE drugs ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true")
+    op.execute("ALTER TABLE drugs ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()")
 
-    # Ambulance Types
-    if not column_exists('ambulance_types', 'description'):
-        op.add_column('ambulance_types', sa.Column('description', sa.String(length=255), nullable=True))
-    if not column_exists('ambulance_types', 'is_active'):
-        op.add_column('ambulance_types', sa.Column('is_active', sa.Boolean(), nullable=False, server_default='true'))
-    if not column_exists('ambulance_types', 'updated_at'):
-        op.add_column('ambulance_types', sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')))
+    # Ambulance Types table
+    op.execute("ALTER TABLE ambulance_types ADD COLUMN IF NOT EXISTS description VARCHAR(255)")
+    op.execute("ALTER TABLE ambulance_types ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true")
+    op.execute("ALTER TABLE ambulance_types ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()")
 
-    # Accreditation Categories
-    if not column_exists('accreditation_categories', 'description'):
-        op.add_column('accreditation_categories', sa.Column('description', sa.String(length=255), nullable=True))
-    if not column_exists('accreditation_categories', 'is_active'):
-        op.add_column('accreditation_categories', sa.Column('is_active', sa.Boolean(), nullable=False, server_default='true'))
-    # Users
-    if not column_exists('users', 'provider_id'):
-        op.add_column('users', sa.Column('provider_id', sa.Integer(), nullable=True))
-        op.create_index(op.f('ix_users_provider_id'), 'users', ['provider_id'], unique=False)
-    if not column_exists('users', 'state_id'):
-        op.add_column('users', sa.Column('state_id', sa.Integer(), nullable=True))
-        op.create_index(op.f('ix_users_state_id'), 'users', ['state_id'], unique=False)
-    if not column_exists('users', 'lga_id'):
-        op.add_column('users', sa.Column('lga_id', sa.Integer(), nullable=True))
-        op.create_index(op.f('ix_users_lga_id'), 'users', ['lga_id'], unique=False)
-    if not column_exists('users', 'last_login'):
-        op.add_column('users', sa.Column('last_login', sa.DateTime(), nullable=True))
-    if not column_exists('users', 'failed_login_attempts'):
-        op.add_column('users', sa.Column('failed_login_attempts', sa.Integer(), nullable=False, server_default='0'))
-    if not column_exists('users', 'lockout_until'):
-        op.add_column('users', sa.Column('lockout_until', sa.DateTime(), nullable=True))
-    if not column_exists('users', 'created_at'):
-        op.add_column('users', sa.Column('created_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')))
-    if not column_exists('users', 'updated_at'):
-        op.add_column('users', sa.Column('updated_at', sa.DateTime(), nullable=False, server_default=sa.text('now()')))
+    # Accreditation Categories table
+    op.execute("ALTER TABLE accreditation_categories ADD COLUMN IF NOT EXISTS description VARCHAR(255)")
+    op.execute("ALTER TABLE accreditation_categories ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true")
+    op.execute("ALTER TABLE accreditation_categories ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()")
+    
+    # Users table additions
+    op.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS phone_number VARCHAR(20)")
+    op.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS provider_id INTEGER")
+    op.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS state_id INTEGER")
+    op.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS lga_id INTEGER")
+    op.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login TIMESTAMP WITH TIME ZONE")
+    op.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS failed_login_attempts INTEGER DEFAULT 0")
+    op.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS lockout_until TIMESTAMP WITH TIME ZONE")
+    op.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT now()")
+    op.execute("ALTER TABLE users ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP WITH TIME ZONE DEFAULT now()")
 
 
 def downgrade() -> None:

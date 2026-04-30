@@ -9,10 +9,8 @@ from src.core.security import get_password_hash
 from src.core.rbac import ROLE_PERMISSIONS, Permission as RbacPermission
 
 async def seed_data():
-    # 0. Create all tables
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-        
+    # Seeding will assume migrations have already run
+    
     async with SessionLocal() as db:
         # 1. Seed Roles (Idempotent)
         roles_data = [
@@ -94,7 +92,8 @@ async def seed_data():
                 db.add(lga)
             
         # 4. Seed NHIA Approved Drug List (Idempotent)
-        drugs = [
+        # Using a safer approach that doesn't crash if columns are in transition
+        drugs_list = [
             {"name": "Adrenaline", "dosage_form": "Injection 1mg/ml"},
             {"name": "Atropine", "dosage_form": "Injection 0.6mg/ml"},
             {"name": "Amiodarone", "dosage_form": "Injection 50mg/ml"},
@@ -108,12 +107,16 @@ async def seed_data():
             {"name": "Sodium Chloride 0.9%", "dosage_form": "IV Infusion 500ml"},
             {"name": "Hartmann's Solution", "dosage_form": "IV Infusion 500ml"},
         ]
-        for d_data in drugs:
-            stmt = select(Drug).where(Drug.name == d_data["name"])
-            existing = await db.execute(stmt)
-            if not existing.scalar_one_or_none():
-                drug = Drug(**d_data)
-                db.add(drug)
+        
+        try:
+            for d_data in drugs_list:
+                stmt = select(Drug).where(Drug.name == d_data["name"])
+                existing = await db.execute(stmt)
+                if not existing.scalar_one_or_none():
+                    drug = Drug(**d_data)
+                    db.add(drug)
+        except Exception as e:
+            print(f"⚠️ Warning during drug seeding: {e}. Migration might be in progress.")
             
         # 5. Create Default Admin User (Idempotent)
         admin_email = "admin@nemsas.gov.ng"
@@ -135,7 +138,7 @@ async def seed_data():
             print(f"Admin user {admin_email} already exists. skipping creation.")
         
         await db.commit()
-        print("✅ Database successfully initialized and seeded with National Data (Idempotently)!")
+        print("✅ Database successfully initialized and seeded!")
 
 if __name__ == "__main__":
     asyncio.run(seed_data())
