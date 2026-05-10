@@ -1,0 +1,20 @@
+[
+    {
+        "id": 3,
+        "name": "Private",
+        "description": "Private",
+        "dateAdded": "2026-01-07T17:54:12.887767+00:00"
+    },
+    {
+        "id": 2,
+        "name": "Tertiary",
+        "description": "Tertiary",
+        "dateAdded": "2026-01-07T17:54:12.887767+00:00"
+    },
+    {
+        "id": 1,
+        "name": "General",
+        "description": "General",
+        "dateAdded": "2026-02-26T19:43:59.19848+00:00"
+    }
+]
