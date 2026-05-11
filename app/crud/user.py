@@ -39,7 +39,8 @@ class CRUDUser:
         *, 
         skip: int = 0, 
         limit: int = 100,
-        search: Optional[str] = None
+        search: Optional[str] = None,
+        state_id: Optional[int] = None
     ) -> tuple[List[User], int]:
         from sqlalchemy import func, or_
         
@@ -52,6 +53,9 @@ class CRUDUser:
                 User.email.ilike(f"%{search}%")
             )
             query = query.filter(search_filter)
+        
+        if state_id is not None:
+            query = query.filter(User.state_id == state_id)
         
         # Get count
         count_query = select(func.count()).select_from(query.subquery())

@@ -15,16 +15,21 @@ async def read_ambulances(
     driverName: Optional[str] = None,
     stateId: Optional[int] = None,
     days: Optional[int] = None,
+    current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Retrieve ambulances with filtering.
+    Retrieve ambulances with filtering (SUPERADMINISTRATOR sees all, ADMINSEMSASUSER only their state).
     """
+    effective_state_id = stateId
+    if current_user.user_type == "ADMINSEMSASUSER":
+        effective_state_id = current_user.state_id
+
     ambulances, total_count = await ambulance_crud.get_multi_with_count(
         db, 
         skip=skip, 
         limit=limit,
         driver_name=driverName,
-        state_id=stateId,
+        state_id=effective_state_id,
         days=days
     )
     from app.schemas.ambulance import AmbulanceSummary

@@ -30,13 +30,31 @@ async def read_users(
     limit: int = 100,
     offset: Optional[int] = None,
     search: Optional[str] = None,
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR"])),
+    state_id: Optional[int] = None,
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
 ):
     """
-    Get all users (SUPERADMINISTRATOR only)
+    Get all users (SUPERADMINISTRATOR can see all or filter by state, ADMINSEMSASUSER only their state)
     """
     actual_skip = offset if offset is not None else skip
-    users, total = await user_crud.get_multi_with_count(db, skip=actual_skip, limit=limit, search=search)
+    
+    # Logic for state filtering:
+    # 1. ADMINSEMSASUSER is strictly limited to their own state.
+    # 2. SUPERADMINISTRATOR can filter by state_id query param if provided, otherwise sees all.
+    effective_state_id = None
+    
+    if current_user.user_type == "ADMINSEMSASUSER":
+        effective_state_id = current_user.state_id
+    elif current_user.user_type == "SUPERADMINISTRATOR":
+        effective_state_id = state_id
+        
+    users, total = await user_crud.get_multi_with_count(
+        db, 
+        skip=actual_skip, 
+        limit=limit, 
+        search=search,
+        state_id=effective_state_id
+    )
     return {
         "success": True,
         "message": "User(s) fetched",
@@ -53,8 +71,37 @@ async def create_user(
     *,
     db: AsyncSession = Depends(deps.get_db),
     user_in: UserCreate,
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR"])),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
 ):
+    # Role-based validation for creation
+    if current_user.user_type == "ADMINSEMSASUSER":
+        # 1. Enforce state restriction
+        if user_in.state_id != current_user.state_id:
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "message": "User creation failed",
+                    "error": f"You can only create users for your own state (ID: {current_user.state_id})"
+                }
+            )
+        
+        # 2. Enforce allowed roles
+        allowed_roles = [
+            "SEMSASUSER", 
+            "SEMSASDISPATCH", 
+            "AMBULANCEUSER", 
+            "EMERGENCYTREATMENTUSER", 
+            "STATEVIEWER"
+        ]
+        if user_in.user_type not in allowed_roles:
+            raise HTTPException(
+                status_code=403,
+                detail={
+                    "message": "User creation failed",
+                    "error": f"You are not authorized to create users with the role '{user_in.user_type}'. Allowed roles: {', '.join(allowed_roles)}"
+                }
+            )
+
     # Check if user exists (email)
     existing_user_email = await user_crud.get_by_email(db, email=user_in.email)
     if existing_user_email:
@@ -79,8 +126,6 @@ async def create_user(
             }
         )
 
-
-        
     new_user = await user_crud.create(db, obj_in=user_in)
     return {
         "success": True,

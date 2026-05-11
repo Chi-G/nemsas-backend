@@ -15,6 +15,7 @@ def get_password_hash(password: str) -> str:
 def create_access_token(
     subject: Union[str, Any], 
     role: Optional[str] = None,
+    state_id: Optional[int] = None,
     expires_delta: timedelta = None
 ) -> str:
     if expires_delta:
@@ -26,6 +27,7 @@ def create_access_token(
         "exp": expire, 
         "sub": str(subject), 
         "role": role,  # Added user role
+        "state_id": state_id, # Added state_id
         "type": "access"
     }
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
@@ -34,6 +36,7 @@ def create_access_token(
 def create_refresh_token(
     subject: Union[str, Any], 
     role: Optional[str] = None,
+    state_id: Optional[int] = None,
     expires_delta: timedelta = None
 ) -> str:
     if expires_delta:
@@ -45,6 +48,7 @@ def create_refresh_token(
         "exp": expire, 
         "sub": str(subject), 
         "role": role,  # Added user role
+        "state_id": state_id, # Added state_id
         "type": "refresh"
     }
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
