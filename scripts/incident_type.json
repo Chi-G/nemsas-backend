@@ -1,0 +1,74 @@
+[
+        {
+            "id": 12,
+            "name": "Others",
+            "description": "Others",
+            "dateAdded": "2026-02-26T19:43:59.198595+00:00"
+        },
+        {
+            "id": 11,
+            "name": "Geriatric Emergency",
+            "description": "Geriatric Emergency",
+            "dateAdded": "2026-02-26T19:43:59.198595+00:00"
+        },
+        {
+            "id": 10,
+            "name": "Fire Accident",
+            "description": "Fire Accident",
+            "dateAdded": "2026-02-26T19:43:59.198595+00:00"
+        },
+        {
+            "id": 9,
+            "name": "Bomblast",
+            "description": "Bomblast",
+            "dateAdded": "2026-02-26T19:43:59.198595+00:00"
+        },
+        {
+            "id": 8,
+            "name": "Banditry/Terrorism",
+            "description": "Banditry/Terrorism",
+            "dateAdded": "2026-02-26T19:43:59.198594+00:00"
+        },
+        {
+            "id": 7,
+            "name": "Paediatric (<5yrs)",
+            "description": "Paediatric (<5yrs)",
+            "dateAdded": "2026-02-26T19:43:59.198594+00:00"
+        },
+        {
+            "id": 6,
+            "name": "Neonatal (<5yrs)",
+            "description": "Neonatal (<5yrs)",
+            "dateAdded": "2026-02-26T19:43:59.198594+00:00"
+        },
+        {
+            "id": 5,
+            "name": "Obstetric Accident",
+            "description": "Obstetric Accident",
+            "dateAdded": "2026-02-26T19:43:59.198593+00:00"
+        },
+        {
+            "id": 4,
+            "name": "Industrial Accident",
+            "description": "Industrial Accident",
+            "dateAdded": "2026-02-26T19:43:59.198578+00:00"
+        },
+        {
+            "id": 3,
+            "name": "Chemical Accident",
+            "description": "Chemical Accident",
+            "dateAdded": "2026-02-26T19:43:59.198578+00:00"
+        },
+        {
+            "id": 2,
+            "name": "Domestic Accident",
+            "description": "Domestic Accident",
+            "dateAdded": "2026-02-26T19:43:59.198578+00:00"
+        },
+        {
+            "id": 1,
+            "name": "RTA",
+            "description": "RTA",
+            "dateAdded": "2026-02-26T19:43:59.198577+00:00"
+        }
+    ]
