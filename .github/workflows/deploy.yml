@@ -1,0 +1,390 @@
+name: Deploy FastAPI to VPS
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to deploy (e.g., master, development)'
+        required: true
+        default: 'master'
+        type: string
+      environment:
+        description: 'Deployment environment'
+        required: true
+        type: choice
+        options:
+          - dev
+          - prod
+      port:
+        description: 'Port to expose (default: 9000)'
+        required: false
+        default: '9000'
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    env:
+      PYTHON_VERSION: '3.12'
+    
+    steps:
+      # ============================================================================
+      # STEP 1: CHECKOUT REPOSITORY
+      # ============================================================================
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+          fetch-depth: 0
+      
+      - name: 📋 Display deployment information
+        run: |
+          echo "=========================================="
+          echo "🚀 DEPLOYMENT INFORMATION"
+          echo "=========================================="
+          echo "Branch: ${{ github.event.inputs.branch }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Triggered by: workflow_dispatch"
+          echo "=========================================="
+      
+      # ============================================================================
+      # STEP 2: DETERMINE DEPLOYMENT CONFIGURATION
+      # ============================================================================
+      - name: 🎯 Set deployment configuration
+        id: deploy-config
+        run: |
+          ENVIRONMENT="${{ github.event.inputs.environment }}"
+          echo "ENVIRONMENT=${ENVIRONMENT}" >> $GITHUB_ENV
+          
+          # Map dev to staging secrets, prod to production secrets
+          if [ "${ENVIRONMENT}" == "dev" ]; then
+            echo "Using STAGING secrets for dev environment"
+            echo "SERVER_IP=${{ secrets.STAGE_SERVER_IP }}" >> $GITHUB_ENV
+            echo "SSH_USER=root" >> $GITHUB_ENV
+            {
+              echo "SSH_PRIVATE_KEY<<EOF"
+              echo "${{ secrets.STAGE_SSH_KEY }}"
+              echo "EOF"
+            } >> $GITHUB_ENV
+            echo "SSH_PASSPHRASE=${{ secrets.STAGE_SSH_KEY_PASSPHRASE }}" >> $GITHUB_ENV
+            echo "DEPLOY_PATH=/var/www/nemsas-backend" >> $GITHUB_ENV
+            echo "DEPLOY_PORT=${{ github.event.inputs.port }}" >> $GITHUB_ENV
+          elif [ "${ENVIRONMENT}" == "prod" ]; then
+            echo "Using PRODUCTION secrets for prod environment"
+            echo "SERVER_IP=${{ secrets.PROD_SERVER_IP }}" >> $GITHUB_ENV
+            echo "SSH_USER=root" >> $GITHUB_ENV
+            {
+              echo "SSH_PRIVATE_KEY<<EOF"
+              echo "${{ secrets.PROD_SSH_KEY }}"
+              echo "EOF"
+            } >> $GITHUB_ENV
+            echo "SSH_PASSPHRASE=" >> $GITHUB_ENV
+            echo "DEPLOY_PATH=/var/www/nemsas-backend" >> $GITHUB_ENV
+            echo "DEPLOY_PORT=${{ github.event.inputs.port }}" >> $GITHUB_ENV
+          fi
+          
+          echo "=========================================="
+          echo "🎯 DEPLOYMENT CONFIGURATION"
+          echo "=========================================="
+          echo "Environment: ${ENVIRONMENT}"
+          echo "Deploy Path: Configured"
+          echo "SSH User: Configured"
+          echo "SSH Key: Configured"
+          echo "=========================================="
+      
+      # ============================================================================
+      # STEP 3: VALIDATE SECRETS
+      # ============================================================================
+      - name: 🔎 Validate required secrets
+        run: |
+          ENVIRONMENT="${{ env.ENVIRONMENT }}"
+          MISSING_SECRETS=""
+          
+          if [ -z "${{ env.SERVER_IP }}" ]; then
+            MISSING_SECRETS+="SERVER_IP "
+          fi
+          
+          if [ -z "${{ env.SSH_PRIVATE_KEY }}" ]; then
+            MISSING_SECRETS+="SSH_PRIVATE_KEY or SSH_KEY "
+          fi
+          
+          if [ ! -z "${MISSING_SECRETS}" ]; then
+            echo "❌ ERROR: Missing secrets for ${ENVIRONMENT} environment"
+            echo "Missing: ${MISSING_SECRETS}"
+            exit 1
+          fi
+          
+          echo "✅ All required secrets are configured"
+      
+      # ============================================================================
+      # STEP 4: SETUP SSH KEY
+      # ============================================================================
+      - name: 🔐 Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
+          
+          # Create SSH key file
+          echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          
+          # Start SSH agent
+          eval "$(ssh-agent -s)"
+          
+          # Add key (handle passphrase for staging, no passphrase for prod)
+          if [ -z "${{ env.SSH_PASSPHRASE }}" ]; then
+            # Production - no passphrase
+            ssh-add ~/.ssh/deploy_key
+            echo "✅ SSH key added (no passphrase)"
+          else
+            # Development (staging) - with passphrase
+            echo "${{ env.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/deploy_key
+            echo "✅ SSH key added (with passphrase)"
+          fi
+          
+          # Export agent variables for subsequent steps
+          echo "SSH_AUTH_SOCK=$SSH_AUTH_SOCK" >> $GITHUB_ENV
+          echo "SSH_AGENT_PID=$SSH_AGENT_PID" >> $GITHUB_ENV
+      
+      - name: 🔑 Add VPS to known hosts
+        run: |
+          echo "=========================================="
+          echo "🔑 CONFIGURING SSH CONNECTION"
+          echo "=========================================="
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ env.SERVER_IP }} >> ~/.ssh/known_hosts 2>/dev/null
+          echo "✅ SSH configured for ${{ env.SERVER_IP }}"
+          echo "=========================================="
+      
+      # ============================================================================
+      # STEP 5: PREPARE SERVER ENVIRONMENT
+      # ============================================================================
+      - name: 📁 Create deployment directory and verify setup
+        run: |
+          echo "========================================"
+          echo "📁 PREPARING SERVER ENVIRONMENT"
+          echo "========================================"
+          
+          DEPLOY_PATH="${{ env.DEPLOY_PATH }}"
+          SSH_USER="${{ env.SSH_USER }}"
+          SERVER_IP="${{ env.SERVER_IP }}"
+          
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 "${SSH_USER}@${SERVER_IP}" << 'ENDSSH'
+            echo "Creating deployment directory..."
+            mkdir -p "$DEPLOY_PATH"
+            
+            echo "Checking Docker installation..."
+            if ! command -v docker &> /dev/null; then
+              echo "❌ ERROR: Docker not found on server"
+              exit 1
+            fi
+            
+            if ! docker compose version &> /dev/null 2>&1 && ! command -v docker-compose &> /dev/null; then
+              echo "❌ ERROR: Docker Compose not found on server"
+              exit 1
+            fi
+            
+            echo "✅ Docker available: $(docker --version)"
+            echo "✅ Docker Compose available"
+            
+            # Check if .env exists
+            if [ ! -f "$DEPLOY_PATH/.env" ]; then
+              echo "⚠️  WARNING: .env file not found at $DEPLOY_PATH/.env"
+              echo "Please ensure .env is manually created with required variables"
+            else
+              echo "✅ .env file found"
+            fi
+            
+            echo "✅ Server environment ready"
+          ENDSSH
+          
+          echo "========================================"
+      
+      # ============================================================================
+      # STEP 6: SETUP PYTHON (for local validation)
+      # ============================================================================
+      - name: 🐍 Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      
+      - name: 📦 Validate project structure
+        run: |
+          echo "=========================================="
+          echo "📦 VALIDATING PROJECT STRUCTURE"
+          echo "=========================================="
+          
+          # Check required files
+          required_files=("Dockerfile" "docker-compose.yml" "deploy.sh" "pyproject.toml")
+          
+          for file in "${required_files[@]}"; do
+            if [ -f "$file" ]; then
+              echo "✅ $file found"
+            else
+              echo "❌ ERROR: $file not found"
+              exit 1
+            fi
+          done
+          
+          echo "=========================================="
+      
+      # ============================================================================
+      # STEP 7: SYNC SOURCE CODE TO SERVER
+      # ============================================================================
+      - name: 📤 Copy source code to server
+        run: |
+          echo "========================================"
+          echo "📤 SYNCING SOURCE CODE TO SERVER"
+          echo "========================================"
+          
+          SSH_USER="${{ env.SSH_USER }}"
+          SERVER_IP="${{ env.SERVER_IP }}"
+          DEPLOY_PATH="${{ env.DEPLOY_PATH }}"
+          
+          echo "Destination: ${SSH_USER}@${SERVER_IP}:${DEPLOY_PATH}/"
+          echo ""
+          
+          rsync -avz --delete \
+            --progress \
+            --exclude '.git/' \
+            --exclude '.github/' \
+            --exclude '.gitignore' \
+            --exclude '__pycache__/' \
+            --exclude '*.pyc' \
+            --exclude '.pytest_cache/' \
+            --exclude '.coverage' \
+            --exclude 'htmlcov/' \
+            --exclude '.env' \
+            --exclude '.env.local' \
+            --exclude '.dockerignore' \
+            --exclude '*.log' \
+            --exclude 'node_modules/' \
+            --exclude '.next/' \
+            --exclude 'dist/' \
+            --exclude 'build/' \
+            --exclude '.backups/' \
+            ./ "${SSH_USER}@${SERVER_IP}:${DEPLOY_PATH}/"
+          
+          echo ""
+          echo "✅ Source code synced successfully"
+          echo "========================================"
+      
+      # ============================================================================
+      # STEP 8: EXECUTE DEPLOYMENT ON SERVER
+      # ============================================================================
+      - name: 🚀 Run deployment script on server
+        run: |
+          echo "========================================"
+          echo "🚀 EXECUTING DEPLOYMENT"
+          echo "========================================"
+          
+          SSH_USER="${{ env.SSH_USER }}"
+          SERVER_IP="${{ env.SERVER_IP }}"
+          DEPLOY_PATH="${{ env.DEPLOY_PATH }}"
+          DEPLOY_PORT="${{ env.DEPLOY_PORT }}"
+          
+          ssh -o StrictHostKeyChecking=no "${SSH_USER}@${SERVER_IP}" << ENDSSH
+            cd "${DEPLOY_PATH}"
+            
+            # Make deploy script executable
+            chmod +x deploy.sh
+            
+            # Run deployment with environment variables
+            DEPLOY_PORT="${DEPLOY_PORT}" bash deploy.sh
+            
+            DEPLOYMENT_RESULT=\$?
+            
+            if [ \$DEPLOYMENT_RESULT -eq 0 ]; then
+              echo "✅ Deployment completed successfully"
+            else
+              echo "❌ Deployment failed with exit code: \$DEPLOYMENT_RESULT"
+              exit 1
+            fi
+          ENDSSH
+          
+          echo "========================================"
+      
+      # ============================================================================
+      # STEP 9: VERIFY DEPLOYMENT
+      # ============================================================================
+      - name: ✅ Verify deployment
+        run: |
+          echo "========================================"
+          echo "✅ VERIFYING DEPLOYMENT"
+          echo "========================================"
+          
+          SSH_USER="${{ env.SSH_USER }}"
+          SERVER_IP="${{ env.SERVER_IP }}"
+          DEPLOY_PORT="${{ env.DEPLOY_PORT }}"
+          
+          # Wait for service to be ready
+          MAX_ATTEMPTS=30
+          ATTEMPT=0
+          
+          while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            if ssh -o StrictHostKeyChecking=no "${SSH_USER}@${SERVER_IP}" \
+              "curl -f -s http://localhost:${DEPLOY_PORT}/health" > /dev/null 2>&1; then
+              echo "✅ API health check passed"
+              break
+            fi
+            
+            ATTEMPT=$((ATTEMPT + 1))
+            if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+              echo "Waiting for service to be ready... ($ATTEMPT/$MAX_ATTEMPTS)"
+              sleep 2
+            fi
+          done
+          
+          if [ $ATTEMPT -eq $MAX_ATTEMPTS ]; then
+            echo "❌ Service failed to become healthy"
+            exit 1
+          fi
+          
+          echo "========================================"
+      
+      # ============================================================================
+      # STEP 10: DISPLAY DEPLOYMENT SUMMARY
+      # ============================================================================
+      - name: 📋 Deployment summary
+        if: success()
+        run: |
+          echo ""
+          echo "=========================================="
+          echo "✅ DEPLOYMENT SUCCESSFUL"
+          echo "=========================================="
+          echo "Environment: ${{ env.ENVIRONMENT }}"
+          echo "Branch: ${{ github.event.inputs.branch }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Server: ${{ env.SERVER_IP }}"
+          echo "Deploy Path: ${{ env.DEPLOY_PATH }}"
+          echo "Port: ${{ env.DEPLOY_PORT }}"
+          echo ""
+          echo "🔗 Access URL: http://${{ env.SERVER_IP }}:${{ env.DEPLOY_PORT }}"
+          echo "📚 API Docs: http://${{ env.SERVER_IP }}:${{ env.DEPLOY_PORT }}/docs"
+          echo ""
+          echo "Deployed at: $(date -u +'%Y-%m-%d %H:%M:%S UTC')"
+          echo "=========================================="
+      
+      # ============================================================================
+      # STEP 11: HANDLE DEPLOYMENT FAILURE
+      # ============================================================================
+      - name: 🔴 Deployment failed notification
+        if: failure()
+        run: |
+          echo ""
+          echo "=========================================="
+          echo "❌ DEPLOYMENT FAILED"
+          echo "=========================================="
+          echo "Environment: ${{ env.ENVIRONMENT }}"
+          echo "Branch: ${{ github.event.inputs.branch }}"
+          echo "Check the logs above for details"
+          echo "=========================================="
+          exit 1
+
+concurrency:
+  group: deploy-${{ github.event.inputs.environment }}
+  cancel-in-progress: false

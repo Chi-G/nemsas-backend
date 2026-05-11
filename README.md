@@ -1,81 +1,80 @@
-# nemsas-backend
 # NEMSAS Backend
 
-This is the backend service for the National Emergency Medical Services and Ambulance System (NEMSAS), built with FastAPI and SQLAlchemy.
+The backend system for the National Emergency Medical Service and Ambulance System (NEMSAS). This system provides API endpoints for incident management, dispatching, partner coordination, and claims processing.
 
-## 🚀 Features
+## Tech Stack
 
-- **FastAPI Framework**: High-performance, easy-to-learn, fast-to-code, ready-for-production.
-- **SQLAlchemy ORM**: Robust database toolkit and Object Relational Mapper.
-- **Alembic**: Database migration tool.
-- **JWT Authentication**: Secure user authentication and authorization.
-- **Password Security**: Password hashing with bcrypt.
-- **Comprehensive Health Data Management**: Centralized management for hospitals, emergency treatment centers, ambulances, and their medical personnel.
+- **Framework:** [FastAPI](https://fastapi.tiangolo.com/)
+- **ORM:** [SQLAlchemy](https://www.sqlalchemy.org/)
+- **Migrations:** [Alembic](https://alembic.sqlalchemy.org/)
+- **Database:** PostgreSQL (via `asyncpg`)
+- **Package Manager:** [UV](https://github.com/astral-uv/uv)
+- **Validation:** [Pydantic v2](https://docs.pydantic.dev/)
 
-## 📋 Prerequisites
+## Installation
 
-- Python 3.10+
-- PostgreSQL 13+
-- Redis (optional, for caching/background tasks)
+### Prerequisites
 
-## 🛠️ Installation
+- Python 3.12+
+- [UV package manager](https://docs.astral.sh/uv/getting-started/installation/)
+- PostgreSQL
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository-url>
-    cd nemsas-backend
-    ```
+### Setup
 
-2.  **Create a virtual environment:**
-    ```bash
-    python3 -m venv venv
-    source venv/bin/activate  # On Windows: venv\Scripts\activate
-    ```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/goodnessaig1/nemsas-backend.git
+   cd nemsas-backend
+   ```
 
-3.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
+2. **Install dependencies:**
+   ```bash
+   uv sync
+   ```
 
-## 🔄 Database Setup
+3. **Configure Environment Variables:**
+   Create a `.env` file in the root directory based on the parameters in `app/core/config.py`. Be sure to configure:
+   - `DATABASE_URL` (e.g., `postgresql+asyncpg://user:password@localhost/nemsas`)
+   - `SECRET_KEY`
+   - `JWT_ALGORITHM`
 
-1.  **Apply migrations:**
-    ```bash
-    alembic upgrade head
-    ```
+4. **Run Database Migrations:**
+   ```bash
+   uv run alembic upgrade head
+   ```
 
-## 🏃‍♂️ Running the Server
+5. **Database Seeding:**
+   You can populate the reference tables and test data using our hydration scripts located in the `scripts/` directory.
+   
+   **Bulk Hydration:**
+   Populates core data such as States, LGAs, Wards, Users, Roles, and Hospitals:
+   ```bash
+   PYTHONPATH=. uv run scripts/seed_all.py
+   ```
 
-Start the development server with hot-reload:
+   *Alternatively, you can run individual seeds if needed:*
+   - `PYTHONPATH=. uv run scripts/seed_states.py`
+   - `PYTHONPATH=. uv run scripts/seed_users.py`
+
+## Development
+
+### Running the server Locally
+
+Start the Uvicorn development server with auto-reload enabled:
+```bash
+PYTHONPATH=. uv run uvicorn app.main:app --reload
+```
+
+Alternatively, use the helper script:
+```bash
+./scripts/start.sh
+```
+
+The API will be accessible at `http://localhost:8000` (or the configured port).
+Interactive API Documentation is available at `/docs`.
+
+### Running Tests
 
 ```bash
-uvicorn app.main:app --reload --host [IP_ADDRESS] --port 8000
-```
-
-The API will be available at `http://[IP_ADDRESS]`.
-
-## 📊 API Documentation
-
-Documentation is available at:
-- **Swagger UI**: `http://[IP_ADDRESS]/docs`
-- **ReDoc**: `http://[IP_ADDRESS]/redoc`
-
-## 📁 Project Structure
-
-```
-nemsas-backend/
-├── app/
-│   ├── api/
-│   │   └── v1/               # API endpoints organized by version
-│   │       ├── endpoints/      # Route handlers for different resources
-│   │       └── deps.py         # Dependency injection utilities
-│   ├── core/                 # Core application configuration
-│   ├── crud/                 # Database CRUD operations
-│   ├── models/               # SQLAlchemy database models
-│   ├── schemas/              # Pydantic data validation schemas
-│   ├── services/             # Business logic services
-│   └── tests/                # Unit and integration tests
-├── alembic/                  # Alembic migration scripts
-├── scripts/                  # Utility scripts (e.g., data seeding)
-└── tests/                    # Full test suite
+PYTHONPATH=. uv run pytest
 ```

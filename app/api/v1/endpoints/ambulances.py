@@ -2,8 +2,11 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
-from app.schemas.ambulance import AmbulanceResponse
+from app.schemas.ambulance import AmbulanceResponse, AmbulanceCreate
 from app.crud.crud_ambulance import ambulance as ambulance_crud
+from app.models.user import User
+import string
+import random
 
 router = APIRouter()
 
@@ -42,10 +45,6 @@ async def read_ambulances(
         "refreshTokenExpiryTime": "0001-01-01T00:00:00"
     }
 
-import string
-import random
-from app.schemas.ambulance import AmbulanceCreate
-from app.models.user import User
 
 @router.post("/", response_model=AmbulanceResponse)
 async def create_ambulance(
