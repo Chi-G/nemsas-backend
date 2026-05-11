@@ -32,8 +32,8 @@ async def login(
     elif not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
     
-    access_token = security.create_access_token(user.id, role=user.user_type)
-    refresh_token = security.create_refresh_token(user.id, role=user.user_type)
+    access_token = security.create_access_token(user.id, role=user.user_type, state_id=user.state_id)
+    refresh_token = security.create_refresh_token(user.id, role=user.user_type, state_id=user.state_id)
     
     return {
         "access_token": access_token,

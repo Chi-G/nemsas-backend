@@ -11,6 +11,7 @@ class Token(BaseModel):
 class TokenPayload(BaseModel):
     sub: Optional[str] = None
     role: Optional[str] = None
+    state_id: Optional[int] = None
 
 class LoginRequest(BaseModel):
     email: str # Using str to match your flexible email handling
