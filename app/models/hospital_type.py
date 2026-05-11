@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime
-from app.models.base import Base
+from app.db.session import Base
 
 class HospitalType(Base):
     __tablename__ = "hospital_types"

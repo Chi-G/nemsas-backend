@@ -21,15 +21,15 @@ async def read_incidents(
     Retrieve incidents with filtering and pagination.
     """
     incidents, total = await incident_crud.get_multi_with_count(
-        db, 
-        skip=skip, 
+        db,
+        skip=skip,
         limit=limit,
         search=search,
         status=status,
         triage=triage,
         state=state
     )
-    
+
     return {
         "success": True,
         "message": "Incidents successfully fetched",

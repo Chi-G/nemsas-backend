@@ -11,10 +11,10 @@ class CRUDIncident:
         return result.scalars().first()
 
     async def get_multi_with_count(
-        self, 
-        db: AsyncSession, 
-        *, 
-        skip: int = 0, 
+        self,
+        db: AsyncSession,
+        *,
+        skip: int = 0,
         limit: int = 100,
         search: Optional[str] = None,
         status: Optional[str] = None,
@@ -22,7 +22,7 @@ class CRUDIncident:
         state: Optional[str] = None
     ) -> Tuple[List[Incident], int]:
         query = select(Incident)
-        
+
         if search:
             search_filter = or_(
                 Incident.serial_no.ilike(f"%{search}%"),
@@ -30,7 +30,7 @@ class CRUDIncident:
                 Incident.description.ilike(f"%{search}%")
             )
             query = query.filter(search_filter)
-            
+
         if status:
             query = query.filter(Incident.incident_status_type == status)
         if triage:

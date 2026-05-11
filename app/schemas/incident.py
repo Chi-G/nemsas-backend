@@ -47,7 +47,7 @@ class IncidentUpdate(IncidentBase):
 class Incident(IncidentBase):
     id: int
     date_added: Optional[datetime] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class IncidentSummary(BaseModel):
@@ -64,7 +64,7 @@ class IncidentSummary(BaseModel):
     incident_location: Optional[str] = None
     incident_category_id: Optional[int] = None
     date_added: Optional[datetime] = None
-    
+
     model_config = ConfigDict(from_attributes=True)
 
 class IncidentResponse(BaseModel):

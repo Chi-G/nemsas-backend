@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.api.v1.endpoints import (
-    users, states, lgas, wards, roles, auth, 
+    users, states, lgas, wards, roles, auth,
     hospital_types, ambulance_types, hospitals, ambulances, organisations, incidents
 )
 

@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.api import api_router
+import app.models.base # Force register all models to load relationships
 from app.core.config import settings
 from app.core.middleware import LoggingMiddleware
 from fastapi import Request, HTTPException
@@ -130,3 +131,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 @app.get("/")
 async def root():
     return {"message": "Welcome to NEMSAS API"}
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}

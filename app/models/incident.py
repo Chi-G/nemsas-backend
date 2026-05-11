@@ -35,7 +35,7 @@ class Incident(Base):
     latitude = Column(Float, nullable=True)
     mass_casualty = Column(Boolean, default=False)
     total_patients = Column(Integer, nullable=True)
-    
+
     ambulance_start = Column(DateTime(timezone=True), nullable=True)
     ambulance_stop = Column(DateTime(timezone=True), nullable=True)
     date_stop = Column(DateTime(timezone=True), nullable=True)
@@ -44,7 +44,7 @@ class Incident(Base):
     claims_approved = Column(String, nullable=True)
     state_name = Column(String, nullable=True)
     date_added = Column(DateTime(timezone=True), nullable=True)
-    
+
     etc_id = Column(Integer, ForeignKey("hospitals.id"), nullable=True)
     ambulance_id = Column(Integer, ForeignKey("ambulances.id"), nullable=True)
 

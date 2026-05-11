@@ -2,12 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from app.api import deps
-from app.schemas.hospital import HospitalResponse, Hospital as HospitalSchema
+from app.schemas.hospital import HospitalResponse, Hospital as HospitalSchema, HospitalCreate
 from app.crud.hospital import hospital_crud
+from app.models.user import User
+from datetime import datetime
+from typing import Any, List, Optional
 
 router = APIRouter()
 
-from typing import List, Optional
 
 @router.get("/", response_model=HospitalResponse)
 async def read_hospitals(
@@ -44,9 +46,6 @@ async def read_hospitals(
         "refreshTokenExpiryTime": "0001-01-01T00:00:00"
     }
     
-from app.schemas.hospital import HospitalCreate
-from app.models.user import User
-from datetime import datetime
 
 @router.post("/", response_model=HospitalResponse)
 async def create_hospital(
