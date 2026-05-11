@@ -1,7 +1,27 @@
-from sqlalchemy import Column, Integer, String, Text, Boolean, Float, DateTime, ForeignKey, Date
+import enum
+from sqlalchemy import Column, Integer, String, Text, Boolean, Float, DateTime, ForeignKey, Date, Enum as SQLAlchemyEnum
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from app.models.base import Base
+from datetime import datetime, timezone
+
+class IncidentStatus(str, enum.Enum):
+    CREATED = "Created"
+    Reported = "Reported"
+    DISPATCHED = "Dispatched"
+    ACCEPTED = "Accepted"
+    EN_ROUTE = "En Route"
+    AT_SCENE = "At Scene"
+    PATIENT_LOADED = "Patient Loaded"
+    EN_ROUTE_TO_ETC = "En Route to ETC"
+    ARRIVED_AT_ETC = "Arrived at ETC"
+    COMPLETED = "Completed"
+    CLOSED = "Closed"
+
+class ComplianceRating(str, enum.Enum):
+    COMPLIANT = "Compliant"
+    PARTIALLY_COMPLIANT = "Partially Compliant"
+    NON_COMPLIANT = "Non-Compliant"
 
 class Incident(Base):
     __tablename__ = "incidents"
@@ -53,3 +73,36 @@ class Incident(Base):
     hospital = relationship("Hospital", foreign_keys=[etc_id])
     ambulance = relationship("Ambulance", foreign_keys=[ambulance_id])
     incident_type = relationship("IncidentType", back_populates="incidents")
+    
+    status_history = relationship("IncidentStatusHistory", back_populates="incident")
+    dispatches = relationship("Dispatch", back_populates="incident")
+    claims = relationship("Claim", back_populates="incident")
+    patients = relationship("Patient", back_populates="incident")
+
+class IncidentStatusHistory(Base):
+    __tablename__ = "incident_status_history"
+    
+    id = Column(Integer, primary_key=True)
+    incident_id = Column(Integer, ForeignKey("incidents.id"))
+    status = Column(SQLAlchemyEnum(IncidentStatus, native_enum=False))
+    changed_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    # Link changed_by to modern UUID User
+    changed_by_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    notes = Column(String(255), nullable=True)
+    
+    incident = relationship("Incident", back_populates="status_history")
+    changed_by = relationship("User")
+
+class QAFinding(Base):
+    __tablename__ = "qa_findings"
+    
+    id = Column(Integer, primary_key=True)
+    incident_id = Column(Integer, ForeignKey("incidents.id"))
+    compliance_rating = Column(SQLAlchemyEnum(ComplianceRating, native_enum=False))
+    findings_text = Column(String(1000))
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+    # Link officer to modern UUID User
+    qa_officer_id = Column(UUID(as_uuid=True), ForeignKey("users.id"))
+    
+    incident = relationship("Incident")
+    qa_officer = relationship("User")
