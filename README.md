@@ -47,14 +47,23 @@ The backend system for the National Emergency Medical Service and Ambulance Syst
    You can populate the reference tables and test data using our hydration scripts located in the `scripts/` directory.
    
    **Bulk Hydration:**
-   Populates core data such as States, LGAs, Wards, Users, Roles, and Hospitals:
+   Populates all core data, reference types, entities (Ambulances, Hospitals), Incidents, and Patients in the correct dependency order:
    ```bash
-   PYTHONPATH=. uv run scripts/seed_all.py
+   PYTHONPATH=. ./venv/bin/python3 scripts/seed_all.py
    ```
 
-   *Alternatively, you can run individual seeds if needed:*
-   - `PYTHONPATH=. uv run scripts/seed_states.py`
-   - `PYTHONPATH=. uv run scripts/seed_users.py`
+   **Individual Seeders (Optimized & Resilient):**
+   These scripts use batch processing and handle missing foreign keys gracefully:
+   - **Incidents:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_incidents.py`
+   - **Patients:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_patients.py`
+   - **Ambulances:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_ambulances.py`
+   - **Hospitals:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_hospitals.py`
+
+   **Monitor Progress:**
+   Check the current record counts in the database:
+   ```bash
+   ./venv/bin/python3 scripts/check_counts.py
+   ```
 
 ## Development
 

@@ -14,6 +14,9 @@ from scripts.seed_hospital_types import seed_hospital_types
 from scripts.seed_ambulance_types import seed_ambulance_types
 from scripts.seed_hospitals import seed_hospitals
 from scripts.seed_ambulances import seed_ambulances
+from scripts.seed_incident_types import seed_incident_types
+from scripts.seed_incidents import seed_incidents
+from scripts.seed_patients import seed_patients
 
 async def run_all_seeds():
     print("🚀 Starting master seeding process...")
@@ -42,6 +45,9 @@ async def run_all_seeds():
     print("\n--- Seeding Ambulance Types ---")
     await seed_ambulance_types()
 
+    print("\n--- Seeding Incident Types ---")
+    await seed_incident_types()
+
     # 3. Main Entities
     print("\n--- Seeding Hospitals ---")
     await seed_hospitals()
@@ -52,6 +58,13 @@ async def run_all_seeds():
     # 4. Users
     print("\n--- Seeding Users (with password hashing) ---")
     await seed_users()
+
+    # 5. Operational Data
+    print("\n--- Seeding Incidents ---")
+    await seed_incidents()
+
+    print("\n--- Seeding Patients ---")
+    await seed_patients()
         
     print("\n✅ All seeding operations completed!")
 
