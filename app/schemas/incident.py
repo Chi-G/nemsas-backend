@@ -1,7 +1,8 @@
-from pydantic import BaseModel, ConfigDict
-from typing import Optional, List
+from pydantic import BaseModel, ConfigDict, computed_field
+from typing import Optional, List, Any
 from datetime import datetime, date
 from uuid import UUID
+from app.schemas.patient import Patient
 
 class IncidentBase(BaseModel):
     caller_name: Optional[str] = None
@@ -47,6 +48,14 @@ class IncidentUpdate(IncidentBase):
 class Incident(IncidentBase):
     id: int
     date_added: Optional[datetime] = None
+    patients: List[Patient] = []
+
+    @computed_field
+    @property
+    def incident_type_name(self) -> Optional[str]:
+        if hasattr(self, "incident_type") and self.incident_type:
+            return self.incident_type.name
+        return None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -64,6 +73,15 @@ class IncidentSummary(BaseModel):
     incident_location: Optional[str] = None
     incident_category_id: Optional[int] = None
     date_added: Optional[datetime] = None
+    patients: List[Patient] = []
+    
+    @computed_field
+    @property
+    def incident_type_name(self) -> Optional[str]:
+        # Note: This requires the relationship to be loaded in the CRUD/Endpoint
+        if hasattr(self, "incident_type") and self.incident_type:
+            return self.incident_type.name
+        return None
 
     model_config = ConfigDict(from_attributes=True)
 

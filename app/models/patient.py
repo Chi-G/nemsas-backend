@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Date
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Date, JSON
 from sqlalchemy.orm import relationship
 from app.db.session import Base
 from datetime import datetime, timezone
@@ -12,7 +12,7 @@ class Patient(Base):
     last_name = Column(String, nullable=True)
     
     do_b = Column(Date, nullable=True)
-    sex = Column(String(20), nullable=True) # Could hold "Male", "Female", or Integer codes from payload
+    sex = Column(Integer, nullable=True) # Changed from String to Integer
     phone_number = Column(String(20), nullable=True)
     
     nhia = Column(String(50), nullable=True) # National Health Insurance Authority ID
@@ -22,9 +22,9 @@ class Patient(Base):
     ambulance_id = Column(Integer, nullable=True) # Can map to Ambulance.id if needed
     etc_id = Column(Integer, nullable=True) # Emergency Treatment Center ID
     
-    medical_interventions = Column(String(1000), nullable=True)
-    notes = Column(String(1000), nullable=True)
-    drugs = Column(String(500), nullable=True)
+    medical_interventions = Column(JSON, nullable=True)
+    notes = Column(JSON, nullable=True) # Changed from String to JSON
+    drugs = Column(JSON, nullable=True)
     runsheet = Column(String(255), nullable=True)
     extra_details = Column(String(1000), nullable=True)
 

@@ -7,14 +7,14 @@ class PatientBase(BaseModel):
     middle_name: Optional[str] = Field(None, alias="middleName")
     last_name: Optional[str] = Field(None, alias="lastName")
     do_b: Optional[datetime] = Field(None, alias="doB")
-    sex: Optional[str] = Field(None, alias="sex")
+    sex: Optional[int] = Field(None, alias="sex")
     phone_number: Optional[str] = Field(None, alias="phoneNumber")
     nhia: Optional[str] = Field(None, alias="nhia")
     address: Optional[str] = Field(None, alias="address")
     
-    incident_id: Optional[int] = Field(None, alias="incident_Id")
+    incident_id: Optional[int] = Field(None, alias="incident_id")
     ambulance_id: Optional[int] = Field(None, alias="ambulance_Id")
-    etc_id: Optional[int] = Field(None, alias="etC_Id")
+    etc_id: Optional[int] = Field(None, alias="etC_id")
     
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 

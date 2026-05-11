@@ -1,13 +1,21 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func, or_
+from sqlalchemy.orm import selectinload
 from typing import List, Optional, Tuple
 from app.models.incident import Incident
 from app.schemas.incident import IncidentCreate, IncidentUpdate
 
 class CRUDIncident:
     async def get(self, db: AsyncSession, id: int) -> Optional[Incident]:
-        result = await db.execute(select(Incident).filter(Incident.id == id))
+        result = await db.execute(
+            select(Incident)
+            .filter(Incident.id == id)
+            .options(
+                selectinload(Incident.patients),
+                selectinload(Incident.incident_type)
+            )
+        )
         return result.scalars().first()
 
     async def get_multi_with_count(
@@ -19,9 +27,13 @@ class CRUDIncident:
         search: Optional[str] = None,
         status: Optional[str] = None,
         triage: Optional[str] = None,
-        state: Optional[str] = None
+        state: Optional[str] = None,
+        state_name_filter: Optional[str] = None
     ) -> Tuple[List[Incident], int]:
-        query = select(Incident)
+        query = select(Incident).options(
+            selectinload(Incident.patients),
+            selectinload(Incident.incident_type)
+        )
 
         if search:
             search_filter = or_(
@@ -35,7 +47,11 @@ class CRUDIncident:
             query = query.filter(Incident.incident_status_type == status)
         if triage:
             query = query.filter(Incident.triage_category == triage)
-        if state:
+        
+        # Priority for strict state filtering (from role)
+        if state_name_filter:
+            query = query.filter(Incident.state_name.ilike(f"%{state_name_filter}%"))
+        elif state:
             query = query.filter(Incident.state_name.ilike(f"%{state}%"))
 
         # Count
@@ -49,6 +65,7 @@ class CRUDIncident:
             .offset(skip)
             .limit(limit)
         )
+        # pyrefly: ignore [bad-return]
         return result.scalars().all(), total
 
     async def create(self, db: AsyncSession, *, obj_in: IncidentCreate) -> Incident:
