@@ -5,18 +5,26 @@ description = "NEMSAS Backend"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "alembic>=1.18.4",
-    "asyncpg>=0.31.0",
-    "bcrypt>=5.0.0",
+    "alembic==1.13.1",
+    "asyncpg==0.29.0",
+    "bcrypt==4.1.2",
     "email-validator>=2.3.0",
-    "fastapi>=0.135.2",
+    "fastapi==0.110.0",
     "fastapi-mail>=1.4.1",
     "googlemaps>=4.10.0",
     "gunicorn>=25.1.0",
-    "passlib[bcrypt]>=1.7.4",
-    "pydantic-settings>=2.13.1",
-    "pyjwt[crypto]>=2.12.1",
-    "python-multipart>=0.0.22",
-    "sqlalchemy>=2.0.48",
-    "uvicorn>=0.42.0",
+    "passlib[bcrypt]==1.7.4",
+    "psycopg2-binary==2.9.9",
+    "pydantic[email]==2.6.1",
+    "pydantic-settings==2.1.0",
+    "python-dotenv==1.0.1",
+    "python-jose[cryptography]==3.3.0",
+    "python-multipart==0.0.9",
+    "requests==2.31.0",
+    "sqlalchemy[asyncio]==2.0.27",
+    "uvicorn[standard]==0.27.1",
 ]
+
+
+[tool.pyright]
+extraPaths = ["."]

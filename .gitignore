@@ -25,3 +25,16 @@ env/
 .ruff_cache/
 TASK_PROGRESS.md
 json-data/
+*.sql
+*.bak
+.backups/
+
+# Sensitive / Temp Cache
+auth_token.json
+captured_payloads.json
+scratch/
+
+# Additional cleanup
+uv.lock
+seed_log.txt
+sample_fields.txt

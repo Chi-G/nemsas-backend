@@ -1,0 +1,14 @@
+[
+    {"id": "PARTNERS", "name": "PARTNERS"},
+    {"id": "SEMSASPIUUSER", "name": "SEMSAS PIU USER"},
+    {"id": "SEMSASUSER", "name": "SEMSASUSER"},
+    {"id": "SEMSASDISPATCH", "name": "SEMSASDISPATCH"},
+    {"id": "AMBULANCEUSER", "name": "AMBULANCEUSER"},
+    {"id": "SUPERADMINISTRATOR", "name": "SUPERADMINISTRATOR"},
+    {"id": "NEMSASADMIN", "name": "NEMSASADMIN"},
+    {"id": "EMERGENCYTREATMENTUSER", "name": "EMERGENCYTREATMENTUSER"},
+    {"id": "ADMINSEMSASUSER", "name": "ADMINSEMSASUSER"},
+    {"id": "NEMSASUSER", "name": "NEMSASUSER"},
+    {"id": "NATIONALVIEWER", "name": "NATIONALVIEWER"},
+    {"id": "STATEVIEWER", "name": "STATEVIEWER"}
+]

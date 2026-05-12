@@ -1,6 +1,6 @@
 # NEMSAS Backend
 
-The backend system for the National Emergency Medical Service and Ambulance System (NEMSAS). This system provides API endpoints for incident management, dispatching, and partner coordination.
+The backend system for the National Emergency Medical Service and Ambulance System (NEMSAS). This system provides API endpoints for incident management, dispatching, partner coordination, and claims processing.
 
 ## Tech Stack
 
@@ -17,12 +17,13 @@ The backend system for the National Emergency Medical Service and Ambulance Syst
 
 - Python 3.12+
 - [UV package manager](https://docs.astral.sh/uv/getting-started/installation/)
+- PostgreSQL
 
 ### Setup
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/Sydani-Tech/nemsas-backend.git
+   git clone https://github.com/goodnessaig1/nemsas-backend.git
    cd nemsas-backend
    ```
 
@@ -32,7 +33,10 @@ The backend system for the National Emergency Medical Service and Ambulance Syst
    ```
 
 3. **Configure Environment Variables:**
-   Create a `.env` file in the root directory and add your configurations (refer to `src/core/config.py` for required variables).
+   Create a `.env` file in the root directory based on the parameters in `app/core/config.py`. Be sure to configure:
+   - `DATABASE_URL` (e.g., `postgresql+asyncpg://user:password@localhost/nemsas`)
+   - `SECRET_KEY`
+   - `JWT_ALGORITHM`
 
 4. **Run Database Migrations:**
    ```bash
@@ -40,56 +44,46 @@ The backend system for the National Emergency Medical Service and Ambulance Syst
    ```
 
 5. **Database Seeding:**
-   The repository contains two seeding scripts, each serving a different purpose. You must run `seed.py` first, but `demo_data.py` is only for testing environments.
+   You can populate the reference tables and test data using our hydration scripts located in the `scripts/` directory.
    
-   **A. Master Reference Data (Required):**
-   This populates the database with essential, non-test data like States, LGAs, Drugs, and core User Roles. It is safe and idempotent.
+   **Bulk Hydration:**
+   Populates all core data, reference types, entities (Ambulances, Hospitals), Incidents, and Patients in the correct dependency order:
    ```bash
-   PYTHONPATH=. uv run scripts/seed.py
-   ```
-   
-   **B. Operational Demo Data (Development Only):**
-   This populates the database with a simulated workflow including fake partners, ambulances, incidents, claims, and dummy users. **Do not run this in production.**
-   ```bash
-   PYTHONPATH=. uv run scripts/demo_data.py
+   PYTHONPATH=. ./venv/bin/python3 scripts/seed_all.py
    ```
 
-## Test User Roles & Credentials
+   **Individual Seeders (Optimized & Resilient):**
+   These scripts use batch processing and handle missing foreign keys gracefully:
+   - **Incidents:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_incidents.py`
+   - **Patients:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_patients.py`
+   - **Ambulances:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_ambulances.py`
+   - **Hospitals:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_hospitals.py`
 
-If you have run **both** seeding scripts locally, the following test accounts are available to help you test role-based access.
-
-**Super Admin Account:**
-- **Email:** `admin@nemsas.gov.ng`
-- **Password:** `chibuike4u` *(Created during `seed.py`)*
-
-**Dummy Testing Accounts (Created by `demo_data.py`):**
-*The password for all accounts below is `password123`*
-
-| Role | Email Login |
-| :--- | :--- |
-| **SEMSAS Admin** | `semsas_admin@demo.com` |
-| **Ambulance Crew** | `crew@demo.com` |
-| **Dispatcher** | `dispatcher@demo.com` |
-| **Partner (Fleet Mgr)** | `partner@demo.com` |
-| **Emergency Transport Provider** | `etp@demo.com` |
-| **ETC Staff** | `etc_staff@demo.com` |
-| **Claims Staff** | `claims_staff@demo.com` |
-| **View-Only User** | `view_only@demo.com` |
-
+   **Monitor Progress:**
+   Check the current record counts in the database:
+   ```bash
+   ./venv/bin/python3 scripts/check_counts.py
+   ```
 
 ## Development
 
 ### Running the server Locally
 
+Start the Uvicorn development server with auto-reload enabled:
 ```bash
-uv run uvicorn src.main:app --reload
+PYTHONPATH=. uv run uvicorn app.main:app --reload
 ```
 
-The API will be accessible at `http://localhost:9000`.
-Documentation is available at `http://localhost:9000/docs`.
+Alternatively, use the helper script:
+```bash
+./scripts/start.sh
+```
+
+The API will be accessible at `http://localhost:8000` (or the configured port).
+Interactive API Documentation is available at `/docs`.
 
 ### Running Tests
 
 ```bash
-uv run pytest
+PYTHONPATH=. uv run pytest
 ```
