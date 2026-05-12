@@ -19,7 +19,7 @@ env/
 *.docx
 *_text.txt
 
-# UV and Python specific 
+# UV and Python specific
 .python-version
 .pytest_cache/
 .ruff_cache/
@@ -35,6 +35,5 @@ captured_payloads.json
 scratch/
 
 # Additional cleanup
-uv.lock
 seed_log.txt
 sample_fields.txt
