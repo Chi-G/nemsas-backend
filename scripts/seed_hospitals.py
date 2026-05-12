@@ -2,118 +2,109 @@ import asyncio
 import json
 import os
 from datetime import datetime
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from app.db.session import SessionLocal
 from app.models.hospital import Hospital
+from app.models.hospital_type import HospitalType
+from app.models.state import State
+from app.models.lga import LGA
 
 async def seed_hospitals():
-    json_path = os.path.join(os.path.dirname(__file__), "hospitals.json")
-    
-    # Data from user request
-    default_data = [
-        {
-            "id": 429,
-            "name": "Annunciation Specialist Hospital",
-            "hospitalTypeId": 1,
-            "stateId": 14,
-            "lgaId": 302,
-            "location": "Annunciation Hospital Road in Emene",
-            "address1": "27 Annunciation \nHospital Road, Emene, \nEnugu 400211, Enugu, ",
-            "address2": "...",
-            "landmark": "Emene Junction or near the Emenite area",
-            "dateAdded": "2026-05-04T11:38:56.308474+00:00"
-        },
-        {
-            "id": 428,
-            "name": "DR. NLOGHA OKEKE MEMORIAL MEDICAL FOUNDATION/Eastern Nigeria Medical Centre",
-            "hospitalTypeId": 1,
-            "stateId": 14,
-            "lgaId": 302,
-            "location": "Uwani, Enugu,",
-            "address1": "30 AMIGBO LANE, UWANI, \nENUGU ",
-            "address2": "...",
-            "landmark": "opposite CIC, Enugu ",
-            "dateAdded": "2026-05-04T11:36:33.264426+00:00"
-        },
-        {
-            "id": 427,
-            "name": "POSH Specialist Hospital (Patrick Otiji Specialist Hospital)",
-            "hospitalTypeId": 1,
-            "stateId": 14,
-            "lgaId": 303,
-            "location": "New Haven",
-            "address1": "100 Chime Avenue, \nNew Haven, Enugu,",
-            "address2": "...",
-            "landmark": "along the main Chime Avenue, near the New Haven/Independence Layout intersection area./ Opposite De Pines Bar ",
-            "dateAdded": "2026-05-04T11:35:18.130679+00:00"
-        }
-    ]
+    json_path = "scripts/hospitals.json"
+    if not os.path.exists(json_path):
+        print(f"❌ {json_path} not found")
+        return
 
-    if os.path.exists(json_path):
-        with open(json_path, 'r') as f:
-            data = json.load(f)
-    else:
-        data = default_data
-        with open(json_path, 'w') as f:
-            json.dump(data, f, indent=4)
+    with open(json_path, 'r') as f:
+        data = json.load(f)
 
     async with SessionLocal() as session:
-        print(f"🏥 Seeding {len(data)} Hospitals...")
+        # Get all valid foreign keys to avoid violations
+        type_ids = set((await session.execute(select(HospitalType.id))).scalars().all())
+        state_ids = set((await session.execute(select(State.id))).scalars().all())
+        lga_ids = set((await session.execute(select(LGA.id))).scalars().all())
         
+        print(f"✅ Found {len(type_ids)} hospital types, {len(state_ids)} states, {len(lga_ids)} LGAs.")
+
+        print(f"🏥 Preparing {len(data)} Hospitals...")
+        
+        to_insert = []
         for item in data:
-            try:
-                async with session.begin_nested():
-                    date_added = None
-                    if item.get("dateAdded"):
-                        try:
-                            date_added = datetime.fromisoformat(item["dateAdded"].replace("Z", "+00:00"))
-                        except:
-                            date_added = datetime.now()
+            date_added = None
+            if item.get("dateAdded"):
+                try:
+                    date_added = datetime.fromisoformat(item["dateAdded"].replace("Z", "+00:00"))
+                except:
+                    date_added = datetime.now()
 
-                    hospital_type_id = item.get("hospitalTypeId")
-                    if hospital_type_id == 0:
-                        hospital_type_id = None
-                        
-                    state_id = item.get("stateId")
-                    if state_id == 0:
-                        state_id = None
-                        
-                    lga_id = item.get("lgaId")
-                    if lga_id == 0:
-                        lga_id = None
+            # Clean and Validate IDs
+            def clean_id(val, valid_set):
+                if val is None or val == 0: return None
+                v = int(val)
+                return v if v in valid_set else None
 
-                    stmt = insert(Hospital).values(
-                        id=item["id"],
-                        name=item["name"],
-                        hospital_type_id=hospital_type_id,
-                        state_id=state_id,
-                        lga_id=lga_id,
-                        location=item.get("location"),
-                        address1=item.get("address1"),
-                        address2=item.get("address2"),
-                        landmark=item.get("landmark"),
-                        date_added=date_added
-                    ).on_conflict_do_update(
-                        index_elements=['id'],
-                        set_={
-                            'name': item['name'],
-                            'hospital_type_id': hospital_type_id,
-                            'state_id': state_id,
-                            'lga_id': lga_id,
-                            'location': item.get('location'),
-                            'address1': item.get('address1'),
-                            'address2': item.get('address2'),
-                            'landmark': item.get('landmark'),
-                            'date_added': date_added
-                        }
-                    )
-                    await session.execute(stmt)
-            except Exception as e:
-                print(f"⚠️ Skipping hospital ID {item['id']} due to error: {str(e)[:100]}...")
-                continue
+            hospital_type_id = clean_id(item.get("hospitalTypeId"), type_ids)
+            state_id = clean_id(item.get("stateId"), state_ids)
+            lga_id = clean_id(item.get("lgaId"), lga_ids)
+
+            hospital_data = {
+                "id": item["id"],
+                "name": item["name"],
+                "hospital_type_id": hospital_type_id,
+                "state_id": state_id,
+                "lga_id": lga_id,
+                "location": item.get("location"),
+                "address1": item.get("address1"),
+                "address2": item.get("address2"),
+                "landmark": item.get("landmark"),
+                "date_added": date_added
+            }
+            to_insert.append(hospital_data)
+
+        print(f"🚀 Starting batch insertion of {len(to_insert)} hospitals...")
+        BATCH_SIZE = 100
+        total_added = 0
         
-        await session.commit()
-        print("✅ Hospitals seeded successfully!")
+        for i in range(0, len(to_insert), BATCH_SIZE):
+            chunk = to_insert[i:i + BATCH_SIZE]
+            stmt = insert(Hospital).values(chunk)
+            
+            update_dict = {
+                c.name: stmt.excluded[c.name]
+                for c in Hospital.__table__.columns
+                if c.name not in ['id']
+            }
+            
+            stmt = stmt.on_conflict_do_update(
+                index_elements=['id'],
+                set_=update_dict
+            )
+            
+            try:
+                await session.execute(stmt)
+                await session.commit()
+                total_added += len(chunk)
+                print(f"✅ Batch {i//BATCH_SIZE + 1} processed. ({total_added}/{len(to_insert)})")
+            except Exception as e:
+                await session.rollback()
+                print(f"⚠️ Batch {i//BATCH_SIZE + 1} failed: {str(e).splitlines()[0]}")
+                print(f"🔄 Falling back to one-by-one for this batch...")
+                for single_item in chunk:
+                    try:
+                        inner_stmt = insert(Hospital).values(single_item)
+                        inner_stmt = inner_stmt.on_conflict_do_update(
+                            index_elements=['id'],
+                            set_={k: v for k, v in single_item.items() if k != 'id'}
+                        )
+                        await session.execute(inner_stmt)
+                        await session.commit()
+                        total_added += 1
+                    except Exception as inner_e:
+                        await session.rollback()
+                        print(f"❌ Skipping hospital ID {single_item.get('id')}: {str(inner_e).splitlines()[0]}")
+        
+        print(f"🏁 Done! Successfully seeded {total_added} hospitals.")
 
 if __name__ == "__main__":
     asyncio.run(seed_hospitals())

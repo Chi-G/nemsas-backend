@@ -16,6 +16,7 @@ from scripts.seed_hospitals import seed_hospitals
 from scripts.seed_ambulances import seed_ambulances
 from scripts.seed_incident_types import seed_incident_types
 from scripts.seed_incidents import seed_incidents
+from scripts.seed_patients import seed_patients
 
 async def run_all_seeds():
     print("🚀 Starting master seeding process...")
@@ -61,6 +62,9 @@ async def run_all_seeds():
     # 5. Operational Data
     print("\n--- Seeding Incidents ---")
     await seed_incidents()
+
+    print("\n--- Seeding Patients ---")
+    await seed_patients()
         
     print("\n✅ All seeding operations completed!")
 

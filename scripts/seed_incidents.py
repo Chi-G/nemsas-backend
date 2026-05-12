@@ -3,9 +3,13 @@ import json
 import os
 import uuid
 from datetime import datetime, date
+from sqlalchemy import select, func
 from sqlalchemy.dialects.postgresql import insert as pg_insert
 from app.db.session import SessionLocal
 from app.models.incident import Incident
+from app.models.ambulance import Ambulance
+from app.models.hospital import Hospital
+from app.models.incident_type import IncidentType
 
 BATCH_SIZE = 500
 
@@ -53,7 +57,21 @@ async def seed_incidents():
         incidents_data = json.load(f)
 
     async with SessionLocal() as session:
-        print(f"🧐 Cleaning and preparing {len(incidents_data)} incidents...")
+        # Get all existing IDs to skip them
+        result = await session.execute(select(Incident.id))
+        existing_ids = set(result.scalars().all())
+        print(f"📈 Total Incidents already in DB: {len(existing_ids)}")
+        
+        # Get all valid foreign keys to avoid violations
+        amb_ids = set((await session.execute(select(Ambulance.id))).scalars().all())
+        etc_ids = set((await session.execute(select(Hospital.id))).scalars().all())
+        type_ids = set((await session.execute(select(IncidentType.id))).scalars().all())
+        from app.models.user import User
+        user_ids = set((await session.execute(select(User.id))).scalars().all())
+        
+        print(f"✅ Found {len(amb_ids)} ambulances, {len(etc_ids)} hospitals, {len(type_ids)} incident types, {len(user_ids)} users.")
+
+        print(f"🧐 Cleaning and preparing incidents (skipping existing IDs)...")
         
         seen_ids = set()
         seen_serial_nos = set()
@@ -65,11 +83,27 @@ async def seed_incidents():
             incident_id = item.get("id")
             serial_no = item.get("serialNo")
             
+            # Skip if already in DB or seen in this run
+            if incident_id in existing_ids: continue
             if incident_id in seen_ids: continue
             if serial_no and serial_no in seen_serial_nos: continue
             
             seen_ids.add(incident_id)
             if serial_no: seen_serial_nos.add(serial_no)
+
+            # Sanitize Foreign Keys
+            inc_type_id = item.get("incidentCategoryId")
+            if inc_type_id not in type_ids: inc_type_id = None
+            
+            etc_id = item.get("etcId")
+            if etc_id not in etc_ids: etc_id = None
+            
+            amb_id = item.get("ambulance_Id")
+            if amb_id not in amb_ids: amb_id = None
+
+            dispatcher_id = item.get("dispatcherId")
+            if not is_valid_uuid(dispatcher_id) or uuid.UUID(str(dispatcher_id)) not in user_ids:
+                dispatcher_id = None
             
             # Prepare data
             data = {
@@ -86,11 +120,11 @@ async def seed_incidents():
                 "street": item.get("street"),
                 "area_council": item.get("areaCouncil"),
                 "zip_code": item.get("zipCode"),
-                "incident_category_id": item.get("incidentCategoryId"),
+                "incident_category_id": inc_type_id,
                 "can_resolve_without_ambulance": parse_bool(item.get("canResolveWithoutAmbulance")),
                 "treatment_center": item.get("treatmentCenter"),
                 "dispatch_full_name": item.get("dispatchFullName"),
-                "dispatcher_id": item.get("dispatcherId") if is_valid_uuid(item.get("dispatcherId")) else None,
+                "dispatcher_id": dispatcher_id,
                 "dispatch_date": parse_date(item.get("dispatchDate")),
                 "supervisor_first_name": item.get("supervisorFirstName"),
                 "supervisor_middle_name": item.get("supervisorMiddleName"),
@@ -110,8 +144,8 @@ async def seed_incidents():
                 "claims_approved": item.get("claimsApproved"),
                 "state_name": item.get("stateName"),
                 "date_added": parse_datetime(item.get("dateAdded")),
-                "etc_id": item.get("etcId"),
-                "ambulance_id": item.get("ambulance_Id")
+                "etc_id": etc_id,
+                "ambulance_id": amb_id
             }
             to_insert.append(data)
 
@@ -121,20 +155,30 @@ async def seed_incidents():
         for i in range(0, len(to_insert), BATCH_SIZE):
             chunk = to_insert[i:i + BATCH_SIZE]
             
+            # Prepare the ON CONFLICT statement correctly
             stmt = pg_insert(Incident).values(chunk)
+            
+            # Use the excluded row to update existing records
+            update_dict = {
+                c.name: stmt.excluded[c.name]
+                for c in Incident.__table__.columns
+                if c.name not in ['id']
+            }
+            
             stmt = stmt.on_conflict_do_update(
                 index_elements=['id'],
-                set_={k: v for k, v in chunk[0].items() if k != 'id'}
+                set_=update_dict
             )
             
             try:
                 await session.execute(stmt)
                 await session.commit()
                 total_added += len(chunk)
-                print(f"✅ Chunk {i//BATCH_SIZE + 1} processed. ({total_added}/{len(to_insert)})")
+                print(f"✅ Batch {i//BATCH_SIZE + 1} processed. ({total_added}/{len(to_insert)})")
             except Exception as e:
                 await session.rollback()
-                print(f"⚠️ Chunk {i//BATCH_SIZE + 1} failed: {str(e).split('\\n')[0]}. Falling back to one-by-one...")
+                print(f"⚠️ Batch {i//BATCH_SIZE + 1} failed: {type(e).__name__}: {str(e).splitlines()[0]}")
+                print(f"🔄 Falling back to one-by-one for this batch...")
                 for single_item in chunk:
                     try:
                         inner_stmt = pg_insert(Incident).values(single_item)
@@ -147,7 +191,7 @@ async def seed_incidents():
                         total_added += 1
                     except Exception as inner_e:
                         await session.rollback()
-                        print(f"❌ Skipping Incident {single_item['id']}: {str(inner_e).split('\\n')[0]}")
+                        print(f"❌ Skipping Incident {single_item.get('id')} / {single_item.get('serial_no')}: {str(inner_e).splitlines()[0]}")
         
         print(f"🏁 Done! Successfully processed {total_added} incidents.")
 
