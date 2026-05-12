@@ -65,8 +65,7 @@ class CRUDIncident:
             .offset(skip)
             .limit(limit)
         )
-        # pyrefly: ignore [bad-return]
-        return result.scalars().all(), total
+        return list(result.scalars().all()), total
 
     async def create(self, db: AsyncSession, *, obj_in: IncidentCreate) -> Incident:
         db_obj = Incident(**obj_in.model_dump())

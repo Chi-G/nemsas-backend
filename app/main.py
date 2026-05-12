@@ -10,8 +10,8 @@ from fastapi.responses import JSONResponse
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
-    docs_url="/swagger-protected",
-    redoc_url="/redoc-protected",
+    docs_url="/docs",
+    redoc_url="/redoc",
 
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
 )
