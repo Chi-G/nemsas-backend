@@ -33,7 +33,7 @@ class CRUDAmbulance:
                 selectinload(Ambulance.ambulance_type)
             )
         )
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     async def get_multi_with_count(
         self, 
@@ -71,15 +71,19 @@ class CRUDAmbulance:
                 selectinload(Ambulance.ambulance_type)
             )
         )
-        return result.scalars().all(), total_count
+        return list(result.scalars().all()), total_count
 
     async def get_by_state(self, db: AsyncSession, state_id: int) -> List[Ambulance]:
         result = await db.execute(
             select(Ambulance)
             .filter(Ambulance.state_id == state_id)
-            .options(selectinload(Ambulance.state))
+            .options(
+                selectinload(Ambulance.state),
+                selectinload(Ambulance.lga),
+                selectinload(Ambulance.ambulance_type)
+            )
         )
-        return result.scalars().all()
+        return list(result.scalars().all())
 
     async def create(self, db: AsyncSession, *, obj_in: Any) -> Ambulance:
         obj_in_data = obj_in.model_dump(exclude_unset=True, by_alias=False)
