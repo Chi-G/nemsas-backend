@@ -6,7 +6,7 @@ class PatientBase(BaseModel):
     first_name: Optional[str] = Field(None, alias="firstName")
     middle_name: Optional[str] = Field(None, alias="middleName")
     last_name: Optional[str] = Field(None, alias="lastName")
-    do_b: Optional[datetime] = Field(None, alias="doB")
+    do_b: Optional[date] = Field(None, alias="doB")
     sex: Optional[int] = Field(None, alias="sex")
     phone_number: Optional[str] = Field(None, alias="phoneNumber")
     nhia: Optional[str] = Field(None, alias="nhia")

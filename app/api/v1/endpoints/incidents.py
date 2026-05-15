@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional
+from typing import Optional, Any
 from app.api import deps
-from app.schemas.incident import IncidentResponse, IncidentSummary, Incident as IncidentSchema
+from app.schemas.incident import IncidentResponse, IncidentSummary, Incident as IncidentSchema, IncidentCreate
 from app.crud.incident import incident_crud
 from app.models.user import User
 
@@ -44,8 +44,8 @@ async def read_incidents(
     
     # Apply role-based filtering
     if current_user.user_type in restricted_roles:
-        if current_user.state_id:
-            state_id_filter = current_user.state_id
+        if current_user.state_id is not None:
+            state_id_filter = int(current_user.state_id)
         else:
             # If user has no state assigned and is in a restricted role, they see nothing
             return {
@@ -96,3 +96,45 @@ async def read_incident(
             raise HTTPException(status_code=403, detail="Not authorized to access this incident")
 
     return incident
+
+@router.post("/", response_model=Any)
+async def create_incident(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    incident_in: IncidentCreate,
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Create a new incident.
+    
+    Only **SEMSASDISPATCH** and **EMERGENCYTREATMENTUSER** are allowed to create incidents.
+    """
+    allowed_roles = {"SEMSASDISPATCH", "EMERGENCYTREATMENTUSER"}
+    if current_user.user_type not in allowed_roles:
+        raise HTTPException(
+            status_code=403, 
+            detail="Only SEMSASDISPATCH and EMERGENCYTREATMENTUSER can create incidents"
+        )
+    
+    # If state_id is not provided in payload, use user's state_id
+    if not incident_in.state_id and current_user.state_id is not None:
+        incident_in.state_id = int(current_user.state_id)
+
+    # Resolve incident category name to ID if needed
+    if not incident_in.incident_category_id and incident_in.incident_category:
+        from app.models.incident_type import IncidentType
+        from sqlalchemy import select
+        category_result = await db.execute(
+            select(IncidentType).filter(IncidentType.name.ilike(incident_in.incident_category))
+        )
+        category = category_result.scalars().first()
+        if category:
+            incident_in.incident_category_id = int(category.id)
+
+    new_incident = await incident_crud.create(db, obj_in=incident_in)
+    
+    return {
+        "success": True,
+        "message": "Incident successfully created",
+        "data": IncidentSchema.model_validate(new_incident)
+    }
