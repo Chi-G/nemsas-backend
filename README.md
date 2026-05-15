@@ -71,6 +71,14 @@ The backend system for the National Emergency Medical Service and Ambulance Syst
    ./venv/bin/python3 scripts/check_counts.py
    ```
 
+### Utility Scripts
+
+**Update User Email:**
+Finds a user by email and updates it to a new one (e.g., updating `ahmednu@datharm.com` to `ahmednu@texis.com`):
+```bash
+PYTHONPATH=. ./venv/bin/python3 scripts/update_user_email.py
+```
+
 ## Development
 
 ### Running the server Locally
