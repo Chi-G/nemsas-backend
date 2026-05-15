@@ -36,6 +36,7 @@ class IncidentBase(BaseModel):
     incident_status_type: Optional[str] = None
     event_status_type: Optional[str] = None
     state_name: Optional[str] = None
+    state_id: Optional[int] = None
     etc_id: Optional[int] = None
     ambulance_id: Optional[int] = None
 
@@ -68,6 +69,7 @@ class IncidentSummary(BaseModel):
     incident_status_type: Optional[str] = None
     event_status_type: Optional[str] = None
     state_name: Optional[str] = None
+    state_id: Optional[int] = None
     total_patients: Optional[int] = None
     mass_casualty: Optional[bool] = False
     incident_location: Optional[str] = None

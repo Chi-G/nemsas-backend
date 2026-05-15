@@ -59,6 +59,12 @@ The backend system for the National Emergency Medical Service and Ambulance Syst
    - **Ambulances:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_ambulances.py`
    - **Hospitals:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_hospitals.py`
 
+   **Update Incident State IDs:**
+   Syncs incident `state_id` based on `state_name` using `states.json`:
+   ```bash
+   PYTHONPATH=. ./venv/bin/python3 scripts/update_incident_state_ids.py
+   ```
+
    **Monitor Progress:**
    Check the current record counts in the database:
    ```bash

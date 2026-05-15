@@ -27,8 +27,10 @@ class CRUDIncident:
         search: Optional[str] = None,
         status: Optional[str] = None,
         triage: Optional[str] = None,
-        state: Optional[str] = None,
-        state_name_filter: Optional[str] = None
+        state_id: Optional[int] = None,
+        state_id_filter: Optional[int] = None,
+        mass_casualty: Optional[bool] = None,
+        sort_by_state: bool = False
     ) -> Tuple[List[Incident], int]:
         query = select(Incident).options(
             selectinload(Incident.patients),
@@ -47,22 +49,30 @@ class CRUDIncident:
             query = query.filter(Incident.incident_status_type == status)
         if triage:
             query = query.filter(Incident.triage_category == triage)
+        if mass_casualty is not None:
+            query = query.filter(Incident.mass_casualty == mass_casualty)
         
         # Priority for strict state filtering (from role)
-        if state_name_filter:
-            query = query.filter(Incident.state_name.ilike(f"%{state_name_filter}%"))
-        elif state:
-            query = query.filter(Incident.state_name.ilike(f"%{state}%"))
+        if state_id_filter is not None:
+            query = query.filter(Incident.state_id == state_id_filter)
+        elif state_id is not None:
+            query = query.filter(Incident.state_id == state_id)
 
         # Count
         count_query = select(func.count()).select_from(query.subquery())
         count_result = await db.execute(count_query)
         total = count_result.scalar() or 0
 
+        # Sorting
+        if sort_by_state:
+            # We sort by state_name
+            query = query.order_by(Incident.state_name.asc())
+        else:
+            query = query.order_by(Incident.date_added.desc())
+
         # Records
         result = await db.execute(
-            query.order_by(Incident.date_added.desc())
-            .offset(skip)
+            query.offset(skip)
             .limit(limit)
         )
         return list(result.scalars().all()), total

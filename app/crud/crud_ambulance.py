@@ -39,10 +39,9 @@ class CRUDAmbulance:
         self, 
         db: AsyncSession, 
         *, 
-        skip: int = 0, 
-        limit: int = 100,
         driver_name: Optional[str] = None,
         state_id: Optional[int] = None,
+        ambulance_type_id: Optional[int] = None,
         days: Optional[int] = None
     ) -> Tuple[List[Ambulance], int]:
         query = select(Ambulance)
@@ -51,6 +50,8 @@ class CRUDAmbulance:
             query = query.filter(Ambulance.driver_name.ilike(f"%{driver_name}%"))
         if state_id:
             query = query.filter(Ambulance.state_id == state_id)
+        if ambulance_type_id:
+            query = query.filter(Ambulance.ambulance_type_id == ambulance_type_id)
         if days:
             from datetime import timedelta
             start_date = datetime.now() - timedelta(days=days)
@@ -63,8 +64,7 @@ class CRUDAmbulance:
 
         # Get data
         result = await db.execute(
-            query.offset(skip)
-            .limit(limit)
+            query.order_by(Ambulance.date_added.desc())
             .options(
                 selectinload(Ambulance.state),
                 selectinload(Ambulance.lga),
@@ -77,6 +77,7 @@ class CRUDAmbulance:
         result = await db.execute(
             select(Ambulance)
             .filter(Ambulance.state_id == state_id)
+            .order_by(Ambulance.date_added.desc())
             .options(
                 selectinload(Ambulance.state),
                 selectinload(Ambulance.lga),

@@ -22,8 +22,6 @@ class CRUDHospital:
         self, 
         db: AsyncSession, 
         *, 
-        skip: int = 0, 
-        limit: int = 100,
         name: Optional[str] = None,
         state_id: Optional[int] = None,
         days: Optional[int] = None
@@ -47,8 +45,7 @@ class CRUDHospital:
 
 
         result = await db.execute(
-            query.offset(skip)
-            .limit(limit)
+            query.order_by(Hospital.date_added.desc())
             .options(
                 selectinload(Hospital.hospital_type),
                 selectinload(Hospital.state),
@@ -56,7 +53,7 @@ class CRUDHospital:
             )
         )
 
-        return result.scalars().all(), total
+        return list(result.scalars().all()), total
 
     async def create(self, db: AsyncSession, *, obj_in: HospitalCreate) -> Hospital:
         db_obj = Hospital(
@@ -81,12 +78,13 @@ class CRUDHospital:
         result = await db.execute(
             select(Hospital)
             .filter(Hospital.state_id == state_id)
+            .order_by(Hospital.date_added.desc())
             .options(
                 selectinload(Hospital.hospital_type),
                 selectinload(Hospital.state),
                 selectinload(Hospital.lga)
             )
         )
-        return result.scalars().all()
+        return list(result.scalars().all())
 
 hospital_crud = CRUDHospital()

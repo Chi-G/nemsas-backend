@@ -150,7 +150,7 @@ def upgrade() -> None:
     sa.Column('longitude', sa.Float(), nullable=True),
     sa.Column('timestamp', sa.DateTime(timezone=True), nullable=True),
     sa.Column('is_paused', sa.Boolean(), nullable=True),
-    sa.Column('incident_leg', sa.Enum('DISPATCH_TO_SCENE', 'SCENE_TO_ETC', 'OFFLINE', name='incidentleg'), nullable=True),
+    sa.Column('incident_leg', sa.Enum('DISPATCH_TO_SCENE', 'SCENE_TO_ETC', 'OFFLINE', name='incidentleg', native_enum=False), nullable=True),
     sa.Column('delta_distance', sa.Float(), nullable=True),
     sa.ForeignKeyConstraint(['ambulance_id'], ['ambulances.id'], ),
     sa.ForeignKeyConstraint(['incident_id'], ['incidents.id'], ),
