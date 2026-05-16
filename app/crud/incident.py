@@ -31,6 +31,7 @@ class CRUDIncident:
         state_id: Optional[int] = None,
         state_id_filter: Optional[int] = None,
         mass_casualty: Optional[bool] = None,
+        incident_category_id: Optional[int] = None,
         sort_by_state: bool = False
     ) -> Tuple[List[Incident], int]:
         query = select(Incident).options(
@@ -43,7 +44,12 @@ class CRUDIncident:
             search_filter = or_(
                 Incident.serial_no.ilike(f"%{search}%"),
                 Incident.caller_name.ilike(f"%{search}%"),
-                Incident.description.ilike(f"%{search}%")
+                Incident.caller_number.ilike(f"%{search}%"),
+                Incident.description.ilike(f"%{search}%"),
+                Incident.incident_location.ilike(f"%{search}%"),
+                Incident.street.ilike(f"%{search}%"),
+                Incident.district_ward.ilike(f"%{search}%"),
+                Incident.area_council.ilike(f"%{search}%")
             )
             query = query.filter(search_filter)
 
@@ -53,6 +59,8 @@ class CRUDIncident:
             query = query.filter(Incident.triage_category == triage)
         if mass_casualty is not None:
             query = query.filter(Incident.mass_casualty == mass_casualty)
+        if incident_category_id is not None:
+            query = query.filter(Incident.incident_category_id == incident_category_id)
         
         # Priority for strict state filtering (from role)
         if state_id_filter is not None:

@@ -36,12 +36,25 @@ else
     echo "[$(date)] 🛡 Preserving existing data. Running incremental schema upgrades..."
 fi
 
+# Run database migrations
 echo "[$(date)] 🚀 Running database migrations (alembic upgrade head)..."
 alembic upgrade head
 
+# 🔗 Link incidents to states (backfill state_id)
+echo "[$(date)] 🔗 Linking incidents to their respective states..."
+PYTHONPATH=. python scripts/update_incident_state_ids.py
+
+# 📧 Update Admin Email
+echo "[$(date)] 📧 Checking and updating admin user email..."
+PYTHONPATH=. python scripts/update_user_email.py
+
 # Seed base data
-echo "[$(date)] 🌱 Seeding database..."
+echo "[$(date)] 🌱 Seeding base database..."
 python -m scripts.seed_all
+
+# Seed operational data (Claims, Incidents, Run Sheets)
+echo "[$(date)] 📑 Seeding operational data (Claims, Incidents, Run Sheets)..."
+PYTHONPATH=. python scripts/seed_ops.py
 
 echo "[$(date)] ✨ Startup sequence complete."
 

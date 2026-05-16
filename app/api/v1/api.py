@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from app.api.v1.endpoints import (
     users, states, lgas, wards, roles, auth,
     hospital_types, ambulance_types, hospitals, ambulances, organisations,
-    incidents, claims, run_sheets, monitoring, incident_types
+    incidents, claims, run_sheets, monitoring, incident_types, websockets
 )
 
 api_router = APIRouter()
@@ -24,3 +24,4 @@ api_router.include_router(incidents.router, prefix="/incidents", tags=["incident
 api_router.include_router(claims.router, prefix="/claims", tags=["claims"])
 api_router.include_router(run_sheets.router, prefix="/run-sheets", tags=["runsheets"])
 api_router.include_router(monitoring.router, prefix="/monitoring", tags=["monitoring"])
+api_router.include_router(websockets.router, prefix="/ws", tags=["websockets"])

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional, Any
+from typing import Optional, Any, cast
 from app.api import deps
 from app.schemas.incident import IncidentResponse, IncidentSummary, Incident as IncidentSchema, IncidentCreate
 from app.crud.incident import incident_crud
@@ -18,6 +18,7 @@ async def read_incidents(
     triage: Optional[str] = None,
     state_id: Optional[int] = None,
     mass_casualty: Optional[bool] = None,
+    incident_category_id: Optional[int] = None,
     sort_by_state: bool = False,
     current_user: User = Depends(deps.get_current_user)
 ):
@@ -30,6 +31,7 @@ async def read_incidents(
     - `triage`: Filter by triage category.
     - `state_id`: Filter by state ID (only for Global roles).
     - `mass_casualty`: Filter by mass casualty status (true/false).
+    - `incident_category_id`: Filter by incident category ID.
     - `sort_by_state`: Sort results by state name (ascending).
     
     **Role-based Access:**
@@ -45,7 +47,7 @@ async def read_incidents(
     # Apply role-based filtering
     if current_user.user_type in restricted_roles:
         if current_user.state_id is not None:
-            state_id_filter = int(current_user.state_id)
+            state_id_filter = cast(int, current_user.state_id)
         else:
             # If user has no state assigned and is in a restricted role, they see nothing
             return {
@@ -65,6 +67,7 @@ async def read_incidents(
         state_id=state_id,
         state_id_filter=state_id_filter,
         mass_casualty=mass_casualty,
+        incident_category_id=incident_category_id,
         sort_by_state=sort_by_state
     )
 
@@ -118,7 +121,7 @@ async def create_incident(
     
     # If state_id is not provided in payload, use user's state_id
     if not incident_in.state_id and current_user.state_id is not None:
-        incident_in.state_id = int(current_user.state_id)
+        incident_in.state_id = cast(int, current_user.state_id)
 
     # Resolve incident category name to ID if needed
     if not incident_in.incident_category_id and incident_in.incident_category:
@@ -129,12 +132,18 @@ async def create_incident(
         )
         category = category_result.scalars().first()
         if category:
-            incident_in.incident_category_id = int(category.id)
+            incident_in.incident_category_id = cast(int, category.id)
 
     new_incident = await incident_crud.create(db, obj_in=incident_in)
+    
+    # Broadcast incident via Websockets
+    from app.services.notification_service import notification_service
+    # Construct a payload, excluding complex objects
+    incident_data = IncidentSchema.model_validate(new_incident).model_dump(mode="json")
+    await notification_service.publish_incident(incident_data)
     
     return {
         "success": True,
         "message": "Incident successfully created",
-        "data": IncidentSchema.model_validate(new_incident)
+        "data": incident_data
     }

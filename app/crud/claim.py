@@ -11,7 +11,11 @@ class CRUDClaim:
     async def get(self, db: AsyncSession, id: int) -> Optional[Claim]:
         stmt = select(Claim).options(
             selectinload(Claim.patient),
-            selectinload(Claim.incident).selectinload(Incident.patients)
+            selectinload(Claim.incident).options(
+                selectinload(Incident.patients),
+                selectinload(Incident.incident_type),
+                selectinload(Incident.state)
+            )
         ).where(Claim.id == id)
         result = await db.execute(stmt)
         return result.scalars().first()
@@ -49,7 +53,11 @@ class CRUDClaim:
 
         stmt = select(Claim).options(
             selectinload(Claim.patient),
-            selectinload(Claim.incident).selectinload(Incident.patients)
+            selectinload(Claim.incident).options(
+                selectinload(Incident.patients),
+                selectinload(Incident.incident_type),
+                selectinload(Incident.state)
+            )
         ).order_by(desc(Claim.id))
         
         count_stmt = select(func.count()).select_from(Claim)

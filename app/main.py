@@ -7,13 +7,24 @@ from app.core.middleware import LoggingMiddleware
 from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
 
+from contextlib import asynccontextmanager
+from app.services.notification_service import notification_service
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await notification_service.connect_redis()
+    yield
+    # Shutdown
+    await notification_service.disconnect_redis()
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
-
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    lifespan=lifespan,
 )
 
 from fastapi.exceptions import RequestValidationError
