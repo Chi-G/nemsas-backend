@@ -14,8 +14,6 @@ router = APIRouter()
 @router.get("/", response_model=HospitalResponse)
 async def read_hospitals(
     db: AsyncSession = Depends(deps.get_db),
-    skip: int = 0,
-    limit: int = 100,
     name: Optional[str] = None,
     stateId: Optional[int] = None,
     days: Optional[int] = None,
@@ -30,8 +28,6 @@ async def read_hospitals(
     
     hospitals, total = await hospital_crud.get_multi_with_count(
         db, 
-        skip=skip, 
-        limit=limit,
         name=name,
         state_id=effective_state_id,
         days=days

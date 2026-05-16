@@ -63,6 +63,7 @@ class Incident(Base):
     event_status_type = Column(String, nullable=True)
     claims_approved = Column(String, nullable=True)
     state_name = Column(String, nullable=True)
+    state_id = Column(Integer, ForeignKey("states.id"), nullable=True)
     date_added = Column(DateTime(timezone=True), nullable=True)
 
     etc_id = Column(Integer, ForeignKey("hospitals.id"), nullable=True)
@@ -73,6 +74,7 @@ class Incident(Base):
     hospital = relationship("Hospital", foreign_keys=[etc_id])
     ambulance = relationship("Ambulance", foreign_keys=[ambulance_id])
     incident_type = relationship("IncidentType", back_populates="incidents")
+    state = relationship("State")
     
     status_history = relationship("IncidentStatusHistory", back_populates="incident")
     dispatches = relationship("Dispatch", back_populates="incident")
