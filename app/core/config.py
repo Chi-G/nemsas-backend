@@ -26,6 +26,9 @@ class Settings(BaseSettings):
     # Firebase Settings
     FIREBASE_SERVICE_ACCOUNT_PATH: Optional[str] = None # Path to service account json
 
+    # Upload Provider Settings
+    UPLOAD_PROVIDER: str = "local"
+
     # Cloudinary Settings
     CLOUDINARY_CLOUD_NAME: Optional[str] = None
     CLOUDINARY_API_KEY: Optional[str] = None

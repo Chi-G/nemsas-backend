@@ -1,5 +1,5 @@
 from typing import Any, Optional
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app.models.user import User
@@ -17,25 +17,68 @@ router = APIRouter()
 
 @router.post("/upload")
 async def upload_claim_image(
+    request: Request,
     file: UploadFile = File(...)
 ) -> Any:
     """
-    Upload an image/receipt to Cloudinary and return the secure URL.
+    Upload an image/receipt to Cloudinary or local storage and return the URL.
     """
-    cloudinary.config(
-        cloud_name=settings.CLOUDINARY_CLOUD_NAME,
-        api_key=settings.CLOUDINARY_API_KEY,
-        api_secret=settings.CLOUDINARY_API_SECRET,
-        secure=True
-    )
+    # Check if Cloudinary should be used
+    use_cloudinary = settings.UPLOAD_PROVIDER.lower() == "cloudinary"
     
+    # Check if Cloudinary credentials are fully configured
+    if use_cloudinary:
+        if not all([settings.CLOUDINARY_CLOUD_NAME, settings.CLOUDINARY_API_KEY, settings.CLOUDINARY_API_SECRET]):
+            print("[Upload] Cloudinary credentials missing. Falling back to local upload.")
+            use_cloudinary = False
+            
     contents = await file.read()
-    upload_result = cloudinary.uploader.upload(contents)
+    url = None
+    message = ""
     
+    if use_cloudinary:
+        try:
+            cloudinary.config(
+                cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+                api_key=settings.CLOUDINARY_API_KEY,
+                api_secret=settings.CLOUDINARY_API_SECRET,
+                secure=True
+            )
+            upload_result = cloudinary.uploader.upload(contents)
+            url = upload_result.get("secure_url")
+            message = "File successfully uploaded to Cloudinary"
+        except Exception as e:
+            print(f"[Upload] Cloudinary upload failed: {e}. Falling back to local upload.")
+            use_cloudinary = False
+            
+    if not use_cloudinary:
+        # Local upload logic
+        import uuid
+        import os
+        
+        # Ensure uploads folder exists in local context
+        upload_dir = "static/uploads"
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        # Generate a unique safe filename
+        safe_filename = f"{uuid.uuid4().hex}_{os.path.basename(file.filename or 'upload.jpg')}"
+        file_path = os.path.join(upload_dir, safe_filename)
+        
+        # Write file content locally
+        with open(file_path, "wb") as f:
+            f.write(contents)
+            
+        # Construct absolute URL using incoming request
+        base_url = str(request.base_url)
+        if not base_url.endswith("/"):
+            base_url += "/"
+        url = f"{base_url}static/uploads/{safe_filename}"
+        message = "File successfully uploaded locally"
+        
     return {
         "success": True,
-        "message": "File successfully uploaded",
-        "url": upload_result.get("secure_url")
+        "message": message,
+        "url": url
     }
 
 @router.get("/", response_model=ClaimPaginatedResponse)

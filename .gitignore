@@ -38,3 +38,6 @@ scratch/
 seed_log.txt
 sample_fields.txt
 nemsas-app-firebase.json
+
+# Local Uploads Cache
+static/uploads/
