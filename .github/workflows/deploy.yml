@@ -276,7 +276,7 @@ jobs:
       # ============================================================================
       # STEP 7.5: CREATE DYNAMIC CONFIGURATION FILES
       # ============================================================================
-      - name: 🔐 Create dynamic configuration files on server
+      - name: 🔐 Create dynamic configuration files on server (if missing)
         env:
           ENV_FILE_CONTENT: ${{ secrets.ENV_FILE }}
           FIREBASE_JSON_CONTENT: ${{ secrets.FIREBASE_JSON }}
@@ -293,14 +293,34 @@ jobs:
           echo "$ENV_FILE_CONTENT" > temp_env
           echo "$FIREBASE_JSON_CONTENT" > temp_firebase.json
           
-          # Copy to server via scp using deployment SSH key
-          scp -o StrictHostKeyChecking=no temp_env "${SSH_USER}@${SERVER_IP}:${DEPLOY_PATH}/.env"
-          scp -o StrictHostKeyChecking=no temp_firebase.json "${SSH_USER}@${SERVER_IP}:${DEPLOY_PATH}/nemsas-app-firebase.json"
+          # Copy to server as temporary files using scp
+          scp -o StrictHostKeyChecking=no temp_env "${SSH_USER}@${SERVER_IP}:${DEPLOY_PATH}/.env.example_github"
+          scp -o StrictHostKeyChecking=no temp_firebase.json "${SSH_USER}@${SERVER_IP}:${DEPLOY_PATH}/nemsas-app-firebase.json.example_github"
           
-          # Clean up temporary files
+          # On the server, only move them to target location if they do not exist
+          ssh -o StrictHostKeyChecking=no "${SSH_USER}@${SERVER_IP}" << ENDSSH
+            if [ ! -f "${DEPLOY_PATH}/.env" ]; then
+              echo "Creating new .env from GitHub secrets..."
+              cp "${DEPLOY_PATH}/.env.example_github" "${DEPLOY_PATH}/.env"
+            else
+              echo "🛡️ .env already exists on server. Preserving server configuration."
+            fi
+            
+            if [ ! -f "${DEPLOY_PATH}/nemsas-app-firebase.json" ]; then
+              echo "Creating new nemsas-app-firebase.json from GitHub secrets..."
+              cp "${DEPLOY_PATH}/nemsas-app-firebase.json.example_github" "${DEPLOY_PATH}/nemsas-app-firebase.json"
+            else
+              echo "🛡️ nemsas-app-firebase.json already exists on server. Preserving server configuration."
+            fi
+            
+            # Clean up example files on server
+            rm -f "${DEPLOY_PATH}/.env.example_github" "${DEPLOY_PATH}/nemsas-app-firebase.json.example_github"
+          ENDSSH
+          
+          # Clean up temporary files on runner
           rm temp_env temp_firebase.json
           
-          echo "✅ Config files created and synced successfully"
+          echo "✅ Configuration check completed successfully"
           echo "========================================"
       
       # ============================================================================
