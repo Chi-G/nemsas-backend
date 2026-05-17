@@ -260,6 +260,8 @@ jobs:
             --exclude 'htmlcov/' \
             --exclude '.env' \
             --exclude '.env.local' \
+            --exclude 'nemsas-app-firebase.json' \
+            --exclude 'static/' \
             --exclude '.dockerignore' \
             --exclude '*.log' \
             --exclude 'node_modules/' \
