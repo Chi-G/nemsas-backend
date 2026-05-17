@@ -39,7 +39,7 @@ class GPSHistory(Base):
     timestamp = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     is_paused = Column(Boolean, default=False)
     
-    incident_leg = Column(SQLAlchemyEnum(IncidentLeg), nullable=True)
+    incident_leg = Column(SQLAlchemyEnum(IncidentLeg, native_enum=False), nullable=True)
     delta_distance = Column(Float, default=0.0)
     
     ambulance = relationship("Ambulance")

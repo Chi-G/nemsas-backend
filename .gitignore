@@ -38,3 +38,4 @@ scratch/
 uv.lock
 seed_log.txt
 sample_fields.txt
+nemsas-app-firebase.json

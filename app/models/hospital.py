@@ -16,6 +16,8 @@ class Hospital(Base):
     landmark = Column(String, nullable=True)
     nhia_or_shia = Column(String, nullable=True)
     date_added = Column(DateTime(timezone=True), nullable=True)
+    latitude = Column(String, nullable=True)
+    longitude = Column(String, nullable=True)
 
     # Relationships
     hospital_type = relationship("HospitalType")

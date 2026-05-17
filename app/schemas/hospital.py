@@ -12,6 +12,8 @@ class HospitalBase(BaseModel):
     address2: Optional[str] = None
     landmark: Optional[str] = None
     nhia_or_shia: Optional[str] = Field(None, alias="nhiAorSHIA")
+    latitude: Optional[str] = None
+    longitude: Optional[str] = None
 
 class HospitalCreate(HospitalBase):
     id: Optional[int] = None

@@ -23,6 +23,10 @@ dependencies = [
     "requests==2.31.0",
     "sqlalchemy[asyncio]==2.0.27",
     "uvicorn[standard]==0.27.1",
+    "cloudinary==1.44.2",
+    "firebase-admin==7.4.0",
+    "redis==7.4.0",
+    "python-socketio==5.16.1",
 ]
 
 

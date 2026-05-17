@@ -61,6 +61,7 @@ class Incident(Base):
     date_stop = Column(DateTime(timezone=True), nullable=True)
     incident_status_type = Column(String, nullable=True)
     event_status_type = Column(String, nullable=True)
+    rejection_reason = Column(String, nullable=True, default="")
     claims_approved = Column(String, nullable=True)
     state_name = Column(String, nullable=True)
     state_id = Column(Integer, ForeignKey("states.id"), nullable=True)
@@ -80,6 +81,18 @@ class Incident(Base):
     dispatches = relationship("Dispatch", back_populates="incident")
     claims = relationship("Claim", back_populates="incident")
     patients = relationship("Patient", back_populates="incident")
+
+    @property
+    def incident_type_name(self) -> Optional[str]:
+        if self.incident_type:
+            return self.incident_type.name
+        return None
+
+    @property
+    def state_name_computed(self) -> Optional[str]:
+        if self.state:
+            return self.state.name
+        return None
 
 class IncidentStatusHistory(Base):
     __tablename__ = "incident_status_history"

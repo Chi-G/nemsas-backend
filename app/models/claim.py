@@ -83,6 +83,7 @@ class Claim(Base):
     patient = relationship("Patient", back_populates="claims")
     submitting_user = relationship("User", foreign_keys=[user_id])
     processor = relationship("User", foreign_keys=[processed_by_id])
+    images = relationship("ClaimImage", back_populates="claim")
 
 class ClaimAuditLog(Base):
     __tablename__ = "claim_audit_logs"
@@ -97,3 +98,18 @@ class ClaimAuditLog(Base):
     
     claim = relationship("Claim")
     processor = relationship("User", foreign_keys=[processed_by_id])
+
+class ClaimImage(Base):
+    __tablename__ = "claim_images"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=False)
+    claim_id = Column(Integer, ForeignKey("claims.id"), index=True, nullable=True)
+    claim_title = Column(String(500), nullable=True)
+    incident_id = Column(Integer, ForeignKey("incidents.id"), index=True, nullable=True)
+    image_url = Column(String(1000), nullable=True)
+    is_etc = Column(Boolean, default=False)
+    
+    # Relationships
+    claim = relationship("Claim", back_populates="images")
+    incident = relationship("Incident")
+
