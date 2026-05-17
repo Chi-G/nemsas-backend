@@ -1,0 +1,1064 @@
+[
+    {
+        "id": 1,
+        "code": "NHIS-010-000",
+        "description": "GENERAL DESCRIPTION",
+        "isMedicine": false
+    },
+    {
+        "id": 3,
+        "code": "NHIS-021-000",
+        "description": "Minor Procedures/Surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 4,
+        "code": "NHIS-022-000",
+        "description": "Intermediate Procedures/Surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 5,
+        "code": "NHIS-023-000",
+        "description": "Major Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 7,
+        "code": "",
+        "description": "General",
+        "isMedicine": false
+    },
+    {
+        "id": 8,
+        "code": "NHIS-031-000",
+        "description": "Minor Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 9,
+        "code": "NHIS-032-000",
+        "description": "Intermediate Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 10,
+        "code": "NHIS-033-000",
+        "description": "Major Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 11,
+        "code": "NHIS-040-000",
+        "description": "Internal Medicine",
+        "isMedicine": false
+    },
+    {
+        "id": 13,
+        "code": "NHIS-051-000",
+        "description": "MUA & POP Application",
+        "isMedicine": false
+    },
+    {
+        "id": 14,
+        "code": "NHIS-052-000",
+        "description": "Minor Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 15,
+        "code": "NHIS-053-000",
+        "description": "Intermediate Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 16,
+        "code": "NHIS-054-000",
+        "description": "Major Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 17,
+        "code": "NHIS-054-000",
+        "description": "Open Reduction and Internal Fixation of Fractures of:",
+        "isMedicine": false
+    },
+    {
+        "id": 19,
+        "code": "NHIS-060-000",
+        "description": "General Surgery",
+        "isMedicine": false
+    },
+    {
+        "id": 20,
+        "code": "NHIS-061-000",
+        "description": "Minor Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 21,
+        "code": "NHIS-062-000",
+        "description": "Intermediate Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 22,
+        "code": "NHIS-063-000",
+        "description": "Major Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 24,
+        "code": "NHIS-080-000",
+        "description": "Optometry",
+        "isMedicine": false
+    },
+    {
+        "id": 26,
+        "code": "NHIS-090-000",
+        "description": "Ophthalmology",
+        "isMedicine": false
+    },
+    {
+        "id": 27,
+        "code": "NHIS-091-000",
+        "description": "Intermediate Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 28,
+        "code": "NHIS-092-000",
+        "description": "Major Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 29,
+        "code": "NHIS-093-000",
+        "description": "Other Procedures/surgeries",
+        "isMedicine": false
+    },
+    {
+        "id": 31,
+        "code": "NHIS-110-000",
+        "description": "Paediatrics",
+        "isMedicine": false
+    },
+    {
+        "id": 32,
+        "code": "NHIS-111-001",
+        "description": "Critical Care (In ICU per day)",
+        "isMedicine": false
+    },
+    {
+        "id": 33,
+        "code": "NHIS-111-011",
+        "description": "Aspirations/Paracentesis",
+        "isMedicine": false
+    },
+    {
+        "id": 35,
+        "code": "NHIS-120-000",
+        "description": "Dental Surgery",
+        "isMedicine": false
+    },
+    {
+        "id": 37,
+        "code": "NHIS-130-000",
+        "description": "Physiotherapy",
+        "isMedicine": false
+    },
+    {
+        "id": 38,
+        "code": "NHIS-131-000",
+        "description": "Medical/Neurological Conditions",
+        "isMedicine": false
+    },
+    {
+        "id": 39,
+        "code": "NHIS-132-000",
+        "description": "Paediatric conditions",
+        "isMedicine": false
+    },
+    {
+        "id": 40,
+        "code": "NHIS-133-000",
+        "description": "Surgical/Orthopaedic Conditions",
+        "isMedicine": false
+    },
+    {
+        "id": 41,
+        "code": "NHIS-134-000",
+        "description": "O & G Conditions",
+        "isMedicine": false
+    },
+    {
+        "id": 42,
+        "code": "NHIS-140-000",
+        "description": "Hysteroscopic Procedures",
+        "isMedicine": false
+    },
+    {
+        "id": 43,
+        "code": "NHIS-150-000",
+        "description": "Neurosurgery",
+        "isMedicine": false
+    },
+    {
+        "id": 44,
+        "code": "",
+        "description": "RADIOLOGY INVESTIGATIONS PRICE LIST",
+        "isMedicine": false
+    },
+    {
+        "id": 45,
+        "code": "NHIS-171-000",
+        "description": "Upper Limb",
+        "isMedicine": false
+    },
+    {
+        "id": 46,
+        "code": "NHIS-172-000",
+        "description": "Lower Limb",
+        "isMedicine": false
+    },
+    {
+        "id": 47,
+        "code": "NHIS-173-000",
+        "description": "Thorax",
+        "isMedicine": false
+    },
+    {
+        "id": 48,
+        "code": "NHIS-174-000",
+        "description": "Vertebrae",
+        "isMedicine": false
+    },
+    {
+        "id": 49,
+        "code": "NHIS-175-000",
+        "description": "Abdomen",
+        "isMedicine": false
+    },
+    {
+        "id": 50,
+        "code": "NHIS-176-000",
+        "description": "Skull Series",
+        "isMedicine": false
+    },
+    {
+        "id": 51,
+        "code": "NHIS-177-000",
+        "description": "Dental X-ray",
+        "isMedicine": false
+    },
+    {
+        "id": 52,
+        "code": "NHIS-178-000",
+        "description": "Special Investigations",
+        "isMedicine": false
+    },
+    {
+        "id": 53,
+        "code": "NHIS-179-000",
+        "description": "Ultrasound Scanning",
+        "isMedicine": false
+    },
+    {
+        "id": 54,
+        "code": "NHIS-180-000",
+        "description": "PRIMARY HEALTH CARE PROVIDERS",
+        "isMedicine": false
+    },
+    {
+        "id": 56,
+        "code": "",
+        "description": "Full Electrolytes-(a-d)",
+        "isMedicine": false
+    },
+    {
+        "id": 57,
+        "code": "",
+        "description": "Liver Function Tests-(a-e)",
+        "isMedicine": false
+    },
+    {
+        "id": 58,
+        "code": "",
+        "description": "Total Lipid Profile (a-d)",
+        "isMedicine": false
+    },
+    {
+        "id": 59,
+        "code": "",
+        "description": "Pregnancy Test (a-b)",
+        "isMedicine": false
+    },
+    {
+        "id": 60,
+        "code": "",
+        "description": "Hormonal Assay (a –f)",
+        "isMedicine": false
+    },
+    {
+        "id": 61,
+        "code": "",
+        "description": "Thyroid Screening (a-f)",
+        "isMedicine": false
+    },
+    {
+        "id": 62,
+        "code": "",
+        "description": "Tumour Markers",
+        "isMedicine": false
+    },
+    {
+        "id": 63,
+        "code": "",
+        "description": "Haematology & Blood Group Serology",
+        "isMedicine": false
+    },
+    {
+        "id": 65,
+        "code": "",
+        "description": "Urine",
+        "isMedicine": false
+    },
+    {
+        "id": 66,
+        "code": "",
+        "description": "Stool",
+        "isMedicine": false
+    },
+    {
+        "id": 67,
+        "code": "",
+        "description": "Blood",
+        "isMedicine": false
+    },
+    {
+        "id": 68,
+        "code": "",
+        "description": "Seminal Fluid",
+        "isMedicine": false
+    },
+    {
+        "id": 69,
+        "code": "",
+        "description": "Sputum",
+        "isMedicine": false
+    },
+    {
+        "id": 70,
+        "code": "",
+        "description": "C.S.F",
+        "isMedicine": false
+    },
+    {
+        "id": 71,
+        "code": "",
+        "description": "Swabs - Pus, Wound, Throat, Eye, Ear, Urethral, Aspirates, HVS, Endo-cervical and others.",
+        "isMedicine": false
+    },
+    {
+        "id": 72,
+        "code": "",
+        "description": "Skin",
+        "isMedicine": false
+    },
+    {
+        "id": 73,
+        "code": "",
+        "description": "Other Serological Tests",
+        "isMedicine": false
+    },
+    {
+        "id": 74,
+        "code": "",
+        "description": "AIDS Screening:",
+        "isMedicine": false
+    },
+    {
+        "id": 75,
+        "code": "",
+        "description": "Histology/Cytology",
+        "isMedicine": false
+    },
+    {
+        "id": 76,
+        "code": "NHIA-02-03-00",
+        "description": "Non-Narcotic Analgesics and Antipyretics",
+        "isMedicine": true
+    },
+    {
+        "id": 77,
+        "code": "NHIA-01-01-00",
+        "description": "General Anaesthetics",
+        "isMedicine": true
+    },
+    {
+        "id": 78,
+        "code": "NHIA-01-02-00",
+        "description": "Premedication Drugs and Analgesics Adjuvants",
+        "isMedicine": true
+    },
+    {
+        "id": 79,
+        "code": "NHIA-01-03-00",
+        "description": "Skeletal Muscle Relaxants and Antagonists",
+        "isMedicine": true
+    },
+    {
+        "id": 80,
+        "code": "NHIA CODE",
+        "description": "Cholinesterase inhibitors",
+        "isMedicine": true
+    },
+    {
+        "id": 81,
+        "code": "NHIA-01-04-00",
+        "description": "Local Anaesthetics",
+        "isMedicine": true
+    },
+    {
+        "id": 82,
+        "code": "NHIA-02-00-00",
+        "description": "ANALGESICS, ANTIPYRETICS AND NON- STEROIDAL ANTI-INFLAMATORY DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 83,
+        "code": "NHIA-02-02-00",
+        "description": "Narcotic Antagonist",
+        "isMedicine": true
+    },
+    {
+        "id": 84,
+        "code": "NHIA-02-04-00",
+        "description": "Non-Steroidal Anti-Inflammatory Drugs and Medicines Used for Gout/Rheumatoid Arthritis",
+        "isMedicine": true
+    },
+    {
+        "id": 85,
+        "code": "NHIA-02-05-00",
+        "description": "Skeletal Muscle & Antispasmodics",
+        "isMedicine": true
+    },
+    {
+        "id": 86,
+        "code": "NHIA-03-01-00",
+        "description": "Antihistamines",
+        "isMedicine": true
+    },
+    {
+        "id": 87,
+        "code": "NHIA-03-02-00",
+        "description": "Antianaphylactics",
+        "isMedicine": true
+    },
+    {
+        "id": 88,
+        "code": "NHIA-04-01-00",
+        "description": "Specific Antidotes",
+        "isMedicine": true
+    },
+    {
+        "id": 89,
+        "code": "NHIA-04-02-00",
+        "description": "Non-Specific Antidotes",
+        "isMedicine": true
+    },
+    {
+        "id": 90,
+        "code": "NHIA-05-00-00",
+        "description": "ANTI-CONVULSANTS (ANTI-EPILEPTICS)",
+        "isMedicine": true
+    },
+    {
+        "id": 91,
+        "code": "NHIA-06-01-00",
+        "description": "Amoebicides/Antiflagellate",
+        "isMedicine": true
+    },
+    {
+        "id": 92,
+        "code": "NHIA-06-02-00",
+        "description": "Antihelmintics",
+        "isMedicine": true
+    },
+    {
+        "id": 93,
+        "code": "NHIA-06-03-00",
+        "description": "Antischistosomal Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 94,
+        "code": "NHIA-06-04-00",
+        "description": "Antifilarial Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 95,
+        "code": "NHIA-06-05-00",
+        "description": "Anti-Malarial Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 96,
+        "code": "NHIA-06-06-00",
+        "description": "Antitrypanosomal, Antileishmaniasis   Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 97,
+        "code": "NHIA-06-07-00",
+        "description": "Antibacterial Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 98,
+        "code": "NHIA-06-08-00",
+        "description": "Antileprosy Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 99,
+        "code": "NHIA-06-09-00",
+        "description": " Systemic Antifungal Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 100,
+        "code": "NHIA-06-10-00",
+        "description": "Antiviral Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 102,
+        "code": "NHIA-06-11-01",
+        "description": "Protease Inhibitors",
+        "isMedicine": true
+    },
+    {
+        "id": 103,
+        "code": "NHIA-06-11-11",
+        "description": "Nucleoside Reverse Transcriptase Inhibitors",
+        "isMedicine": true
+    },
+    {
+        "id": 104,
+        "code": "NHIA-06-11-29",
+        "description": "Non-nucleoside Reverse Transcriptase Inhibitors",
+        "isMedicine": true
+    },
+    {
+        "id": 105,
+        "code": "NHIA-06-11-37",
+        "description": "Fixed dose combinations",
+        "isMedicine": true
+    },
+    {
+        "id": 106,
+        "code": "NHIA-07-00-00",
+        "description": "ANTI-MIGRAINE DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 107,
+        "code": "NHIA-08-00-00",
+        "description": "IMMUNO SUPPRESIVE DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 109,
+        "code": "NHIA-09-01-00",
+        "description": "Anti-parkinsonism Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 110,
+        "code": "NHIA-09-02-00",
+        "description": "Drugs for Myasthenia Gravis",
+        "isMedicine": true
+    },
+    {
+        "id": 111,
+        "code": "NHIA-09-03-00",
+        "description": "Drugs for Subarachnoid Haemorrhage",
+        "isMedicine": true
+    },
+    {
+        "id": 112,
+        "code": "NHIA-10-00-00",
+        "description": "ANTISEPTICS AND DISINFECTANTS",
+        "isMedicine": true
+    },
+    {
+        "id": 113,
+        "code": "NHIA-10-02-00",
+        "description": "for Dementia",
+        "isMedicine": true
+    },
+    {
+        "id": 115,
+        "code": "NHIA-11-01-00",
+        "description": "Anti-Aneamic Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 116,
+        "code": "NHIA-11-02-00",
+        "description": "Anticoagulants",
+        "isMedicine": true
+    },
+    {
+        "id": 117,
+        "code": "NHIA-11-03-00",
+        "description": "Anti Platelets",
+        "isMedicine": true
+    },
+    {
+        "id": 118,
+        "code": "NHIA-11-04-00",
+        "description": "Anti Fibrinolytic and Haemostatic Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 119,
+        "code": "NHIA-11-05-00",
+        "description": "PLASMA SUBSTITUTES",
+        "isMedicine": true
+    },
+    {
+        "id": 120,
+        "code": "NHIA-12-01-00",
+        "description": "ANTI ANGINAL DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 121,
+        "code": "NHIA-12-02-00",
+        "description": "ANTI-ARRHYTHMIC DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 122,
+        "code": "NHIA-12-03-00",
+        "description": "DIURETICS",
+        "isMedicine": true
+    },
+    {
+        "id": 123,
+        "code": "NHIA-12-04-00",
+        "description": "ANTIHYPERTENSIVES DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 124,
+        "code": "NHIA-12-05-00",
+        "description": "CARDIAC GLYCOSIDE AND CARDIOTONICS",
+        "isMedicine": true
+    },
+    {
+        "id": 125,
+        "code": "NHIA-12-06-00",
+        "description": "LIPID – REGULATING DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 127,
+        "code": "NHIA-13-01-00",
+        "description": "LOCAL   ANAESTHETICS",
+        "isMedicine": true
+    },
+    {
+        "id": 128,
+        "code": "NHIA-13-02-00",
+        "description": "MOUTHWASHES",
+        "isMedicine": true
+    },
+    {
+        "id": 129,
+        "code": "NHIA-13-03-00",
+        "description": "ANTI INFLAMMATORY DENTAL DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 131,
+        "code": "NHIA-14-01-00",
+        "description": "ANTI-INFECTIVE DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 132,
+        "code": "NHIA-14-02-00",
+        "description": "ANTI-PRURITIC DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 133,
+        "code": "NHIA-14-03-00",
+        "description": "ASTRINGENT DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 134,
+        "code": "NHIA-14-04-00",
+        "description": "ANTI-ACNE DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 135,
+        "code": "NHIA-14-05-00",
+        "description": "SCABICIDES AND PEDICULICIDES",
+        "isMedicine": true
+    },
+    {
+        "id": 136,
+        "code": "NHIA-14-06-00",
+        "description": "FUNGICIDES WITH ANTIBACTERIAL/ANTI-INFLAMMATORY AGENTS",
+        "isMedicine": true
+    },
+    {
+        "id": 137,
+        "code": "NHIA-14-07-00",
+        "description": "KERATOLYTIC/ PSORIASIS DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 140,
+        "code": "NHIA-15-01-00",
+        "description": "Anti-infective   Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 143,
+        "code": "NHIA-15-01-05",
+        "description": "Combined   Anti-infective   &   Anti-inflammatory Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 144,
+        "code": "NHIA-15-01-11",
+        "description": "Preparations for removal of ear wax",
+        "isMedicine": true
+    },
+    {
+        "id": 146,
+        "code": "NHIA-15-02-01",
+        "description": "Antiallergic & Nasal Decongestants (Topical & Systemic)",
+        "isMedicine": true
+    },
+    {
+        "id": 147,
+        "code": "NHIA-15-02-13",
+        "description": "CAUTERIZATION OF NOSE",
+        "isMedicine": true
+    },
+    {
+        "id": 148,
+        "code": "NHIA-15-03-00",
+        "description": "THROAT DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 150,
+        "code": "NHIA-16-01-00",
+        "description": "ANTACID DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 151,
+        "code": "NHIA-16-02-00",
+        "description": "ANTI-EMETIC DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 152,
+        "code": "NHIA-16-03-00",
+        "description": "ANTI-SPASMODIC DRUGS & SMOOTH MUSCLE STIMULANT",
+        "isMedicine": true
+    },
+    {
+        "id": 153,
+        "code": "NHIA-16-04-00",
+        "description": "PURGATIVES / LAXATIVES AND LUBRICANTS",
+        "isMedicine": true
+    },
+    {
+        "id": 155,
+        "code": "NHIA-16-05-01",
+        "description": "Antimotility Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 156,
+        "code": "NHIA-16-05-05",
+        "description": "REPLACEMENT FLUID (ORAL REHYDRATION THERAPY)",
+        "isMedicine": true
+    },
+    {
+        "id": 157,
+        "code": "NHIA-16-06-00",
+        "description": "PREPARATIONS FOR HEAMORRHOID",
+        "isMedicine": true
+    },
+    {
+        "id": 158,
+        "code": "NHIA-16-07-00",
+        "description": "PEPTIC ULCER DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 160,
+        "code": "NHIA-17-01-00",
+        "description": "CORTICOSTEROIDS & SYNTHETIC SUBSTITUTES",
+        "isMedicine": true
+    },
+    {
+        "id": 161,
+        "code": "NHIA-17-02-00",
+        "description": "OESTROGEN",
+        "isMedicine": true
+    },
+    {
+        "id": 162,
+        "code": "NHIA-17-03-00",
+        "description": "PROGESTOGENS",
+        "isMedicine": true
+    },
+    {
+        "id": 163,
+        "code": "NHIA-17-04-00",
+        "description": "DRUGS ACTING ON PITUITARY- OVARIAN AXIS",
+        "isMedicine": true
+    },
+    {
+        "id": 164,
+        "code": "NHIA-17-05-00",
+        "description": "ANTIDIURETIC HORMONES",
+        "isMedicine": true
+    },
+    {
+        "id": 165,
+        "code": "NHIA-17-06-00",
+        "description": "ANTI-DIABETIC       DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 166,
+        "code": "NHIA-17-07-00",
+        "description": "THYROID    HORMONES   AND   ANTITHYROID   DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 167,
+        "code": "NHIA-17-08-00",
+        "description": "BENINGN PROSTATIC HYPERPLASIA DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 169,
+        "code": "NHIA-18-01-00",
+        "description": "SERA AND IMMUNOGLOBULINS",
+        "isMedicine": true
+    },
+    {
+        "id": 170,
+        "code": "NHIA-18-02-00",
+        "description": "VACCINES (All vaccines should comply with WHO requirements for biological substance)",
+        "isMedicine": true
+    },
+    {
+        "id": 172,
+        "code": "NHIA-19-01-00",
+        "description": "ANTI-INFECTIVE",
+        "isMedicine": true
+    },
+    {
+        "id": 173,
+        "code": "NHIA-19-01-12",
+        "description": "sulfate + Polymyxin B + Dexamethasone",
+        "isMedicine": true
+    },
+    {
+        "id": 174,
+        "code": "NHIA-19-02-00",
+        "description": "ANTI ALLERGIC",
+        "isMedicine": true
+    },
+    {
+        "id": 176,
+        "code": "NHIA-19-03-01",
+        "description": "",
+        "isMedicine": true
+    },
+    {
+        "id": 177,
+        "code": "NHIA-19-04-00",
+        "description": "ANTI-GLAUCOMA AND MIOTICS",
+        "isMedicine": true
+    },
+    {
+        "id": 178,
+        "code": "NHIA-19-05-00",
+        "description": "MYDRIATICS",
+        "isMedicine": true
+    },
+    {
+        "id": 179,
+        "code": "NHIA-19-06-00",
+        "description": "DIAGNOSTIC EYE DRUGS & MISCELLANEOUS PREPARATIONS",
+        "isMedicine": true
+    },
+    {
+        "id": 180,
+        "code": "NHIA-20-00-00",
+        "description": "OXYTOCICS AND TOCOLYTICS",
+        "isMedicine": true
+    },
+    {
+        "id": 182,
+        "code": "NHIA-21-01-00",
+        "description": "ORAL PREPARATIONS",
+        "isMedicine": true
+    },
+    {
+        "id": 183,
+        "code": "NHIA-21-02-00",
+        "description": "PARENTERAL PREPARATIONS",
+        "isMedicine": true
+    },
+    {
+        "id": 184,
+        "code": "NHIA-22-00-00",
+        "description": "DIALYSIS SOLUTIONS",
+        "isMedicine": true
+    },
+    {
+        "id": 187,
+        "code": "NHIA-23-01-00",
+        "description": "HYPNOTICS   &   SEDATIVES",
+        "isMedicine": true
+    },
+    {
+        "id": 188,
+        "code": "NHIA-23-02-00",
+        "description": "ANTIDEPRESSANTS",
+        "isMedicine": true
+    },
+    {
+        "id": 191,
+        "code": "NHIA-23-02-06",
+        "description": "+ Methylcobalamin",
+        "isMedicine": true
+    },
+    {
+        "id": 192,
+        "code": "NHIA-23-03-00",
+        "description": "ANTI PSYCHOTICS (MAJOR TRANQUILIZERS)",
+        "isMedicine": true
+    },
+    {
+        "id": 194,
+        "code": "NHIA-24-01-00",
+        "description": "Anti-asthmatic Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 195,
+        "code": "NHIA-24-02-00",
+        "description": "Anti-Tussive, Expectorant and Mucolytic",
+        "isMedicine": true
+    },
+    {
+        "id": 196,
+        "code": "NHIA-25-00-00",
+        "description": "VITAMINS",
+        "isMedicine": true
+    },
+    {
+        "id": 197,
+        "code": "NHIA-26-00-00",
+        "description": "MINERALS",
+        "isMedicine": true
+    },
+    {
+        "id": 198,
+        "code": "NHIA-27-00-00",
+        "description": "CYTOTOXICS AND ADJUVANTS",
+        "isMedicine": true
+    },
+    {
+        "id": 200,
+        "code": "NHIA-28-01-00",
+        "description": "Enzymes",
+        "isMedicine": true
+    },
+    {
+        "id": 201,
+        "code": "NHIA-28-02-00",
+        "description": "Consumables",
+        "isMedicine": true
+    },
+    {
+        "id": 204,
+        "code": "NHIA-29-00-00",
+        "description": "ANTIBACTERIAL DRUGS",
+        "isMedicine": true
+    },
+    {
+        "id": 205,
+        "code": "NHIA-30-00-00",
+        "description": "DRUGS ACTING ON PITUITARY- OVARIAN AXIS",
+        "isMedicine": true
+    },
+    {
+        "id": 207,
+        "code": "NHIA-31-01-00",
+        "description": "Oral Anti-Diabetics",
+        "isMedicine": true
+    },
+    {
+        "id": 209,
+        "code": "NHIA-32-01-00",
+        "description": "SERA AND IMMUNOGLOBULINS",
+        "isMedicine": true
+    },
+    {
+        "id": 211,
+        "code": "NHIA-32-02-00",
+        "description": "VACCINES FOR UNIVERSAL IMMUNIZATION",
+        "isMedicine": true
+    },
+    {
+        "id": 213,
+        "code": "NHIA-33-01-00",
+        "description": "PARENTERAL PREPARATIONS",
+        "isMedicine": true
+    },
+    {
+        "id": 214,
+        "code": "NHIA-34-00-00",
+        "description": "ANTI PSYCHOTICS (MAJOR TRANQUILIZERS)",
+        "isMedicine": true
+    },
+    {
+        "id": 216,
+        "code": "NHIA-35-01-00",
+        "description": "Anti-asthmatic Drugs",
+        "isMedicine": true
+    },
+    {
+        "id": 217,
+        "code": "NHIA-36-00-00",
+        "description": "CYTOTOXICS AND ADJUVANTS",
+        "isMedicine": true
+    },
+    {
+        "id": 218,
+        "code": "NHIA-36-00-16",
+        "description": "",
+        "isMedicine": true
+    }
+]

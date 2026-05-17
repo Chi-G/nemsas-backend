@@ -132,3 +132,34 @@ async def create_user(
         "message": "User successfully created",
         "data": new_user
     }
+
+@router.get("/me/notifications", response_model=ResponseBase[List[dict]])
+async def get_my_notifications(
+    current_user: User = Depends(deps.get_current_user),
+):
+    """
+    Get all cached/pending notifications from Redis
+    """
+    from app.core.notifications import notification_service
+    notifications = await notification_service.get_pending_notifications(str(current_user.id))
+    return {
+        "success": True,
+        "message": "Notifications fetched",
+        "data": notifications
+    }
+
+@router.post("/me/notifications/{notif_id}/read", response_model=ResponseBase[bool])
+async def mark_notification_as_read(
+    notif_id: str,
+    current_user: User = Depends(deps.get_current_user),
+):
+    """
+    Mark a notification as read in Redis
+    """
+    from app.core.notifications import notification_service
+    await notification_service.mark_as_read(str(current_user.id), notif_id)
+    return {
+        "success": True,
+        "message": "Notification marked as read",
+        "data": True
+    }

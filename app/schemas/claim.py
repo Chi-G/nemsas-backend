@@ -27,10 +27,12 @@ class ClaimBase(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
 class ClaimCreate(ClaimBase):
-    pass
+    image_url: Optional[str] = Field(None, alias="imageUrl")
 
 class ClaimUpdate(ClaimBase):
     pass
+
+from app.schemas.claim_image import ClaimImage
 
 class Claim(ClaimBase):
     id: int
@@ -38,6 +40,7 @@ class Claim(ClaimBase):
     
     patient: Optional[Patient] = None
     incident_view_model: Optional[Incident] = Field(None, alias="incidentViewModel")
+    images: Optional[List[ClaimImage]] = Field(default_factory=list, alias="images")
     
     # Response Compatibility fields
     details: List[Any] = Field(default_factory=list, alias="details")
@@ -46,8 +49,12 @@ class Claim(ClaimBase):
     @model_validator(mode='before')
     @classmethod
     def map_nested(cls, data: Any) -> Any:
-        if hasattr(data, 'incident') and data.incident:
-            data.incident_view_model = data.incident
+        if isinstance(data, dict):
+            if 'incident' in data:
+                data['incident_view_model'] = data['incident']
+        elif hasattr(data, "__dict__") and "incident" in data.__dict__:
+            if data.incident:
+                data.incident_view_model = data.incident
         return data
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)

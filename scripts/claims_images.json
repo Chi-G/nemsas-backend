@@ -1,0 +1,2258 @@
+[
+    {
+        "claimId": 3976,
+        "claimTitle": "claims for NURA   HAMZA, RTA, incident 4143",
+        "incidentId": 4143,
+        "id": 411,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4143/1f64d78c-c094-4715-ba44-b60569603793_hamza nura.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3950,
+        "claimTitle": "claims for SAMAILA  ISHAKU, Paediatric (<5yrs), incident 3738",
+        "incidentId": 3738,
+        "id": 381,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3738/2d8607c3-be62-4509-a3b6-2f5993008d28_SAMAILA ISHAKU.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3941,
+        "claimTitle": "claims for SHADI  JAURO, RTA, incident 4156",
+        "incidentId": 4156,
+        "id": 415,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4156/94deffdb-a60b-4460-98cb-05709a5d9afd_1000106805.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3932,
+        "claimTitle": "claims for ADAMU  ADAMU, RTA, incident 4148",
+        "incidentId": 4148,
+        "id": 414,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4148/4fa61cd3-d26c-4879-830c-8d76828a5386_1000106804.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3927,
+        "claimTitle": "claims for PERCH  IWUNGI, RTA, incident 4146",
+        "incidentId": 4146,
+        "id": 412,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4146/682c4b61-0942-43bf-9df1-06f96788d479_WhatsApp Image 2026-05-16 at 5.02.55 AM.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3922,
+        "claimTitle": "claims for ABDULLAHI   YAYAWA, RTA, incident 4144",
+        "incidentId": 4144,
+        "id": 413,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4144/423a2d14-0ab4-4f01-9e72-3732efff7aff_1000106800.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3885,
+        "claimTitle": "claims for Nurudden     Ibrahim, RTA, incident 4009",
+        "incidentId": 4009,
+        "id": 402,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4009/db8092e0-f339-4e72-a19e-f935ce59b2bb_nurudeen.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3863,
+        "claimTitle": "claims for emergency 2 Emergency 2 emergency 2, RTA, incident 4116",
+        "incidentId": 4116,
+        "id": 407,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/4116/248c5390-429f-4815-984d-adcf0d5b562f_scaled_IMG_20260429_113842.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 3836,
+        "claimTitle": "claims for Godwin  Ekaweze, RTA, incident 4092",
+        "incidentId": 4092,
+        "id": 405,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/4092/105f7013-4439-4369-884e-3f957085df55_scaled_1000182413.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 3815,
+        "claimTitle": "claims for YAHYA  IBRAHIM, RTA, incident 4074",
+        "incidentId": 4074,
+        "id": 408,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4074/91479d3d-8287-4b1a-8a51-78348b3fee5a_1000106322.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3808,
+        "claimTitle": "claims for IBRAHIM MUHD BASHIR, RTA, incident 4066",
+        "incidentId": 4066,
+        "id": 409,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4066/56313d23-15c2-430b-bdaa-3dc7c551a13a_1000106323.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3802,
+        "claimTitle": "claims for BELLO  ABDULKADIR, RTA, incident 4063",
+        "incidentId": 4063,
+        "id": 406,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4063/030bcd0c-75cc-4909-b559-ad6638c00262_1000106139.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3800,
+        "claimTitle": "claims for AISHATU  USMAN, RTA, incident 3950",
+        "incidentId": 3950,
+        "id": 403,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3950/1457a613-38be-47fa-a9b0-5616ad36db83_aishatu usman.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3666,
+        "claimTitle": "claims for Chukwu  Okechukwu Ifeanyi, Others, incident 4022",
+        "incidentId": 4022,
+        "id": 395,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/4022/eb20ca16-ac70-46cf-a0d3-679ad91eb45c_scaled_IMG_20260429_113857.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 3661,
+        "claimTitle": "claims for Abdulrahman   Saad, RTA, incident 4016",
+        "incidentId": 4016,
+        "id": 400,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4016/76e79181-a087-4796-89c0-bb8b76c719e0_abdulrahaman saad.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3657,
+        "claimTitle": "claims for Usman  Muhammad , Others, incident 4011",
+        "incidentId": 4011,
+        "id": 401,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/4011/70491728-3fb2-4465-a639-4ea307f4660d_usman Mohammed.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3655,
+        "claimTitle": "claims for Joy  Isaac, RTA, incident 4003",
+        "incidentId": 4003,
+        "id": 394,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/4003/fd0ba666-644c-4dc5-b09c-69652028b89d_scaled_1000177508.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 3637,
+        "claimTitle": "claims for JUMMAI  SHEHU, RTA, incident 3985",
+        "incidentId": 3985,
+        "id": 404,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3985/f15c53d3-c98c-4ffa-991b-d389ca8118b7_17787697037033993846858277883783.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3624,
+        "claimTitle": "claims for Ishaku  Lamido, RTA, incident 3984",
+        "incidentId": 3984,
+        "id": 399,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3984/0e426ac5-c727-4f7f-9384-8d8e538af617_IMG_20260514_110217_731.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3605,
+        "claimTitle": "claims for ALIYU SHEHU AHMAD, RTA, incident 3960",
+        "incidentId": 3960,
+        "id": 398,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3960/b0f3e810-f85c-4501-acc7-fa0fb5f6599b_IMG_20260514_102130_959.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3581,
+        "claimTitle": "claims for Ihsan  Ibrahim, Others, incident 3952",
+        "incidentId": 3952,
+        "id": 388,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3952/9481d1df-27a9-46aa-817c-78f0c1341131_ihsan ibrahim.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3578,
+        "claimTitle": "claims for BASMA  MUHAMMAD, RTA, incident 3948",
+        "incidentId": 3948,
+        "id": 390,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3948/f7832213-244f-4dea-9bc9-af1627e32338_basma muhd.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3577,
+        "claimTitle": "claims for BABY BOY ZALIKHA, RTA, incident 3949",
+        "incidentId": 3949,
+        "id": 392,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3949/55e18d6e-a57f-4f9d-8e25-1657a059af52_Baby Boy Zalikha_1.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3575,
+        "claimTitle": "claims for ALIYU  NASIR, Paediatric (<5yrs), incident 3947",
+        "incidentId": 3947,
+        "id": 393,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3947/c9f9eed8-d7cb-43c4-849d-6216bde25604_aliyu nasiru.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3571,
+        "claimTitle": "claims for ABDULLAHI  ABUBAKAR, RTA, incident 3942",
+        "incidentId": 3942,
+        "id": 391,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3942/78f1da58-6729-44a1-99c3-c38038b34345_abubakar abdullahi.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3567,
+        "claimTitle": "claims for HUSSAINI  MUHAMMAD, Paediatric (<5yrs), incident 3919",
+        "incidentId": 3919,
+        "id": 389,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3919/2f2ce52b-cdf8-404a-a51e-60c932b4d0a4_hussaini muhd.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3525,
+        "claimTitle": "claims for MUHD  BAPPI, Banditry/Terrorism, incident 3920",
+        "incidentId": 3920,
+        "id": 397,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3920/d5e20e74-2299-4ace-8b62-7330f6009d1b_IMG_20260511_114605_908.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3517,
+        "claimTitle": "claims for GIDADO  SALISU, Banditry/Terrorism, incident 3916",
+        "incidentId": 3916,
+        "id": 396,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3916/27b952e8-3664-442d-842d-568f00695b9b_IMG_20260514_093714_142.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3510,
+        "claimTitle": "claims for ABUBAKAR  ADAMU, Paediatric (<5yrs), incident 3835",
+        "incidentId": 3835,
+        "id": 386,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3835/8b338f1d-bde2-4728-8a45-736dee432f72_ABUBAKAR ADAMU.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3423,
+        "claimTitle": "claims for Zainab   Mustapha, Others, incident 3849",
+        "incidentId": 3849,
+        "id": 377,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/3849/fcc16d96-9146-4076-8561-8cd9a7aa123a_scaled_IMG_20260415_054711_506.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 3419,
+        "claimTitle": "claims for MUSA  ADAMU, Banditry/Terrorism, incident 3853",
+        "incidentId": 3853,
+        "id": 384,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3853/c9b6508c-4266-4106-8654-8651013004fe_17785844566393992412758467235039.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3415,
+        "claimTitle": "claims for SALISU  MUSA, Banditry/Terrorism, incident 3839",
+        "incidentId": 3839,
+        "id": 382,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3839/6359e46e-7e00-4c83-88bf-443df267d207_17785833432324557952010155313504.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3414,
+        "claimTitle": "claims for Yau   Inusa, Others, incident 3850",
+        "incidentId": 3850,
+        "id": 385,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3850/4814efac-23f3-43d8-aa7d-e3c3882f03cf_YAU INUWA.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3393,
+        "claimTitle": "claims for VICTORIA   CHINESU, Banditry/Terrorism, incident 3831",
+        "incidentId": 3831,
+        "id": 380,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3831/ae204de7-3406-4f73-85c0-da9bf7114ae1_17785773917091760543230116213627.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3371,
+        "claimTitle": "claims for Aishatu S. Sani, Others, incident 3812",
+        "incidentId": 3812,
+        "id": 387,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3812/6ec734e1-25fd-4109-9b41-d1283c2ad2bc_AISHATU SANI 00.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3307,
+        "claimTitle": "claims for MUSA  ABDUMUMIN, RTA, incident 3764",
+        "incidentId": 3764,
+        "id": 378,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3764/974c5fef-d0cf-4ebd-81e3-1ce2b4dde5b2_17785746902413768608743145669586.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3285,
+        "claimTitle": "claims for UMAR  SANI, Paediatric (<5yrs), incident 3759",
+        "incidentId": 3759,
+        "id": 379,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3759/a6ffe91d-c57b-4da0-aeda-7f38839cca7a_umar sani.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3280,
+        "claimTitle": "claims for FATIMATU MUHD MAGAJI, Paediatric (<5yrs), incident 3760",
+        "incidentId": 3760,
+        "id": 370,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3760/b98a63fc-943f-45a8-b39b-bacfb93a6510_WhatsApp Image 2026-05-11 at 1.52.56 AM.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3279,
+        "claimTitle": "claims for SARATU  UMAR, Paediatric (<5yrs), incident 3757",
+        "incidentId": 3757,
+        "id": 373,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3757/9a959ecb-9718-4f14-9307-4581f186ab24_saratu umar.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3273,
+        "claimTitle": "claims for Sadiya   Umar, Others, incident 3758",
+        "incidentId": 3758,
+        "id": 374,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3758/2e9dd3dc-e622-4c6a-b6fe-aa454c22be0e_sadiya umar.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3272,
+        "claimTitle": "claims for MUHAMMAD  MAIKUDI, Paediatric (<5yrs), incident 3740",
+        "incidentId": 3740,
+        "id": 383,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3740/a6f29b30-1ec0-44e2-bde1-3d9bb1858c72_MAIKUDI MUHD.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3271,
+        "claimTitle": "claims for ASMAU YAHAYA ADAMU, Paediatric (<5yrs), incident 3415",
+        "incidentId": 3415,
+        "id": 352,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3415/953a6b20-f3f2-4768-8ea6-b932fa5db378_ASMAU YAHAYA.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3262,
+        "claimTitle": "claims for Maryam   Usman, Others, incident 3747",
+        "incidentId": 3747,
+        "id": 372,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3747/93c72740-1f90-43cd-9e19-3f4e1526fe90_maryam alhasan.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3233,
+        "claimTitle": "claims for HUSSAINI  ABUBAKAR  KOMBI, Fire Accident, incident 3716",
+        "incidentId": 3716,
+        "id": 369,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3716/a136749c-5303-42c1-86dd-6e20e4ea4b59_IMG_20260508_171242_289.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3208,
+        "claimTitle": "claims for Muhd Nasir Abdulrauf, Paediatric (<5yrs), incident 3674",
+        "incidentId": 3674,
+        "id": 376,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3674/1b9b0d81-b45e-4677-adf0-7d0aa291da12_abdurrauf muhd nasir.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3207,
+        "claimTitle": "claims for Fatima Garba Pantami, Paediatric (<5yrs), incident 3672",
+        "incidentId": 3672,
+        "id": 371,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3672/8317a9cf-306d-4412-9ab6-19bf12dad2cc_fatima garba pantami.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3194,
+        "claimTitle": "claims for AUWAL  AMADU, RTA, incident 3693",
+        "incidentId": 3693,
+        "id": 366,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3693/5cd8c82b-e0c4-463d-902e-5fb911ba8c63_IMG_20260508_171604_162.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3178,
+        "claimTitle": "claims for Nitte  Dio, RTA, incident 3670",
+        "incidentId": 3670,
+        "id": 367,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3670/8cd08f34-273c-46e3-aa2c-859c56dba4cc_nitte dio.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3175,
+        "claimTitle": "claims for Aisha  Usman, Paediatric (<5yrs), incident 3421",
+        "incidentId": 3421,
+        "id": 348,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3421/7b39e6ef-4c39-4a16-8202-51452f3504a4_aisha usman.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3163,
+        "claimTitle": "claims for Amina  Anas, Paediatric (<5yrs), incident 3422",
+        "incidentId": 3422,
+        "id": 353,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3422/c0ee984d-3fba-4132-a3cf-83b293821664_ASMAU YAHAYA.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3159,
+        "claimTitle": "claims for Breham Okpulor, Benedict Okpulor, Benice Okpulor, Rachael Okpulor, RTA, incident 3644",
+        "incidentId": 3644,
+        "id": 362,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/3644/71db48e4-93da-4fb7-8690-8d67595e540e_scaled_1000177508.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 3156,
+        "claimTitle": "claims for Salisu  Yusuf, RTA, incident 3667",
+        "incidentId": 3667,
+        "id": 368,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3667/e9fe4d37-0ca4-4df5-8d16-de63eccbc444_salisu yusuf.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3101,
+        "claimTitle": "claims for Sanusi   Sani, Domestic Accident, incident 3605",
+        "incidentId": 3605,
+        "id": 364,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3605/bb3f8d0e-82b2-4a65-b9a3-24011329f74c_IMG_20260510_080754_784.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3069,
+        "claimTitle": "claims for Abubakar   Yahaya, RTA, incident 3597",
+        "incidentId": 3597,
+        "id": 363,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3597/c30a3215-f41d-4ddf-89b3-00bdf11419ea_IMG_20260507_095012_249.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 3018,
+        "claimTitle": "claims for Frank  John, RTA, incident 3552",
+        "incidentId": 3552,
+        "id": 360,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/3552/243abffc-e47a-4fd0-9c8f-3fe35c9d1120_scaled_1000175758.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 2953,
+        "claimTitle": "claims for SHUAIBU  ADAMU, RTA, incident 3517",
+        "incidentId": 3517,
+        "id": 359,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/3517/71740e08-55b9-496d-b19b-93a78f87ba99_scaled_1000203701.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 2953,
+        "claimTitle": "claims for SHUAIBU  ADAMU, RTA, incident 3517",
+        "incidentId": 3517,
+        "id": 361,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3517/bc5e5620-27c5-4510-8dd0-9fd49bfe809b_shuaibi adamu.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2891,
+        "claimTitle": "claims for Victor  Matthew, RTA, incident 3476",
+        "incidentId": 3476,
+        "id": 358,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/3476/0f843a4e-cd50-4172-b133-478e5ff61000_scaled_1000175860.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 2890,
+        "claimTitle": "claims for Precious David  Nill, RTA, incident 3475",
+        "incidentId": 3475,
+        "id": 357,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/3475/0052d2a4-dd94-4625-9741-21ea1acf42c9_scaled_1000175831.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 2876,
+        "claimTitle": "claims for Amaechi  Okobia, RTA, incident 3454",
+        "incidentId": 3454,
+        "id": 356,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/3454/e6eab7a3-b0e6-45a0-bb06-7e901ae5f39b_scaled_1000175815.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 2841,
+        "claimTitle": "claims for Ismail  Muhammed, Paediatric (<5yrs), incident 2877",
+        "incidentId": 2877,
+        "id": 265,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2877/e15678fa-1a06-4e85-88a4-f0a539d39bb4_Ismail muhd_3.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2821,
+        "claimTitle": "claims for ISMAIL  ALIYU, Paediatric (<5yrs), incident 3088",
+        "incidentId": 3088,
+        "id": 291,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3088/c14bae35-4f32-4701-8acd-f1dfaa85eb53_955.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2811,
+        "claimTitle": "claims for Hassan   Muhammad , RTA, incident 3176",
+        "incidentId": 3176,
+        "id": 315,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3176/c3342b88-de75-416d-a29d-3c26dc3b1750_hassan muhammad.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2807,
+        "claimTitle": "claims for AZIMA    ABDULLAHI, Paediatric (<5yrs), incident 3390",
+        "incidentId": 3390,
+        "id": 346,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3390/d768b275-ee13-4863-95d4-16c59ca29298_17779779709346781556640372762606.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2804,
+        "claimTitle": "claims for MUHAMMAD  ADAMU, RTA, incident 3387",
+        "incidentId": 3387,
+        "id": 344,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3387/06b0a482-14fa-4637-881e-adfa84043bc3_117357.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2803,
+        "claimTitle": "claims for AHMEDA  ALIYU, RTA, incident 3385",
+        "incidentId": 3385,
+        "id": 341,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3385/3dac6473-fc0d-4053-abf8-71e79dd40c21_117359.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2729,
+        "claimTitle": "claims for Amadu   Seyoji, RTA, incident 3269",
+        "incidentId": 3269,
+        "id": 327,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3269/6675bbff-cb69-4e21-9a81-63b7167297bc_17775396594636336795765485844973.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2560,
+        "claimTitle": "claims for SALEH  UMAR, RTA, incident 3213",
+        "incidentId": 3213,
+        "id": 316,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3213/a1a29354-a865-48db-97db-bbf76cdf063a_17774628266638508121128053854933.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2551,
+        "claimTitle": "claims for Mamman Twan Usman Twan  Usman, RTA, incident 3203",
+        "incidentId": 3203,
+        "id": 309,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3203/f575e176-91b2-4d7e-9d03-3c1e7c79883a_Mamman Twan Usman.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2537,
+        "claimTitle": "claims for Hauwau   Muhammad, RTA, incident 3174",
+        "incidentId": 3174,
+        "id": 305,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3174/a5c0073d-85b2-47af-9cb0-d07d8cdacd30_Hauwau Muhammad.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2498,
+        "claimTitle": "claims for KHALIFA  HASSAN, RTA, incident 3149",
+        "incidentId": 3149,
+        "id": 300,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3149/205bed09-73a6-48d8-8f45-c289cdbb2079_Hassan Khalifa.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2497,
+        "claimTitle": "claims for ABUBAKAR  MAHMUD, RTA, incident 3146",
+        "incidentId": 3146,
+        "id": 295,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3146/0120398b-3a39-4093-8390-6f0c938b8b21_Abubakar Mahmud.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2496,
+        "claimTitle": "claims for MUSA   ABDULLAHI, RTA, incident 3141",
+        "incidentId": 3141,
+        "id": 299,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3141/a7405698-933a-4412-9ecd-93c7d8edfab5_Musa Abdullahi.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2489,
+        "claimTitle": "claims for ABDULKADIR  MUSA, RTA, incident 3125",
+        "incidentId": 3125,
+        "id": 292,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3125/4378d239-c441-41c4-8b67-1979ed53596d_IMG_20260426_192325_069.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2448,
+        "claimTitle": "claims for USMAN  MUHAMMED, RTA, incident 3084",
+        "incidentId": 3084,
+        "id": 289,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3084/72a8e804-a41e-4ec3-9442-f8195a84606a_Usman Muhammad .jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2438,
+        "claimTitle": "claims for Paul  Nwadibie, RTA, incident 3072",
+        "incidentId": 3072,
+        "id": 286,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/3072/0a54b12f-c764-4bf8-b226-aae9df035b1e_scaled_1000173458.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 2434,
+        "claimTitle": "claims for AISHA  IDRIS, Paediatric (<5yrs), incident 3047",
+        "incidentId": 3047,
+        "id": 285,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3047/f0e6bac3-a881-4e1b-863f-9418f9f3b38e_17769375667017315319485589642353.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2429,
+        "claimTitle": "claims for  Ojeme J, RTA, incident 3063",
+        "incidentId": 3063,
+        "id": 284,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/3063/cb72150c-a47d-4daf-a78c-8fc5fa47f699_scaled_1000173847.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 2417,
+        "claimTitle": "claims for HAMZA   BELLO, RTA, incident 3048",
+        "incidentId": 3048,
+        "id": 288,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3048/e53e3839-f79c-40a4-a1c0-1635c90de660_Hamza Bello.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2416,
+        "claimTitle": "claims for ABDULLAHI  ABDULHADI, RTA, incident 3046",
+        "incidentId": 3046,
+        "id": 287,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3046/4b1a7def-303c-435d-86a5-280e561569a1_Abdullahi Abdulhadi.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2387,
+        "claimTitle": "claims for USMAN  BASHIR, RTA, incident 3026",
+        "incidentId": 3026,
+        "id": 283,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3026/1ae355a9-3d1d-4169-88ad-60fe5e5e2ab6_CamScanner 04-22-2026 19.07.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2371,
+        "claimTitle": "claims for FATIMA  FAROUQ GIMBA, RTA, incident 3019",
+        "incidentId": 3019,
+        "id": 280,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3019/0d9a3448-d3d8-4c38-8b06-610860c2fac5_1000407636.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2362,
+        "claimTitle": "claims for LAMI  JONAH, RTA, incident 3008",
+        "incidentId": 3008,
+        "id": 281,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/3008/25365177-c1ae-4b3e-acb6-08f4d3a58681_109741.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2351,
+        "claimTitle": "claims for HADISU  BARKINO, RTA, incident 2994",
+        "incidentId": 2994,
+        "id": 279,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2994/bc2695df-dcf6-44f5-acb4-b88daebe3789_CamScanner 04-19-2026 14.21.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2321,
+        "claimTitle": "claims for BABAYO   AHMADU, Domestic Accident, incident 2957",
+        "incidentId": 2957,
+        "id": 276,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2957/99eae9bd-384e-479f-bf60-a6c6b2e5058d_CamScanner 04-18-2026 16.22.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2317,
+        "claimTitle": "claims for USMAN  ABDULKADIR, RTA, incident 2953",
+        "incidentId": 2953,
+        "id": 275,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2953/07b1b421-d14d-47b4-b286-e9c3bad9323d_CamScanner 04-18-2026 16.02.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2185,
+        "claimTitle": "claims for Unknown  Unknown, RTA, incident 2816",
+        "incidentId": 2816,
+        "id": 262,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2816/a347c684-cae7-4a4f-96b3-2600d71587ca_IMG_20260411_181638.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2184,
+        "claimTitle": "claims for Ishaku  Adamu, RTA, incident 2818",
+        "incidentId": 2818,
+        "id": 264,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2818/c84cba33-fb27-4ae4-8b95-8afca3a34a7e_IMG_20260411_183109.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2183,
+        "claimTitle": "claims for Unknown  Unknown, RTA, incident 2817",
+        "incidentId": 2817,
+        "id": 263,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2817/141ccd99-c3e2-4acb-96ab-6c2ad2c281bb_IMG_20260411_182527.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2182,
+        "claimTitle": "claims for Unknown  Unknown, RTA, incident 2815",
+        "incidentId": 2815,
+        "id": 261,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2815/bbcb9ede-1d1e-428b-b0b2-013ebc24e40d_IMG_20260411_180918.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2181,
+        "claimTitle": "claims for Ahmadu  Isah, RTA, incident 2813",
+        "incidentId": 2813,
+        "id": 259,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2813/1d7472f0-7834-4d67-98fd-005011474119_IMG_20260411_174648.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2180,
+        "claimTitle": "claims for Khadija  Rabiu, RTA, incident 2814",
+        "incidentId": 2814,
+        "id": 260,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2814/20d7e989-cb75-4874-b2eb-8a8c6461f6cf_Screenshot_20260411-175732~2.png",
+        "isEtc": true
+    },
+    {
+        "claimId": 2178,
+        "claimTitle": "claims for Abdullahi  Yahaya, RTA, incident 2811",
+        "incidentId": 2811,
+        "id": 257,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2811/dabf8424-f51d-41ae-be85-fa6e432f9b7a_IMG_20260411_172348.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2177,
+        "claimTitle": "claims for James  Amanda, RTA, incident 2812",
+        "incidentId": 2812,
+        "id": 258,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2812/0f61b54c-4ac9-44ab-8b77-22489e16bbf5_IMG_20260411_173132.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2176,
+        "claimTitle": "claims for Fatima  Aliyu, RTA, incident 2809",
+        "incidentId": 2809,
+        "id": 255,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2809/fd1a6879-bc14-4641-87e0-5d27c00a6bb8_IMG_20260411_165837.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2176,
+        "claimTitle": "claims for Fatima  Aliyu, RTA, incident 2809",
+        "incidentId": 2809,
+        "id": 256,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2809/877743ef-704c-4c99-a7ee-942c639d6084_IMG_20260411_171031.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2175,
+        "claimTitle": "claims for Khadija  Muhammad, RTA, incident 2808",
+        "incidentId": 2808,
+        "id": 254,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2808/ec2bcd0f-20aa-46f4-af53-3d25279cec11_IMG_20260411_165357.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2174,
+        "claimTitle": "claims for Rashida  Muhammad, RTA, incident 2807",
+        "incidentId": 2807,
+        "id": 253,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2807/802d4faa-32b4-426a-9d62-28abc01982ab_IMG_20260411_164650.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2173,
+        "claimTitle": "claims for Halima  Muhammad, RTA, incident 2806",
+        "incidentId": 2806,
+        "id": 252,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2806/15d824a6-f004-4e4a-b752-53deeee0b69c_IMG_20260411_163931.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2172,
+        "claimTitle": "claims for Mustapha  Ala, RTA, incident 2805",
+        "incidentId": 2805,
+        "id": 251,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2805/5c105f82-fe15-4c73-be2c-4ea97497a2d2_IMG_20260411_163130.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2171,
+        "claimTitle": "claims for Sunusi  Adamu, RTA, incident 2804",
+        "incidentId": 2804,
+        "id": 250,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2804/58af3e5a-d8f6-4266-9c1e-2478726c5097_IMG_20260411_162438.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2170,
+        "claimTitle": "claims for Umar  Alhaji, RTA, incident 2803",
+        "incidentId": 2803,
+        "id": 249,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2803/96772802-0657-4258-90e3-f3192a8e33d1_IMG_20260411_161945.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2169,
+        "claimTitle": "claims for Ibrahim  Audu, RTA, incident 2802",
+        "incidentId": 2802,
+        "id": 248,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2802/ab6ae5b6-c433-4d4d-b37c-7531cfb3c3af_Screenshot_20260411-160923~2.png",
+        "isEtc": true
+    },
+    {
+        "claimId": 2168,
+        "claimTitle": "claims for Nazif  Abdullahi, RTA, incident 2801",
+        "incidentId": 2801,
+        "id": 247,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2801/18f289c6-cf9c-44ce-874f-040c19fd8d67_IMG_20260411_155957.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 2052,
+        "claimTitle": "claims for Aisha   Badamasi, Obstetric Accident, incident 2686",
+        "incidentId": 2686,
+        "id": 246,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2686/020a3334-e755-4069-8037-ccca638afd28_478296.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1883,
+        "claimTitle": "claims for Test   Run, Obstetric Accident, incident 2508",
+        "incidentId": 2508,
+        "id": 236,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/2508/18f3e0df-d547-4da1-b7a7-4307d8dd0b8e_scaled_Screenshot_20260323-151706.png",
+        "isEtc": false
+    },
+    {
+        "claimId": 1866,
+        "claimTitle": "claims for PAUL  TWALLI, RTA, incident 2481",
+        "incidentId": 2481,
+        "id": 238,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2481/0514f433-9359-42de-b877-42662d1f9dc7_103442.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1691,
+        "claimTitle": "claims for Rejoice  Jacob, Obstetric Accident, incident 2286",
+        "incidentId": 2286,
+        "id": 235,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/2286/7f3a9069-404c-4142-be8f-34ed672215b7_scaled_1000000305.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 1669,
+        "claimTitle": "claims for Adaria  Ikekhreti, Obstetric Accident, incident 2260",
+        "incidentId": 2260,
+        "id": 234,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/2260/107af46c-48d9-42a9-a3f2-a28d365efc06_scaled_1000659103.png",
+        "isEtc": false
+    },
+    {
+        "claimId": 1600,
+        "claimTitle": "claims for Hajara M Salisu, Obstetric Accident, incident 2173",
+        "incidentId": 2173,
+        "id": 221,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2173/fa9f4ef0-5a46-49dd-8212-0c4ca7f43a99_1000155954.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1595,
+        "claimTitle": "claims for BOSE  MUSTAPHER, RTA, incident 2167",
+        "incidentId": 2167,
+        "id": 231,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2167/fbcc11ef-e789-4fd2-8dff-d4d1fcdd4f3b_87582.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1594,
+        "claimTitle": "claims for SULAIMAN  IBRAHIM, RTA, incident 2165",
+        "incidentId": 2165,
+        "id": 232,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2165/0aed57c6-6381-4d47-9f41-fce6a9092075_87583.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1593,
+        "claimTitle": "claims for MAIKANO   TUKUR, RTA, incident 2166",
+        "incidentId": 2166,
+        "id": 230,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2166/f557ad86-531e-49d1-a80c-a1c79ce69395_87567.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1592,
+        "claimTitle": "claims for HUSSAINI  Tijjani, RTA, incident 2164",
+        "incidentId": 2164,
+        "id": 229,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2164/77131dcc-d550-47bc-9ebc-2bd863964c30_87566.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1591,
+        "claimTitle": "claims for SERAH  DOUGLAS, RTA, incident 2163",
+        "incidentId": 2163,
+        "id": 227,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2163/e4a35307-3637-44ca-a9d8-b81509a0fc43_87564.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1590,
+        "claimTitle": "claims for DAUDA  YAKUBU, RTA, incident 2162",
+        "incidentId": 2162,
+        "id": 228,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2162/286246f8-8b53-4a80-8e3f-eff7009977db_87565.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1589,
+        "claimTitle": "claims for ADAMU  DAUDA, RTA, incident 2159",
+        "incidentId": 2159,
+        "id": 226,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2159/c2f68e2a-8344-444b-82a3-150504d69afb_87563.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1588,
+        "claimTitle": "claims for ROSE   MAJI, RTA, incident 2160",
+        "incidentId": 2160,
+        "id": 225,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2160/99394afb-6979-4b34-977e-233180f5e92a_87562.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1587,
+        "claimTitle": "claims for TALATU  HASSAN, RTA, incident 2161",
+        "incidentId": 2161,
+        "id": 224,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2161/32ba0e08-4a02-45c3-8fa5-6843c42c19d1_87561.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1585,
+        "claimTitle": "claims for MUSA   SARATU, RTA, incident 2157",
+        "incidentId": 2157,
+        "id": 223,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2157/9d052bc3-6760-43df-9769-3900ab07d4fa_87554.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1584,
+        "claimTitle": "claims for Umaru   Saadatu, RTA, incident 2156",
+        "incidentId": 2156,
+        "id": 222,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2156/309c0762-10db-4791-b3c8-c681260363f4_87540.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1575,
+        "claimTitle": "claims for RABI  MOHD, Obstetric Accident, incident 2144",
+        "incidentId": 2144,
+        "id": 220,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2144/569702cb-682a-40c8-9d01-de4307d6670d_1000155955.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1545,
+        "claimTitle": "claims for AHMAD  NASIRU, Paediatric (<5yrs), incident 2055",
+        "incidentId": 2055,
+        "id": 216,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2055/389720a8-8a66-44eb-9acf-e90772289607_Camscanner_1772700299681.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1531,
+        "claimTitle": "claims for HAUWA U   ADAMU, Paediatric (<5yrs), incident 2096",
+        "incidentId": 2096,
+        "id": 217,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2096/1c060cd2-eabb-43f6-8e0b-d15ec8cc7f6f_Camscanner_1772784377142.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1530,
+        "claimTitle": "claims for AMINA   NASIR, Paediatric (<5yrs), incident 2095",
+        "incidentId": 2095,
+        "id": 218,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2095/ec6667d4-12cc-4d21-bb00-53d7fc67598b_Camscanner_1772785245748.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1527,
+        "claimTitle": "claims for MUSTAPHA  MUHD DALIBI, Paediatric (<5yrs), incident 2091",
+        "incidentId": 2091,
+        "id": 219,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2091/fef70f80-3114-4ff7-b863-990268be6a71_Camscanner_1772786211887.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1524,
+        "claimTitle": "claims for SAIDU  ABDULKARIM, Paediatric (<5yrs), incident 2057",
+        "incidentId": 2057,
+        "id": 215,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2057/c16a8ea2-686c-4ae7-a51a-9164d3e93736_Camscanner_1772655959881.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1491,
+        "claimTitle": "claims for Fatima   Amadu, Obstetric Accident, incident 2049",
+        "incidentId": 2049,
+        "id": 213,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2049/e2897d7b-7193-4414-b462-a2c831b5042c_1000151937.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1486,
+        "claimTitle": "claims for hama  mohd, Obstetric Accident, incident 2044",
+        "incidentId": 2044,
+        "id": 212,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2044/d947ea8d-c0e1-4c67-bdcc-321646cc0573_1000151934.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1484,
+        "claimTitle": "claims for ussaina  isah, Obstetric Accident, incident 2042",
+        "incidentId": 2042,
+        "id": 214,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2042/ed8e17e9-f042-4c2c-b542-63909fdc9131_1000151938.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1465,
+        "claimTitle": "claims for IBRAHIM  NASIRU, RTA, incident 2008",
+        "incidentId": 2008,
+        "id": 210,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2008/485fb467-4996-4dc6-81a6-da977f94dc17_Camscanner_1772613451174.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1462,
+        "claimTitle": "claims for BALKISU  SHUAIBU, RTA, incident 2011",
+        "incidentId": 2011,
+        "id": 209,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2011/916bbec1-ec2f-4a13-b215-526cded7897a_Camscanner_1772612170335.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1461,
+        "claimTitle": "claims for WASILA  SANI, Paediatric (<5yrs), incident 1990",
+        "incidentId": 1990,
+        "id": 207,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1990/4033f694-9d76-4157-bcb3-c73175831203_Camscanner_1772540467805.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1460,
+        "claimTitle": "claims for UMAR  MUSA, RTA, incident 2007",
+        "incidentId": 2007,
+        "id": 211,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/2007/6e0b06a3-d0ad-4243-b7ea-e950c53cd4f0_Camscanner_1772614481790.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1445,
+        "claimTitle": "claims for WILLIAMS   YUSUF, Paediatric (<5yrs), incident 1987",
+        "incidentId": 1987,
+        "id": 208,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1987/7133b656-4d11-402f-aa9b-242c912ba2db_Yusuf Wlliams_6 (1).jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1436,
+        "claimTitle": "claims for KHADIJA   BASHIR, Paediatric (<5yrs), incident 1977",
+        "incidentId": 1977,
+        "id": 206,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1977/a1f669db-06d8-4c38-9bd5-5051442f281f_Camscanner_1772527026532.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1421,
+        "claimTitle": "claims for ABUBAKAR  UMAR, RTA, incident 1956",
+        "incidentId": 1956,
+        "id": 204,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1956/7a90bb2b-71e0-43cc-b736-b5b1e74362e9_IMG_20260302_164715_089.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1420,
+        "claimTitle": "claims for AHMAD  DAUDA, Paediatric (<5yrs), incident 1952",
+        "incidentId": 1952,
+        "id": 199,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1952/09433cc9-22e1-4d3b-aa20-d345f2164ebd_Camscanner_1772455349551.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1419,
+        "claimTitle": "claims for YAKUBU  HAMZA, RTA, incident 1954",
+        "incidentId": 1954,
+        "id": 205,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1954/c08e218e-1ac9-411a-8d71-33ab07fca76b_IMG_20260302_165924_134.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1416,
+        "claimTitle": "claims for SANI  LAWAN, RTA, incident 1949",
+        "incidentId": 1949,
+        "id": 203,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1949/13181e60-dd31-4b18-b97c-7f5abbde8efd_IMG_20260302_164225_270.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1401,
+        "claimTitle": "claims for RICHARD  SIMON  SHEHU, RTA, incident 1932",
+        "incidentId": 1932,
+        "id": 202,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1932/181130be-0842-41db-9887-5ffe22fd1b17_81210.png",
+        "isEtc": true
+    },
+    {
+        "claimId": 1400,
+        "claimTitle": "claims for LUKMAN   ABEL, RTA, incident 1931",
+        "incidentId": 1931,
+        "id": 197,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1931/ce57385c-8ded-472d-b711-85fd33be0d08_80542.png",
+        "isEtc": true
+    },
+    {
+        "claimId": 1396,
+        "claimTitle": "claims for MESHACH   SIMON , RTA, incident 1928",
+        "incidentId": 1928,
+        "id": 198,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1928/40a4af10-edf7-4d19-88e2-6b1fbfca56ed_81136.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1395,
+        "claimTitle": "claims for ABDON   ISHAKU, RTA, incident 1927",
+        "incidentId": 1927,
+        "id": 200,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1927/c26a1508-2d4f-419a-bff9-dc9af1bb0618_81137.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1394,
+        "claimTitle": "claims for DAVID   ADO, RTA, incident 1926",
+        "incidentId": 1926,
+        "id": 201,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1926/4524bf8b-8cfb-40aa-ab55-ecc4850c0fe6_81195.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1378,
+        "claimTitle": "claims for ABDULLAHI   UMAR , RTA, incident 1908",
+        "incidentId": 1908,
+        "id": 189,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1908/6fbdf545-3887-448c-bba8-32922552f78b_80495.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1377,
+        "claimTitle": "claims for MURTALA   INUWA , RTA, incident 1907",
+        "incidentId": 1907,
+        "id": 190,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1907/d0556209-c2ca-46d9-ac5b-e9e82580179a_80497.png",
+        "isEtc": true
+    },
+    {
+        "claimId": 1376,
+        "claimTitle": "claims for ISAMI   KAMISU, RTA, incident 1906",
+        "incidentId": 1906,
+        "id": 195,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1906/1e3ab1aa-e85b-4ed5-8346-3e5a8854454a_80535.png",
+        "isEtc": true
+    },
+    {
+        "claimId": 1375,
+        "claimTitle": "claims for MOHAMMED   NASIRU, RTA, incident 1905",
+        "incidentId": 1905,
+        "id": 196,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1905/c216ab86-bb5f-47ee-98c5-987857521b5f_80540.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1374,
+        "claimTitle": "claims for JIBRIN  SABO, RTA, incident 1904",
+        "incidentId": 1904,
+        "id": 194,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1904/fe679e75-8c90-4dc3-bdd4-f1e01e680b7f_80533.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1372,
+        "claimTitle": "claims for BAKARI  ABUBAKAR, RTA, incident 1900",
+        "incidentId": 1900,
+        "id": 191,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1900/80594d9d-74ee-4e4b-bc47-2063d7fbd77f_80499.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1371,
+        "claimTitle": "claims for DANLADI   IDI, RTA, incident 1901",
+        "incidentId": 1901,
+        "id": 193,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1901/0d20d8e9-0585-453d-8e01-6e3fa10b7420_80513.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1342,
+        "claimTitle": "claims for NANA KHADIJA  USMAN, Domestic Accident, incident 1851",
+        "incidentId": 1851,
+        "id": 187,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1851/a54278af-11cd-4202-a26b-3665c7d8c892_Camscanner_1772094882930.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1341,
+        "claimTitle": "claims for ISAH YAHAYA LANO, RTA, incident 1850",
+        "incidentId": 1850,
+        "id": 186,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1850/30ff761f-4cab-45f7-bdd3-071de645cbba_Camscanner_1772094754604.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1339,
+        "claimTitle": "claims for MUHAMMAD  UMAR, RTA, incident 1833",
+        "incidentId": 1833,
+        "id": 185,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1833/dfed4b68-bf22-43f0-bc50-e9b54f6c72ce_Camscanner_1772018866276.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1324,
+        "claimTitle": "claims for BELLO  YUSUF, RTA, incident 1831",
+        "incidentId": 1831,
+        "id": 184,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1831/7719e7d8-db7d-40b1-82ba-98a41311951d_Camscanner_1772018729212.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1308,
+        "claimTitle": "claims for AHMED  KAWU, RTA, incident 1812",
+        "incidentId": 1812,
+        "id": 181,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1812/b563d34d-b9e4-425c-a28e-584573b0a299_74307.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1307,
+        "claimTitle": "claims for MUSA  MOHAMMED, Paediatric (<5yrs), incident 1807",
+        "incidentId": 1807,
+        "id": 183,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1807/40ed8ab6-3104-48f9-b14b-8f1872edbf3f_Camscanner_1772015330256.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1303,
+        "claimTitle": "claims for MOHD  GAINAKO, RTA, incident 1809",
+        "incidentId": 1809,
+        "id": 182,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1809/3568d041-7582-4ccd-93f7-77a66066f0f1_74308.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1302,
+        "claimTitle": "claims for AMINA  ADAMU, Paediatric (<5yrs), incident 1786",
+        "incidentId": 1786,
+        "id": 176,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1786/ab083949-4023-47b1-8b52-fe059089230a_Camscanner_1771923722131.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1292,
+        "claimTitle": "claims for YAKONG  JASMEL, Domestic Accident, incident 1805",
+        "incidentId": 1805,
+        "id": 180,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1805/40a334d1-3a44-42d7-8ddc-cd75b4485a45_74306.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1290,
+        "claimTitle": "claims for NANA  ABUBAKAR, Paediatric (<5yrs), incident 1785",
+        "incidentId": 1785,
+        "id": 175,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1785/da8026d3-5b61-4045-be94-d432cb83e0ca_Camscanner_1771923756621.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1287,
+        "claimTitle": "claims for Maimuna  suleiman, Obstetric Accident, incident 1801",
+        "incidentId": 1801,
+        "id": 179,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1801/2ceed3ec-be6b-425e-b597-6814db0f6bcb_1000145948.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1282,
+        "claimTitle": "claims for Hauwa  Musa Baba, Obstetric Accident, incident 1795",
+        "incidentId": 1795,
+        "id": 178,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1795/6cf3f5c7-89c6-4725-995d-bc69b03c064c_1000145947.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1273,
+        "claimTitle": "claims for CHRISTIANA   CHIOMA, Domestic Accident, incident 1784",
+        "incidentId": 1784,
+        "id": 174,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1784/bf1a9b40-51e9-4d28-9eab-b8aa4d1b164a_Camscanner_1771922424212.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1254,
+        "claimTitle": "claims for IBRAHIM  USMAN, RTA, incident 1764",
+        "incidentId": 1764,
+        "id": 169,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1764/fcff6ec1-6921-4229-93a0-bc4f50c9b655_Camscanner_1771836432346.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1253,
+        "claimTitle": "claims for USMAN  MUHAMMAD, RTA, incident 1766",
+        "incidentId": 1766,
+        "id": 170,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1766/0227cc47-8c04-433c-927b-9b0fef569e8d_Camscanner_1771837040602.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1252,
+        "claimTitle": "claims for ABDUSSALAM  ABUBAKAR, RTA, incident 1723",
+        "incidentId": 1723,
+        "id": 168,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1723/25b49b7e-98fe-409f-b588-c5bdafeb1b62_Camscanner_1771835433931.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1251,
+        "claimTitle": "claims for YAKUBU  ABDULAHI, RTA, incident 1758",
+        "incidentId": 1758,
+        "id": 166,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1758/5e8c99a5-9014-4ee8-be1c-76979ba7b786_17718343349566355648520427807369.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1235,
+        "claimTitle": "claims for Asmau   Suleiman , Obstetric Accident, incident 1739",
+        "incidentId": 1739,
+        "id": 177,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1739/b87a00c4-9e19-465d-8aa5-3ff0e6438030_1000144861.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1234,
+        "claimTitle": "claims for YAHAYA  BABAYO, RTA, incident 1738",
+        "incidentId": 1738,
+        "id": 173,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1738/2b62d260-1d14-45ef-af9e-136c1ef17269_73267.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1228,
+        "claimTitle": "claims for Habiba   Usman , Obstetric Accident, incident 1731",
+        "incidentId": 1731,
+        "id": 164,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1731/088a0cdc-82da-481d-b908-397d509d15a8_17717619472893602868622717513411.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1220,
+        "claimTitle": "claims for HUSSAINA  SHITU, Domestic Accident, incident 1722",
+        "incidentId": 1722,
+        "id": 167,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1722/6edb3285-b9a5-465f-aa07-48dbf58a618a_Camscanner_1771834442650.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1214,
+        "claimTitle": "claims for Ramlat   Haruna , Obstetric Accident, incident 1716",
+        "incidentId": 1716,
+        "id": 165,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1716/d3c1648a-54ec-4acd-9812-6fd826e6f393_Ramlat Haruna_1.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1211,
+        "claimTitle": "claims for UMAR  USMAN, RTA, incident 1713",
+        "incidentId": 1713,
+        "id": 162,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1713/909503fc-f9d3-4bef-89e6-c1cb6186ccab_72032.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1211,
+        "claimTitle": "claims for UMAR  USMAN, RTA, incident 1713",
+        "incidentId": 1713,
+        "id": 163,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1713/57a4b3bf-efc9-4767-976a-fd14952f13ab_Screenshot_20260221-161634.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1189,
+        "claimTitle": "claims for IDRIS   SULAIMAN, Paediatric (<5yrs), incident 1692",
+        "incidentId": 1692,
+        "id": 159,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1692/4b845282-8cd4-48a3-b605-597487571ada_1000316717.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1188,
+        "claimTitle": "claims for YAHAYA  MUHAMMAD, RTA, incident 1691",
+        "incidentId": 1691,
+        "id": 161,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1691/9755980d-f17d-4e3d-9dee-94e4b0a8abc3_Camscanner_1771586487667.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1187,
+        "claimTitle": "claims for YUNUSA MUSA  KWAMI, RTA, incident 1689",
+        "incidentId": 1689,
+        "id": 160,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1689/6cb1207f-65ac-43d0-a76a-a7cc04211ab6_Camscanner_1771586531554.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1185,
+        "claimTitle": "claims for EXIKIEL  LEHANA, RTA, incident 1640",
+        "incidentId": 1640,
+        "id": 152,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1640/dee33393-a4c2-4ac5-83bb-9406d831797b_Camscanner_1771403006277.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1167,
+        "claimTitle": "claims for USMAN  USMAN, Paediatric (<5yrs), incident 1668",
+        "incidentId": 1668,
+        "id": 157,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1668/5b98b91b-b7fc-4427-a669-12b9b035376f_1000316538.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1166,
+        "claimTitle": "claims for USMAN  MUHAMMAD , RTA, incident 1660",
+        "incidentId": 1660,
+        "id": 154,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1660/bb97a568-bc39-4899-9c81-e208b82d4ab9_Camscanner_1771497102696.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1159,
+        "claimTitle": "claims for HAUWA U   MUHAMMAD , RTA, incident 1661",
+        "incidentId": 1661,
+        "id": 158,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1661/90c2d458-39bd-4c97-b68b-9abfd041a58a_71386.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1152,
+        "claimTitle": "claims for SIMON   DALA, RTA, incident 1649",
+        "incidentId": 1649,
+        "id": 155,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1649/eb37a377-bd2c-4fc5-baea-9fe6067d2c1f_CamScanner 02-19-2026 15.31.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1147,
+        "claimTitle": "claims for KALIFA MUHAMMAD  ABUBAKAR, RTA, incident 1639",
+        "incidentId": 1639,
+        "id": 151,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1639/1fa4c158-a515-4f13-9666-3aea3d136dcb_Camscanner_1771403227545.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1138,
+        "claimTitle": "claims for Aisha   Saidu, Obstetric Accident, incident 1631",
+        "incidentId": 1631,
+        "id": 156,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1631/e7eeec86-fce1-4efc-96c0-05cfa8053b18_Aisha Saidu_1.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1119,
+        "claimTitle": "claims for AUNI  MESHACK, RTA, incident 1597",
+        "incidentId": 1597,
+        "id": 148,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1597/4863c271-550a-418c-955d-c4441172873b_CamScanner 02-18-2026 12.26.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1118,
+        "claimTitle": "claims for ZUBAIRU  ABUBAKAR, RTA, incident 1602",
+        "incidentId": 1602,
+        "id": 147,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1602/30e97d3b-4f04-4fa5-a5cb-29f37d9101a2_17714054451833951205041048065793.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1114,
+        "claimTitle": "claims for Rakiya  Ya'u, Obstetric Accident, incident 1594",
+        "incidentId": 1594,
+        "id": 153,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1594/d0a12b14-21b6-4cb0-b676-6c4fe7d0cb9b_Rakiya Yau_7.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1097,
+        "claimTitle": "claims for ADAMU  NURA, RTA, incident 1570",
+        "incidentId": 1570,
+        "id": 145,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1570/eea150c9-bc21-4552-8119-8082a55b24bb_69946.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1086,
+        "claimTitle": "claims for ABDULWAHAB  MUSA, RTA, incident 1558",
+        "incidentId": 1558,
+        "id": 140,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1558/c44b7486-c4a9-4034-8bbc-0ed90dfa1a82_69885.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1082,
+        "claimTitle": "claims for Hauwa Salisu Abdullahi , Obstetric Accident, incident 1553",
+        "incidentId": 1553,
+        "id": 146,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1553/57a22cd6-5ddf-408b-81bd-68b85a36638e_Hauwa Salisu Abdullahi _2.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1064,
+        "claimTitle": "claims for ABUBAKAR  KYARI, RTA, incident 1534",
+        "incidentId": 1534,
+        "id": 137,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1534/0b4d5190-eb11-493c-8904-5ac233600278_1000310953.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1039,
+        "claimTitle": "claims for Fatima  Mohammed , Obstetric Accident, incident 1516",
+        "incidentId": 1516,
+        "id": 139,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1516/ab1308c7-5b01-4b39-9d23-b9930eac5cfe_Fatima Mohammed_1.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1026,
+        "claimTitle": "claims for Hauwa  Haruna, Obstetric Accident, incident 1497",
+        "incidentId": 1497,
+        "id": 136,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1497/e578b093-410d-44d5-b56c-7d84d62d2fa1_Hauwa Haruna_1.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1015,
+        "claimTitle": "claims for BABAYO  UMARU, RTA, incident 1482",
+        "incidentId": 1482,
+        "id": 132,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1482/0b347b65-19b4-4c97-abf8-9583b4736d22_CamScanner 02-13-2026 17.24.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1006,
+        "claimTitle": "claims for AUWALU  ADAMU, RTA, incident 1471",
+        "incidentId": 1471,
+        "id": 127,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1471/3817381b-7b8c-4f6f-8db6-9943c8b17fb7_67632.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1005,
+        "claimTitle": "claims for Hasadiya   Ali, Paediatric (<5yrs), incident 1452",
+        "incidentId": 1452,
+        "id": 133,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1452/10c0de7f-ad0c-4d13-bd3a-b81afa78cf67_Hasadiyya Ali_4.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1004,
+        "claimTitle": "claims for HAUWA  Danladi  ABUBAKAR, RTA, incident 1391",
+        "incidentId": 1391,
+        "id": 118,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1391/f8cb252a-4fe1-4c38-a4bd-90af937e98a5_1000304123.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1003,
+        "claimTitle": "claims for Dantala   Shedrach, Paediatric (<5yrs), incident 1453",
+        "incidentId": 1453,
+        "id": 134,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1453/c5b19f91-36d9-4882-b6cb-a55b84a14cad_Dantala Shedrach_4 (3).jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1002,
+        "claimTitle": "claims for ABUBAKAR   FARUK, RTA, incident 1469",
+        "incidentId": 1469,
+        "id": 128,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1469/b0f9f31e-478e-4fa9-8447-9b9ac8aa2cda_67633.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 1001,
+        "claimTitle": "claims for Hannatu  Abubakar , Obstetric Accident, incident 1470",
+        "incidentId": 1470,
+        "id": 125,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1470/87a0fa26-1c19-4e66-856e-70d6f18feccb_1000135678.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 998,
+        "claimTitle": "claims for Okasha   Lawan  Yusuf, RTA, incident 1461",
+        "incidentId": 1461,
+        "id": 130,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1461/28c53ffc-f292-4cdf-8341-bdb00cc2b234_WhatsApp Image 2026-02-13 at 9.14.53 PM.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 993,
+        "claimTitle": "claims for NURA   IBRAHIM, RTA, incident 1350",
+        "incidentId": 1350,
+        "id": 110,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1350/32378f4e-00d5-4db1-a219-c2c9cfeaef39_CamScanner 02-10-2026 16.15.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 966,
+        "claimTitle": "claims for Saleh  Muhammad , RTA, incident 1413",
+        "incidentId": 1413,
+        "id": 114,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/1413/5b6a5cc1-11fe-48ef-b767-ac97f914aac9_scaled_1770801457586.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 963,
+        "claimTitle": "claims for Halima  Alhaji Umar, Obstetric Accident, incident 1410",
+        "incidentId": 1410,
+        "id": 122,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1410/d52e3b77-54fd-4e8e-b1a7-998e21f534cc_1000134858.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 958,
+        "claimTitle": "claims for Habiba  Mallam  Umar, Obstetric Accident, incident 1404",
+        "incidentId": 1404,
+        "id": 121,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1404/3bfd2b99-0698-42fd-9a61-31c2dddbe950_1000134844.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 944,
+        "claimTitle": "claims for Fatima  Muhammad, Obstetric Accident, incident 1390",
+        "incidentId": 1390,
+        "id": 123,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1390/669274ec-f19c-4cb6-a042-c90be6b57673_Fatima Mohammed Ali_9.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 939,
+        "claimTitle": "claims for Haruna  Hassan Kurmi, RTA, incident 1387",
+        "incidentId": 1387,
+        "id": 119,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1387/959ba9c1-9316-44d1-9001-5a8bc9ba0afe_17708358916428611522539315954956.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 937,
+        "claimTitle": "claims for Ade   Adamu, RTA, incident 1383",
+        "incidentId": 1383,
+        "id": 115,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1383/4e7907c4-904e-471a-8438-48bef6adbefa_CamScanner 02-11-2026 18.05 (1).jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 935,
+        "claimTitle": "claims for Salamatu  Abubakar, Obstetric Accident, incident 1384",
+        "incidentId": 1384,
+        "id": 117,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1384/4a84a15d-0d94-416c-8b95-970a0f9231ba_1000134315.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 930,
+        "claimTitle": "claims for Suleman   Idriss, RTA, incident 1377",
+        "incidentId": 1377,
+        "id": 120,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1377/0c3d5df7-00f4-4607-97ec-10323471b5f1_CamScanner 02-11-2026 18.12.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 923,
+        "claimTitle": "claims for Amina    Yusuf, Obstetric Accident, incident 1367",
+        "incidentId": 1367,
+        "id": 116,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1367/957a9a1d-b237-472e-9ace-e75af9254b93_1000134259.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 917,
+        "claimTitle": "claims for Kadija Adamu Haladu, Obstetric Accident, incident 1356",
+        "incidentId": 1356,
+        "id": 113,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1356/ec1a119e-1c3d-4e3c-91c5-686fd9e38ff9_Hadiza Haladu_1.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 914,
+        "claimTitle": "claims for ADAMU  ADAMU, Fire Accident, incident 1349",
+        "incidentId": 1349,
+        "id": 106,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1349/d6d0672f-d227-4b97-bacb-e1bab1e8b954_1000302814.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 911,
+        "claimTitle": "claims for SULAIMAN  BELLO, Domestic Accident, incident 1351",
+        "incidentId": 1351,
+        "id": 109,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1351/df552599-3886-4d84-9b56-e799fc2d1c5a_CamScanner 02-10-2026 16.16.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 910,
+        "claimTitle": "claims for Fa'iza Nil Bala, Obstetric Accident, incident 1346",
+        "incidentId": 1346,
+        "id": 108,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1346/d3ffc520-5a2b-429f-8518-6b562b8778a3_1000133091.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 905,
+        "claimTitle": "claims for Zainab Nil Mustapha, Obstetric Accident, incident 1338",
+        "incidentId": 1338,
+        "id": 112,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1338/8e42b6c5-dda4-4537-b5b1-304fc8f49a8f_Zainab Mustapha _2.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 903,
+        "claimTitle": "claims for Fatimam Nil Mohd, Obstetric Accident, incident 1334",
+        "incidentId": 1334,
+        "id": 111,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1334/19765ba8-2935-468c-99f5-a91be92049f2_Fatima Mohammed _8.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 891,
+        "claimTitle": "claims for MUSTAPHA  IBRAHIM, Paediatric (<5yrs), incident 1315",
+        "incidentId": 1315,
+        "id": 107,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1315/70edac91-c301-4f9d-b82b-821c7a107d32_17707284894695319629750785652553.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 890,
+        "claimTitle": "claims for Muhammadu   Basiru , RTA, incident 1320",
+        "incidentId": 1320,
+        "id": 104,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1320/5e6bdf7d-0e64-4350-95ab-f0dc0db4cf5c_CamScanner 02-09-2026 10.58_3.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 889,
+        "claimTitle": "claims for Adamu  Audu, Obstetric Accident, incident 1319",
+        "incidentId": 1319,
+        "id": 103,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1319/a9749c64-9654-4808-869b-76790658a38b_CamScanner 02-09-2026 10.42_3.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 888,
+        "claimTitle": "claims for Sani   Muhammadu, RTA, incident 1318",
+        "incidentId": 1318,
+        "id": 101,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1318/444cbdf7-5d69-4235-b8df-4602dd11c732_CamScanner 02-09-2026 10.26_3.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 887,
+        "claimTitle": "claims for Naziru   Adamu, RTA, incident 1317",
+        "incidentId": 1317,
+        "id": 105,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1317/2a0abca3-be78-4288-a395-963bf5f00214_CamScanner 02-09-2026 11.16_2.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 885,
+        "claimTitle": "claims for Hauwa'u Adamu Nil Adamu, Obstetric Accident, incident 1311",
+        "incidentId": 1311,
+        "id": 102,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1311/97882b63-9892-4062-8e0c-9017c42abe95_1000131962.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 884,
+        "claimTitle": "claims for CALCIUM   ISAAC, RTA, incident 1302",
+        "incidentId": 1302,
+        "id": 99,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1302/2822fffe-3b69-49e6-9573-cca3244f7d37_CamScanner 02-07-2026 17.03.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 875,
+        "claimTitle": "claims for Zainab   Abubakar , Obstetric Accident, incident 1305",
+        "incidentId": 1305,
+        "id": 100,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1305/a3e82581-dbbd-487f-a17e-d2420c50757c_1000131290.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 856,
+        "claimTitle": "claims for Edidiong Tom Nil, Others, incident 1274",
+        "incidentId": 1274,
+        "id": 83,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/1274/3165a271-bd2b-4aa0-9b1f-36c60e4746c1_scaled_1000012074.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 847,
+        "claimTitle": "claims for Babayo   Sani, RTA, incident 1255",
+        "incidentId": 1255,
+        "id": 89,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1255/bbe8e162-7f04-4c29-b652-e0147fd77078_CamScanner 02-07-2026 14.40.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 840,
+        "claimTitle": "claims for Sale   Gambo, RTA, incident 1254",
+        "incidentId": 1254,
+        "id": 90,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1254/6d208ea2-b9ca-4b72-831e-01236a1ed5fb_CamScanner 02-07-2026 14.55.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 838,
+        "claimTitle": "claims for SIRAJO  BELLO, RTA, incident 1232",
+        "incidentId": 1232,
+        "id": 97,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1232/2eb83494-0759-4220-a57e-e244183509f0_CamScanner 02-07-2026 16.36.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 820,
+        "claimTitle": "claims for Aisha  Harande, Obstetric Accident, incident 1228",
+        "incidentId": 1228,
+        "id": 98,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1228/8c7ffc56-4b74-43c3-ae06-ad6a9c75dad9_Aisha Harande_8.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 818,
+        "claimTitle": "claims for NASIRU  SALE, RTA, incident 1222",
+        "incidentId": 1222,
+        "id": 87,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1222/a4dbb9b1-266c-4eda-9ffa-dc30036f0cf6_CamScanner 02-07-2026 13.56.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 818,
+        "claimTitle": "claims for NASIRU  SALE, RTA, incident 1222",
+        "incidentId": 1222,
+        "id": 88,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1222/88da62b5-3665-47cd-b30e-3b87b06f5318_CamScanner 02-07-2026 14.25.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 803,
+        "claimTitle": "claims for Nura  Sani  Mohammed, RTA, incident 1032",
+        "incidentId": 1032,
+        "id": 59,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1032/735f8250-46b0-4978-acc6-4bdf25590f5e_CamScanner 01-31-2026 16.46.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 791,
+        "claimTitle": "claims for SALE  UMAR, RTA, incident 1182",
+        "incidentId": 1182,
+        "id": 76,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1182/09ee0a85-d9b5-4d2a-8bbb-164e5a3c2e39_Camscanner_1770293100873.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 789,
+        "claimTitle": "claims for Isyaku   Adamu, RTA, incident 1190",
+        "incidentId": 1190,
+        "id": 85,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1190/348d03ff-25da-4ea9-902c-d2316a747c8d_IMG-20260207-WA0004.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 788,
+        "claimTitle": "claims for Abdullahi   Musa, RTA, incident 1189",
+        "incidentId": 1189,
+        "id": 84,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1189/07569f6b-ad16-4336-90a0-266e790d71e7_IMG-20260207-WA0006.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 785,
+        "claimTitle": "claims for Yau  Abdullahi, RTA, incident 1184",
+        "incidentId": 1184,
+        "id": 86,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1184/457c6b26-8600-46cf-8dcb-82aa905a2484_IMG-20260207-WA0005.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 776,
+        "claimTitle": "claims for CHIOMA FAITH ANCHOR, Obstetric Accident, incident 1170",
+        "incidentId": 1170,
+        "id": 74,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/1170/daee8d31-4f8f-4fff-9afb-fccdc0cdb921_scaled_1000000169.png",
+        "isEtc": false
+    },
+    {
+        "claimId": 768,
+        "claimTitle": "claims for TIMOTHY  MAGAJI, RTA, incident 1155",
+        "incidentId": 1155,
+        "id": 77,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1155/aceff175-b5cb-4e42-90b0-47075038f2ee_59118.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 748,
+        "claimTitle": "claims for Adama  Umar , Obstetric Accident, incident 1132",
+        "incidentId": 1132,
+        "id": 82,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1132/9e4be3e4-d976-4d51-be23-b87e43d98159_1000129256.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 731,
+        "claimTitle": "claims for MUAZU   ADAMU, Paediatric (<5yrs), incident 1113",
+        "incidentId": 1113,
+        "id": 73,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1113/ee10331a-01cc-4673-9c13-67fb52e1d94a_WhatsApp Image 2026-02-04 at 2.39.44 PM.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 730,
+        "claimTitle": "claims for Hafsat  Mohd  Zarma , Obstetric Accident, incident 1114",
+        "incidentId": 1114,
+        "id": 75,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1114/f560e0e4-df31-42b4-a5d8-d6263813cc31_Hafsat M Zarma_10.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 729,
+        "claimTitle": "claims for ALI  ABDULLAHI, RTA, incident 1109",
+        "incidentId": 1109,
+        "id": 70,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1109/32182f37-5dcc-43b0-a1a2-f472a2eac10a_52508.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 728,
+        "claimTitle": "claims for IDRISA  JAURO, RTA, incident 1108",
+        "incidentId": 1108,
+        "id": 71,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1108/acc7d26a-9d35-4832-bd3d-c64cce7578ab_52507.png",
+        "isEtc": true
+    },
+    {
+        "claimId": 726,
+        "claimTitle": "claims for ABDULLAHI  ABBA, RTA, incident 1103",
+        "incidentId": 1103,
+        "id": 69,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1103/7d508658-9a3b-4455-baf7-bdb1373c76ff_17701966736173899181564589908967.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 724,
+        "claimTitle": "claims for ABUBAKAR  ABUBAKAR, Paediatric (<5yrs), incident 1096",
+        "incidentId": 1096,
+        "id": 72,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1096/9af76447-466a-46ed-adcd-b264c6652a0b_17702021804116731723993562906073.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 706,
+        "claimTitle": "claims for BASHIR  JINGI, RTA, incident 1072",
+        "incidentId": 1072,
+        "id": 64,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1072/e77e18ff-f77c-40c2-bdee-9da047b584e3_IMG_20260202_184722_028.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 703,
+        "claimTitle": "claims for Asmau  Adamu, Obstetric Accident, incident 1070",
+        "incidentId": 1070,
+        "id": 61,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1070/384798bf-1055-4e3c-896a-34da2557848a_Asma'u Adamu_6.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 702,
+        "claimTitle": "claims for ABUBAKAR  BAYU, RTA, incident 1069",
+        "incidentId": 1069,
+        "id": 67,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1069/c0efa33c-349b-4219-bc05-30182bf3eac7_17701110867976866389786072762929.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 701,
+        "claimTitle": "claims for DIKKO  USMAN, RTA, incident 1064",
+        "incidentId": 1064,
+        "id": 66,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1064/2c53ab9b-22f8-4a46-a26e-0bdc775b1837_1770110408132835612131407393772.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 698,
+        "claimTitle": "claims for HABIBA   ABDULLAHI, Paediatric (<5yrs), incident 1062",
+        "incidentId": 1062,
+        "id": 62,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1062/a169192a-e983-4637-9902-4a97fe78d857_IMG-20260202-WA0004.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 698,
+        "claimTitle": "claims for HABIBA   ABDULLAHI, Paediatric (<5yrs), incident 1062",
+        "incidentId": 1062,
+        "id": 63,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1062/5b812455-de61-459a-bd2d-4ca399e892a4_IMG-20260202-WA0004.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 697,
+        "claimTitle": "claims for Rakiya  Musa, Obstetric Accident, incident 1060",
+        "incidentId": 1060,
+        "id": 65,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1060/a4d1ea2e-d30d-44b0-8ab2-d3fcd9961724_Rakiya Musa _3.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 676,
+        "claimTitle": "claims for Usman  Mohammed  Bello, RTA, incident 1033",
+        "incidentId": 1033,
+        "id": 60,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1033/09ead1db-d1f0-4152-b509-180ee0d75a94_CamScanner 01-31-2026 16.52.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 675,
+        "claimTitle": "claims for Babangida   Yayaji, RTA, incident 1031",
+        "incidentId": 1031,
+        "id": 58,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1031/9e90a0e6-1c24-4ab3-910e-2b022298dde4_CamScanner 01-31-2026 16.36.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 673,
+        "claimTitle": "claims for Abdullahi   Abubakar, RTA, incident 1025",
+        "incidentId": 1025,
+        "id": 52,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1025/42f6e3e5-ab94-4603-a8d5-ad296209ad74_Camscanner_1769776604435.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 662,
+        "claimTitle": "claims for Abigal Friday Effiong, Others, incident 1015",
+        "incidentId": 1015,
+        "id": 49,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/1015/ad9d1369-3466-4adf-91a8-fcf6ca1ad0a5_scaled_1000002362.png",
+        "isEtc": false
+    },
+    {
+        "claimId": 659,
+        "claimTitle": "claims for Hafsat   Abubakar , Obstetric Accident, incident 1011",
+        "incidentId": 1011,
+        "id": 56,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/1011/8c425b2e-a5cd-41df-80cf-470e2fc94b99_Hafsat Abubakar _4.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 650,
+        "claimTitle": "claims for Hauwa   Yusuf , Obstetric Accident, incident 998",
+        "incidentId": 998,
+        "id": 50,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/998/c6d99df0-6197-4d0d-8ff2-eba11e0da255_17697663095844535624663308798279.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 643,
+        "claimTitle": "claims for Hauwa   Abdullahi , Obstetric Accident, incident 989",
+        "incidentId": 989,
+        "id": 51,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/989/81a29962-d905-4a82-861a-fe7347222f23_17697675775459206738527446245798.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 624,
+        "claimTitle": "claims for Aisha   Muhammad , Obstetric Accident, incident 960",
+        "incidentId": 960,
+        "id": 47,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/960/c0527183-b347-4131-acd8-0d5153b04f0f_1000123277.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 623,
+        "claimTitle": "claims for Halima  Shu'aibu  Adamu , Obstetric Accident, incident 958",
+        "incidentId": 958,
+        "id": 44,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/958/c6db772d-cab0-48a7-b43b-ede6d64afcd8_IMG-20260129-WA0007.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 623,
+        "claimTitle": "claims for Halima  Shu'aibu  Adamu , Obstetric Accident, incident 958",
+        "incidentId": 958,
+        "id": 48,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/958/6bb12815-87be-43ab-a28f-bfd3eb2a0731_Halima shuaibu Aigada_7 (1).jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 615,
+        "claimTitle": "claims for Maryam   Muhammad , Obstetric Accident, incident 943",
+        "incidentId": 943,
+        "id": 40,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/943/b2d46060-530d-4ca2-9ed7-415e7c1905f3_1000122678.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 613,
+        "claimTitle": "claims for Sulaiman  MUHAMMAD, RTA, incident 941",
+        "incidentId": 941,
+        "id": 37,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/941/5e6186c8-e6cf-4efe-9cc6-902d714cf8c1_1000282375.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 612,
+        "claimTitle": "claims for Adamu  Muhammad, RTA, incident 940",
+        "incidentId": 940,
+        "id": 36,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/940/c2d44461-94cc-4907-8a84-012bfc015225_1000282512.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 597,
+        "claimTitle": "claims for AISHATU  ABDULKADIR, RTA, incident 901",
+        "incidentId": 901,
+        "id": 33,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/901/98fe176d-1213-4db3-af25-ec462e0d1916_Aishatu Abdulkarim 1_4.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 591,
+        "claimTitle": "claims for Fauziya  Umar, Obstetric Accident, incident 911",
+        "incidentId": 911,
+        "id": 31,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/911/32d1e1ae-4227-481a-8d0d-0ba59ac06224_scaled_IMG-20260126-WA0000.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 590,
+        "claimTitle": "claims for jerry  Joel, RTA, incident 910",
+        "incidentId": 910,
+        "id": 30,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/910/583ff934-dc6c-47d1-9e2b-5ab3c6f0255c_scaled_20260126_110313.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 589,
+        "claimTitle": "claims for Emediong  Archibong 0kon, Others, incident 907",
+        "incidentId": 907,
+        "id": 29,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/ambulance-claims/907/2ee02045-fbc5-44c8-8c2f-e2c7881606c4_scaled_1000002344.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 586,
+        "claimTitle": "claims for Hauwa  Alhaji  Kasim , Obstetric Accident, incident 900",
+        "incidentId": 900,
+        "id": 35,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/900/1d90b7b8-0628-4f14-b07e-549a9965098d_Hauwa Kasim Alhaji_5 (1).jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 562,
+        "claimTitle": "claims for Habiba  Garba, Obstetric Accident, incident 874",
+        "incidentId": 874,
+        "id": 28,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/etc-claims/874/48cf4507-fe04-40d9-9f0c-e64c1324aae7_IMG-20260125-WA0003.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 522,
+        "claimTitle": "claims for Zara Usman Mohammed , Obstetric Accident, incident 822",
+        "incidentId": 822,
+        "id": 25,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/incident-claims/822/fde909bf-f33e-421d-ba5f-98fef89af08f_scaled_20260120_232339.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 518,
+        "claimTitle": "claims for Abba  Sadiq, Others, incident 816",
+        "incidentId": 816,
+        "id": 21,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/incident-claims/816/e0ea9760-dbe5-4152-8a57-b206a63fdb24_scaled_20260120_184933.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 430,
+        "claimTitle": "claims for NWOVU  GOODLUCK, RTA, incident 671",
+        "incidentId": 671,
+        "id": 11,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/incident-claims/671/6626208d-e1a4-4270-9ad4-1f3363557b32_scaled_1000000150.png",
+        "isEtc": false
+    },
+    {
+        "claimId": 418,
+        "claimTitle": "claims for Usman  Maharazu, RTA, incident 646",
+        "incidentId": 646,
+        "id": 10,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/incident-claims/646/6b4fbdcb-dc50-44b3-a67f-16775c85f077_Maharazu Usman Umar.jpeg",
+        "isEtc": true
+    },
+    {
+        "claimId": 417,
+        "claimTitle": "claims for abba  lawaan, RTA, incident 644",
+        "incidentId": 644,
+        "id": 12,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/incident-claims/644/5f951629-3b92-432e-89eb-7a60698de850_humanitarian.jpg",
+        "isEtc": true
+    },
+    {
+        "claimId": 401,
+        "claimTitle": "claims for Isaac N Nwafor, RTA, incident 614",
+        "incidentId": 614,
+        "id": 9,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/incident-claims/614/0b3af3f9-f0a9-4d25-8a8d-45457d9149cb_scaled_1001112216.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 400,
+        "claimTitle": "claims for Nwankwo N Ngozi, RTA, incident 612",
+        "incidentId": 612,
+        "id": 8,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/incident-claims/612/07b48e33-c905-433f-98c1-dd29218cad5c_scaled_1001112165.jpg",
+        "isEtc": false
+    },
+    {
+        "claimId": 395,
+        "claimTitle": "claims for Kudi Damanambra Serikianambra, Paediatric (<5yrs), incident 531",
+        "incidentId": 531,
+        "id": 6,
+        "imageUrl": "https://nyc3.digitaloceanspaces.com/bhcpf/incident-claims/531/442d0671-0150-4ab7-9c10-e8826c8fcb3b_scaled_1000000034.png",
+        "isEtc": false
+    }
+]

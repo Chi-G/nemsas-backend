@@ -28,6 +28,9 @@ class Patient(PatientBase):
     id: int
     created_at: Optional[datetime] = Field(None, alias="createdAt")
     
+    # Relationship with real MedicalIntervention model
+    interventions: Optional[List["MedicalIntervention"]] = Field(default=[], alias="interventions")
+    
     # Placeholder lists consistent with ViewModel outputs
     medical_interventions: Optional[List[Any]] = Field(default=None, alias="medicalInterventions")
     notes: Optional[List[Any]] = Field(default=None, alias="notes")
@@ -41,3 +44,6 @@ class PatientResponse(BaseModel):
     success: bool
     message: str
     data: Patient
+
+from app.schemas.medical_intervention import MedicalIntervention
+Patient.model_rebuild()

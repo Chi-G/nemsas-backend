@@ -2,13 +2,41 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
-from app.schemas.claim import ClaimPaginatedResponse, ClaimResponse
+from app.models.user import User
+from app.schemas.claim import ClaimPaginatedResponse, ClaimResponse, ClaimCreate
 from app.crud.claim import claim as crud_claim
 from app.crud.claim_setting import claim_setting as crud_setting
 from app.schemas.claim_setting import ClaimSetting
 from typing import List
+from fastapi import UploadFile, File
+import cloudinary
+import cloudinary.uploader
+from app.core.config import settings
 
 router = APIRouter()
+
+@router.post("/upload")
+async def upload_claim_image(
+    file: UploadFile = File(...)
+) -> Any:
+    """
+    Upload an image/receipt to Cloudinary and return the secure URL.
+    """
+    cloudinary.config(
+        cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+        api_key=settings.CLOUDINARY_API_KEY,
+        api_secret=settings.CLOUDINARY_API_SECRET,
+        secure=True
+    )
+    
+    contents = await file.read()
+    upload_result = cloudinary.uploader.upload(contents)
+    
+    return {
+        "success": True,
+        "message": "File successfully uploaded",
+        "url": upload_result.get("secure_url")
+    }
 
 @router.get("/", response_model=ClaimPaginatedResponse)
 async def read_claims(
@@ -50,6 +78,23 @@ async def read_claim_settings(
     configs = await crud_setting.get_all(db)
     # Reformat to plain dictionary or list as needed, maintaining client compatibility.
     return configs
+
+@router.post("/", response_model=ClaimResponse)
+async def create_claim(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    claim_in: ClaimCreate,
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Create a new claim.
+    """
+    item = await crud_claim.create(db, obj_in=claim_in, current_user=current_user)
+    return {
+        "success": True,
+        "message": "Claim successfully created",
+        "data": item
+    }
 
 @router.get("/{id}", response_model=ClaimResponse)
 async def read_claim(

@@ -126,7 +126,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import socketio
+from app.core.socket_manager import sio
+
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+# Mount Socket.IO
+socket_app = socketio.ASGIApp(sio, socketio_path='socket.io')
+app.mount("/socket.io", socket_app)
 
 @app.get("/")
 async def root():
