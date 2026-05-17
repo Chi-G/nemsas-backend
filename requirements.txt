@@ -16,3 +16,4 @@ cloudinary==1.44.2
 firebase-admin==7.4.0
 redis==7.4.0
 python-socketio==5.16.1
+gunicorn==22.0.0

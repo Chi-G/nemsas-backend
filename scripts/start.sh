@@ -50,7 +50,7 @@ echo "Starting application server..."
 exec gunicorn app.main:app \
     --workers=3 \
     --worker-class=uvicorn.workers.UvicornWorker \
-    --bind=0.0.0.0:8000 \
+    --bind=0.0.0.0:${PORT:-8000} \
     --timeout=60 \
     --keep-alive=5 \
     --graceful-timeout=30 \
