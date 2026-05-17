@@ -56,9 +56,13 @@ The backend system for the National Emergency Medical Service and Ambulance Syst
    These scripts use batch processing and handle missing foreign keys gracefully:
    - **Incidents:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_incidents.py`
    - **Patients:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_patients.py`
+   - **Medical Interventions:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_medical_interventions.py`
    - **Ambulances:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_ambulances.py`
    - **Hospitals:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_hospitals.py`
 
+   **Database Management:**
+   - **Create Medical Interventions Table:** `PYTHONPATH=. ./venv/bin/python3 scripts/create_medical_interventions_table.py`
+   
    **Update Incident State IDs:**
    Syncs incident `state_id` based on `state_name` using `states.json`:
    ```bash

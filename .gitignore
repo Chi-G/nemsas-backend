@@ -37,3 +37,4 @@ scratch/
 # Additional cleanup
 seed_log.txt
 sample_fields.txt
+nemsas-app-firebase.json

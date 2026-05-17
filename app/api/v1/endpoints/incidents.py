@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, Any, cast
 from app.api import deps
-from app.schemas.incident import IncidentResponse, IncidentSummary, Incident as IncidentSchema, IncidentCreate
+from app.schemas.incident import IncidentResponse, SingleIncidentResponse, IncidentSummary, Incident as IncidentSchema, IncidentCreate, IncidentUpdate
 from app.crud.incident import incident_crud
 from app.models.user import User
 
@@ -78,6 +78,63 @@ async def read_incidents(
         "total": total
     }
 
+@router.get("/ambulance", response_model=IncidentResponse)
+async def read_ambulance_incidents(
+    db: AsyncSession = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Retrieve incidents assigned to the current user's ambulance.
+    """
+    if current_user.ambulance_id is None:
+        return {
+            "success": True,
+            "message": "No incidents found: you have no assigned ambulance",
+            "data": [],
+            "total": 0
+        }
+
+    incidents, total = await incident_crud.get_multi_by_ambulance(
+        db,
+        ambulance_id=int(current_user.ambulance_id),
+        skip=skip,
+        limit=limit
+    )
+
+    return {
+        "success": True,
+        "message": "Ambulance incidents successfully fetched",
+        "data": incidents,
+        "total": total
+    }
+
+@router.get("/ambulance/{id}", response_model=SingleIncidentResponse)
+async def read_ambulance_incident(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Get a specific incident assigned to the current user's ambulance.
+    """
+    if current_user.ambulance_id is None:
+        raise HTTPException(status_code=403, detail="User has no assigned ambulance")
+    
+    incident = await incident_crud.get(db, id=id)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+    
+    if incident.ambulance_id != current_user.ambulance_id:
+        raise HTTPException(status_code=403, detail="Not authorized to access this incident")
+
+    return {
+        "success": True,
+        "message": "Incident details successfully fetched",
+        "data": incident
+    }
+
 @router.get("/{id}", response_model=IncidentSchema)
 async def read_incident(
     id: int,
@@ -146,4 +203,32 @@ async def create_incident(
         "success": True,
         "message": "Incident successfully created",
         "data": incident_data
+    }
+
+@router.patch("/{id}", response_model=Any)
+async def update_incident(
+    id: int,
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    incident_in: IncidentUpdate,
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Update an existing incident.
+    """
+    incident = await incident_crud.get(db, id=id)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+    
+    # Permission check (simplified for now, usually restricted roles can only update their own state)
+    restricted_roles = {"STATEVIEWER", "ADMINSEMSASUSER", "SEMSASDISPATCH", "SEMSASPIUUSER", "SEMSASUSER"}
+    if current_user.user_type in restricted_roles and current_user.state_id != incident.state_id:
+        raise HTTPException(status_code=403, detail="Not authorized to update this incident")
+
+    updated_incident = await incident_crud.update(db, db_obj=incident, obj_in=incident_in)
+    
+    return {
+        "success": True,
+        "message": "Incident successfully updated",
+        "data": IncidentSchema.model_validate(updated_incident)
     }

@@ -3,6 +3,8 @@ from typing import Optional, List, Any
 from datetime import datetime, date
 from uuid import UUID
 from app.schemas.patient import Patient, PatientCreate
+from app.schemas.hospital import Hospital as HospitalSchema
+from app.schemas.claim_image import ClaimImage
 
 class IncidentBase(BaseModel):
     caller_name: Optional[str] = Field(None, alias="callerName")
@@ -35,6 +37,7 @@ class IncidentBase(BaseModel):
     total_patients: Optional[int] = Field(None, alias="totalPatients")
     incident_status_type: Optional[str] = Field(None, alias="incidentStatusType")
     event_status_type: Optional[str] = Field(None, alias="eventStatusType")
+    rejection_reason: Optional[str] = Field(None, alias="rejectionReason")
     state_name: Optional[str] = Field(None, alias="stateName")
     state_id: Optional[int] = Field(None, alias="stateId")
     etc_id: Optional[int] = Field(None, alias="emergencyTreatmentCenterId")
@@ -55,6 +58,28 @@ class IncidentCreate(IncidentBase):
         alias_generator=alias_generators.to_camel
     )
 
+class IncidentClaim(BaseModel):
+    id: int
+    title: Optional[str] = Field(None, alias="title")
+    patient_name: Optional[str] = Field(None, alias="patientName")
+    ambulance_type: Optional[str] = Field(None, alias="ambulanceType")
+    incident_category: Optional[str] = Field(None, alias="incidentCategory")
+    nhia: Optional[str] = Field(None, alias="nhia")
+    location: Optional[str] = Field(None, alias="location")
+    service_provider: Optional[str] = Field(None, alias="serviceProvider")
+    total_price: Optional[float] = Field(None, alias="totalPrice")
+    distance_covered: Optional[float] = Field(None, alias="distanceCovered")
+    incident_date: Optional[str] = Field(None, alias="incidentDate")
+    status: Optional[str] = Field("New", alias="status")
+    review: Optional[str] = Field(None, alias="review")
+    etc_review: Optional[str] = Field(None, alias="etcReview")
+    incident_id: Optional[int] = Field(None, alias="incidentId")
+    patient_id: Optional[int] = Field(None, alias="patientId")
+    created_at: Optional[datetime] = Field(None, alias="createdAt")
+    images: Optional[List[ClaimImage]] = Field(default_factory=list, alias="images")
+
+    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
 class IncidentUpdate(IncidentBase):
     pass
 
@@ -62,24 +87,11 @@ class Incident(IncidentBase):
     id: int
     date_added: Optional[datetime] = None
     patients: List[Patient] = []
+    hospital: Optional[HospitalSchema] = Field(None, alias="emergencyTreatmentCenter")
     
-    # Internal relationship fields for computed properties
-    incident_type: Optional[Any] = Field(None, exclude=True)
-    state: Optional[Any] = Field(None, exclude=True)
-
-    @computed_field(alias="incidentTypeName")
-    @property
-    def incident_type_name(self) -> Optional[str]:
-        if self.incident_type:
-            return self.incident_type.name
-        return None
-
-    @computed_field(alias="stateName")
-    @property
-    def state_name_computed(self) -> Optional[str]:
-        if self.state:
-            return self.state.name
-        return None
+    incident_type_name: Optional[str] = Field(None, alias="incidentTypeName")
+    state_name_computed: Optional[str] = Field(None, alias="stateName")
+    claims: List[IncidentClaim] = Field(default_factory=list, alias="claims")
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
@@ -96,31 +108,29 @@ class IncidentSummary(BaseModel):
     mass_casualty: Optional[bool] = False
     incident_location: Optional[str] = None
     incident_category_id: Optional[int] = None
+    longitude: Optional[float] = None
+    latitude: Optional[float] = None
     date_added: Optional[datetime] = None
     patients: List[Patient] = []
+    hospital: Optional[HospitalSchema] = Field(None, alias="emergencyTreatmentCenter")
     
-    # Internal relationship fields for computed properties
-    incident_type: Optional[Any] = Field(None, exclude=True)
-    state: Optional[Any] = Field(None, exclude=True)
+    incident_type_name: Optional[str] = Field(None, alias="incidentTypeName")
+    state_name_computed: Optional[str] = Field(None, alias="stateName")
+    claims: List[IncidentClaim] = Field(default_factory=list, alias="claims")
 
-    @computed_field(alias="incidentTypeName")
-    @property
-    def incident_type_name(self) -> Optional[str]:
-        if self.incident_type:
-            return self.incident_type.name
-        return None
-
-    @computed_field(alias="stateName")
-    @property
-    def state_name_computed(self) -> Optional[str]:
-        if self.state:
-            return self.state.name
-        return None
-
-    model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+    model_config = ConfigDict(
+        from_attributes=True, 
+        populate_by_name=True,
+        alias_generator=alias_generators.to_camel
+    )
 
 class IncidentResponse(BaseModel):
     success: bool
     message: str
     data: List[IncidentSummary]
     total: int
+
+class SingleIncidentResponse(BaseModel):
+    success: bool
+    message: str
+    data: Incident

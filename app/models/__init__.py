@@ -10,3 +10,11 @@ from app.models.hospital import Hospital
 from app.models.ambulance import Ambulance
 from app.models.incident_type import IncidentType
 from app.models.incident import Incident
+from app.models.fee_category import FeeCategory
+from app.models.service import Service
+from app.models.etc_intervention import EtcIntervention
+from app.models.claim import ClaimImage
+
+
+
+

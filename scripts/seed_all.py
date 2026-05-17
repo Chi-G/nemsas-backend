@@ -17,6 +17,10 @@ from scripts.seed_ambulances import seed_ambulances
 from scripts.seed_incident_types import seed_incident_types
 from scripts.seed_incidents import seed_incidents
 from scripts.seed_patients import seed_patients
+from scripts.seed_fee_categories import seed_fee_categories
+from scripts.seed_services import seed_services
+
+
 
 async def run_all_seeds():
     print("🚀 Starting master seeding process...")
@@ -48,6 +52,14 @@ async def run_all_seeds():
     print("\n--- Seeding Incident Types ---")
     await seed_incident_types()
 
+    print("\n--- Seeding Fee Categories ---")
+    await seed_fee_categories()
+
+    print("\n--- Seeding Services ---")
+    await seed_services()
+
+
+
     # 3. Main Entities
     print("\n--- Seeding Hospitals ---")
     await seed_hospitals()
@@ -65,8 +77,38 @@ async def run_all_seeds():
 
     print("\n--- Seeding Patients ---")
     await seed_patients()
+
+    print("\n--- Seeding Medical Interventions ---")
+    from scripts.seed_medical_interventions import seed_medical_interventions
+    await seed_medical_interventions()
+
+    print("\n--- Seeding Claims and ETC Interventions ---")
+    from scripts.seed_claims import seed_claims
+    await seed_claims()
+
+    print("\n--- Seeding Claim Images ---")
+    from scripts.seed_claims_images import seed_claims_images
+    await seed_claims_images()
+
+    print("\n--- Synchronizing Database Sequences ---")
+    from sqlalchemy import text
+    from app.db.session import SessionLocal
+    tables_to_sync = ['claims', 'hospitals', 'ambulances', 'patients', 'incidents', 'medical_interventions']
+    async with SessionLocal() as session:
+        for t in tables_to_sync:
+            try:
+                res = await session.execute(text(f"SELECT pg_get_serial_sequence('{t}', 'id');"))
+                seq_name = res.scalar()
+                if seq_name:
+                    await session.execute(text(f"SELECT setval('{seq_name}', COALESCE(MAX(id), 1)) FROM {t};"))
+                    print(f"✅ Sequence synchronized for: {t}")
+            except Exception as e:
+                print(f"⚠️ Failed to sync sequence for {t}: {str(e).splitlines()[0]}")
+        await session.commit()
         
     print("\n✅ All seeding operations completed!")
 
+
 if __name__ == "__main__":
     asyncio.run(run_all_seeds())
+
