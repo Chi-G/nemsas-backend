@@ -20,7 +20,7 @@ env/
 *_text.txt
 
 # UV and Python specific 
-.python-version
+# .python-version
 .pytest_cache/
 .ruff_cache/
 TASK_PROGRESS.md
