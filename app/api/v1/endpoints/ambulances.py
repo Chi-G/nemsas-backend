@@ -13,10 +13,9 @@ router = APIRouter()
 @router.get("/", response_model=AmbulanceResponse)
 async def read_ambulances(
     db: AsyncSession = Depends(deps.get_db),
-    skip: int = 0,
-    limit: int = 100,
     driverName: Optional[str] = None,
     stateId: Optional[int] = None,
+    typeId: Optional[int] = None,
     days: Optional[int] = None,
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
@@ -29,10 +28,9 @@ async def read_ambulances(
 
     ambulances, total_count = await ambulance_crud.get_multi_with_count(
         db, 
-        skip=skip, 
-        limit=limit,
         driver_name=driverName,
         state_id=effective_state_id,
+        ambulance_type_id=typeId,
         days=days
     )
     from app.schemas.ambulance import AmbulanceSummary

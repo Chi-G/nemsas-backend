@@ -12,9 +12,17 @@ from app.models.incident import Incident, IncidentStatusHistory, QAFinding
 from app.models.dispatch import Dispatch, GPSHistory
 from app.models.run_sheet import RunSheet, RunSheetDrugEntry, RunSheetHistory
 from app.models.partner import Partner, Pledge, FacilityRequest
-from app.models.claim import Claim, ClaimAuditLog, ETCIntake
+from app.models.claim import Claim, ClaimAuditLog, ETCIntake, ClaimImage
 from app.models.drug import Drug
 from app.models.audit import SystemAuditLog
 from app.models.patient import Patient
+from app.models.medical_intervention import MedicalIntervention
 from app.models.monitoring import Monitoring
 from app.models.claim_setting import ClaimSetting
+from app.models.fee_category import FeeCategory
+from app.models.service import Service
+from app.models.etc_intervention import EtcIntervention
+from app.models.device import Device
+
+
+

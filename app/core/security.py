@@ -16,7 +16,7 @@ def create_access_token(
     subject: Union[str, Any], 
     role: Optional[str] = None,
     state_id: Optional[int] = None,
-    expires_delta: timedelta = None
+    expires_delta: Optional[timedelta] = None
 ) -> str:
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -37,7 +37,7 @@ def create_refresh_token(
     subject: Union[str, Any], 
     role: Optional[str] = None,
     state_id: Optional[int] = None,
-    expires_delta: timedelta = None
+    expires_delta: Optional[timedelta] = None
 ) -> str:
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
@@ -53,3 +53,11 @@ def create_refresh_token(
     }
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
+
+def verify_token(token: str) -> Optional[dict]:
+    from jose import JWTError
+    try:
+        decoded_token = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        return decoded_token
+    except JWTError:
+        return None

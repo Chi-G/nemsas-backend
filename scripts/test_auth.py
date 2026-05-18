@@ -5,7 +5,7 @@ BASE_URL = "https://emt-proxy-6arxm.ondigitalocean.app/api/v1"
 
 def try_login():
     url = f"{BASE_URL}/Account/login"
-    payload = {"email": "ahmednu@datharm.com", "password": "@Password01"}
+    payload = {"email": "ahmednu@texis.com", "password": "@Password01"}
     print(f"Trying real login POST {url}...")
     resp = requests.post(url, json=payload)
     print(f"Status: {resp.status_code}")
