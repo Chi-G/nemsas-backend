@@ -3,12 +3,13 @@ from app.api.v1.endpoints import (
     users, states, lgas, wards, roles, auth,
     hospital_types, ambulance_types, hospitals, ambulances, organisations,
     incidents, claims, run_sheets, monitoring, incident_types, websockets,
-    medical_interventions, fee_categories, services
+    medical_interventions, fee_categories, services, devices
 )
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
 api_router.include_router(users.router, prefix="/users", tags=["users"])
+api_router.include_router(devices.router, prefix="/devices", tags=["devices"])
 api_router.include_router(organisations.router, prefix="/organisations", tags=["organisations"])
 api_router.include_router(hospital_types.router, prefix="/hospital-types", tags=["hospital-types"])
 api_router.include_router(ambulance_types.router, prefix="/ambulance-types", tags=["ambulance-types"])

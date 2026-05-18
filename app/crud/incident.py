@@ -192,14 +192,18 @@ class CRUDIncident:
         
         # PUSH NOTIFICATION: If ambulance is assigned
         if final_obj and final_obj.ambulance_id:
-            from app.core.notifications import notification_service
-            await notification_service.send_to_ambulance(
-                db, 
-                final_obj.ambulance_id, 
-                title="New Incident Assigned", 
-                body=f"Incident {final_obj.serial_no} has been assigned to your ambulance.",
-                data={"incidentId": final_obj.id, "type": "NEW_ASSIGNMENT"}
-            )
+            try:
+                from app.core.notifications import notification_service
+                await notification_service.send_to_ambulance(
+                    db, 
+                    final_obj.ambulance_id, 
+                    title="New Incident Assigned", 
+                    body=f"Incident {final_obj.serial_no} has been assigned to your ambulance.",
+                    data={"incidentId": final_obj.id, "type": "NEW_ASSIGNMENT"},
+                    sound="incident_sound"
+                )
+            except Exception as e:
+                print(f"[Notification Error] Failed to send push on creation: {e}")
 
         return final_obj
 
@@ -251,14 +255,18 @@ class CRUDIncident:
         
         # PUSH NOTIFICATION: If ambulance was newly assigned or changed
         if final_obj and new_ambulance_id and new_ambulance_id != old_ambulance_id:
-            from app.core.notifications import notification_service
-            await notification_service.send_to_ambulance(
-                db, 
-                new_ambulance_id, 
-                title="New Incident Assignment", 
-                body=f"A new incident ({final_obj.serial_no}) has been assigned to you.",
-                data={"incidentId": final_obj.id, "type": "NEW_ASSIGNMENT"}
-            )
+            try:
+                from app.core.notifications import notification_service
+                await notification_service.send_to_ambulance(
+                    db, 
+                    new_ambulance_id, 
+                    title="New Incident Assignment", 
+                    body=f"A new incident ({final_obj.serial_no}) has been assigned to you.",
+                    data={"incidentId": final_obj.id, "type": "NEW_ASSIGNMENT"},
+                    sound="incident_sound"
+                )
+            except Exception as e:
+                print(f"[Notification Error] Failed to send push on update: {e}")
             
         return final_obj
 
