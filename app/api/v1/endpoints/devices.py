@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
+from typing import List, cast
+from uuid import UUID
 from app.api import deps
 from app.schemas.device import Device, DeviceCreate
 from app.crud.device import device_crud
@@ -19,7 +20,7 @@ async def register_device(
     """
     Register a new device for push notifications
     """
-    device = await device_crud.create(db, obj_in=device_in, user_id=current_user.id)
+    device = await device_crud.create(db, obj_in=device_in, user_id=cast(UUID, current_user.id))
     return {
         "success": True,
         "message": "Device successfully registered",
@@ -34,7 +35,7 @@ async def get_my_devices(
     """
     Get all registered devices for the current user
     """
-    devices = await device_crud.get_multi_by_user(db, user_id=current_user.id)
+    devices = await device_crud.get_multi_by_user(db, user_id=cast(UUID, current_user.id))
     return {
         "success": True,
         "message": "Devices fetched",
@@ -45,7 +46,7 @@ async def get_my_devices(
 async def unregister_device(
     *,
     db: AsyncSession = Depends(deps.get_db),
-    device_id: str,
+    device_id: UUID,
     current_user: User = Depends(deps.get_current_user),
 ):
     """
@@ -53,7 +54,7 @@ async def unregister_device(
     """
     # Verify ownership
     device = await device_crud.get(db, id=device_id)
-    if not device or device.user_id != current_user.id:
+    if not device or cast(UUID, device.user_id) != cast(UUID, current_user.id):
         raise HTTPException(status_code=404, detail="Device not found")
     
     await device_crud.remove(db, id=device_id)
@@ -75,7 +76,7 @@ async def test_push_notification(
     from app.core.notifications import notification_service
     
     # 1. Get all registered devices for the logged-in user
-    devices = await device_crud.get_multi_by_user(db, user_id=current_user.id)
+    devices = await device_crud.get_multi_by_user(db, user_id=cast(UUID, current_user.id))
     if not devices:
         raise HTTPException(
             status_code=400, 
@@ -85,7 +86,7 @@ async def test_push_notification(
     # 2. Trigger push notification with the custom sound
     await notification_service.send_to_user(
         db,
-        user_id=current_user.id,
+        user_id=cast(UUID, current_user.id),
         title="Test Incident Alert",
         body="This is a test incident assignment push notification with the custom alert sound.",
         data={"type": "TEST_PUSH"},
