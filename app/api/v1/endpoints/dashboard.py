@@ -1,9 +1,10 @@
 import calendar
-from typing import Any, Optional
+from datetime import date, datetime, timedelta
+from typing import Any, Literal, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-from sqlalchemy import func, select
+from sqlalchemy import distinct, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api import deps
@@ -40,6 +41,27 @@ class DashboardStatsResponse(BaseModel):
 
 
 # ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+def _incident_period_filter(stmt, period: str):
+    """Apply a date range filter to an incident query based on period string."""
+    today = date.today()
+    if period == "this_year":
+        start = datetime(today.year, 1, 1)
+        stmt = stmt.where(Incident.date_added >= start)
+    elif period == "this_month":
+        start = datetime(today.year, today.month, 1)
+        stmt = stmt.where(Incident.date_added >= start)
+    elif period == "this_week":
+        # Monday of the current week
+        start = datetime.combine(today - timedelta(days=today.weekday()), datetime.min.time())
+        stmt = stmt.where(Incident.date_added >= start)
+    # "all" → no filter
+    return stmt
+
+
+# ---------------------------------------------------------------------------
 # Endpoints
 # ---------------------------------------------------------------------------
 
@@ -47,41 +69,47 @@ class DashboardStatsResponse(BaseModel):
 async def get_dashboard_stats(
     db: AsyncSession = Depends(deps.get_db),
     state_id: Optional[int] = None,
+    period: str = Query(default="all", description="Filter incidents by period: all | this_month | this_week | this_year"),
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
     Get statistics count for states, LGAs, incidents, ambulances, and emergency centers.
-    - SUPERADMINISTRATOR & NEMSASADMIN see all statistics globally unless filtered by state_id.
-    - SEMSAS users see statistics strictly scoped to their state (derived from JWT).
-    - Ambulance and other users default to statistics scoped to their state if present.
+
+    - **period**: Filter incident count by `all` (default), `this_month`, `this_week`, `this_year`.
+    - **noOfStates**: Distinct states that have at least one registered user.
+    - **noOfMamiiLgas**: Distinct LGAs that have at least one registered user.
+    - SUPERADMINISTRATOR & NEMSASADMIN see global stats unless `state_id` is provided.
+    - State-scoped roles (SEMSAS*) see only their own state's data.
     """
     role = getattr(current_user, "user_type", "")
 
-    # Securely determine the effective state scoping
+    # Determine effective state scoping
     if role in ["SUPERADMINISTRATOR", "NEMSASADMIN"]:
         effective_state_id = state_id
-    elif role in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
-        effective_state_id = current_user.state_id
     else:
         effective_state_id = current_user.state_id
 
-    # 1. Count States
+    # 1. Count distinct states that have active users
+    stmt_states = select(func.count(distinct(User.state_id))).where(
+        User.state_id.isnot(None), User.is_active == True
+    )
     if effective_state_id is not None:
-        no_of_states = 1
-    else:
-        stmt_states = select(func.count(State.id))
-        no_of_states = (await db.execute(stmt_states)).scalar() or 0
+        stmt_states = stmt_states.where(User.state_id == effective_state_id)
+    no_of_states = (await db.execute(stmt_states)).scalar() or 0
 
-    # 2. Count LGAs
-    stmt_lgas = select(func.count(LGA.id))
+    # 2. Count distinct LGAs that have active users
+    stmt_lgas = select(func.count(distinct(User.lga_id))).where(
+        User.lga_id.isnot(None), User.is_active == True
+    )
     if effective_state_id is not None:
-        stmt_lgas = stmt_lgas.where(LGA.state_id == effective_state_id)
+        stmt_lgas = stmt_lgas.where(User.state_id == effective_state_id)
     no_of_lgas = (await db.execute(stmt_lgas)).scalar() or 0
 
-    # 3. Count Incidents
+    # 3. Count Incidents (with optional period filter)
     stmt_incidents = select(func.count(Incident.id))
     if effective_state_id is not None:
         stmt_incidents = stmt_incidents.where(Incident.state_id == effective_state_id)
+    stmt_incidents = _incident_period_filter(stmt_incidents, period)
     no_of_incidents = (await db.execute(stmt_incidents)).scalar() or 0
 
     # 4. Count Ambulances
@@ -119,28 +147,27 @@ async def get_dashboard_monthly(
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Returns monthly analytics data for the dashboard graph (Jan–Dec).
-    Aggregates monitoring evaluation records by month.
-    Supports an optional `year` query parameter to filter by year.
+    Returns monthly analytics data for the dashboard graph.
+    Only returns months up to the **current month** for the current year,
+    so future months are never shown in the response.
 
-    Example response:
-        {
-            "message": "Monthly data fetched successfully",
-            "data": [
-                {"month": "January", "noOfTransport": 0, "noOfMamiiLGAs": 33, ...},
-                ...
-            ]
-        }
+    Supports an optional `year` query parameter to filter by a specific year.
     """
-    items = await crud_monitoring.get_monthly_aggregates(db, year=year)
+    today = date.today()
+    effective_year = year or today.year
+
+    items = await crud_monitoring.get_monthly_aggregates(db, year=effective_year)
 
     data = []
     for row in items:
-        month_name = (
-            calendar.month_name[row.month]
-            if row.month and 1 <= row.month <= 12
-            else "Unknown"
-        )
+        if not row.month or not (1 <= row.month <= 12):
+            continue
+
+        # For the current year, suppress future months
+        if effective_year == today.year and row.month > today.month:
+            continue
+
+        month_name = calendar.month_name[row.month]
         data.append({
             "month": month_name,
             "noOfTransport": int(row.noOfTransport or 0),
