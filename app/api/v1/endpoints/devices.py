@@ -62,3 +62,38 @@ async def unregister_device(
         "message": "Device successfully unregistered",
         "data": True
     }
+
+@router.post("/test-push", response_model=ResponseBase[bool])
+async def test_push_notification(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
+):
+    """
+    Send a test push notification to the current user's registered devices with the custom alert sound
+    """
+    from app.core.notifications import notification_service
+    
+    # 1. Get all registered devices for the logged-in user
+    devices = await device_crud.get_multi_by_user(db, user_id=current_user.id)
+    if not devices:
+        raise HTTPException(
+            status_code=400, 
+            detail="You don't have any registered devices. Please register your device first."
+        )
+    
+    # 2. Trigger push notification with the custom sound
+    await notification_service.send_to_user(
+        db,
+        user_id=current_user.id,
+        title="Test Incident Alert",
+        body="This is a test incident assignment push notification with the custom alert sound.",
+        data={"type": "TEST_PUSH"},
+        sound="incident_sound"
+    )
+    
+    return {
+        "success": True,
+        "message": f"Test push notification successfully sent to {len(devices)} device(s)",
+        "data": True
+    }
