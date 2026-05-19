@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     
     # Firebase Settings
     FIREBASE_SERVICE_ACCOUNT_PATH: Optional[str] = None # Path to service account json
+    FIREBASE_CREDENTIALS_JSON: Optional[str] = None # Raw JSON string of service account for production
 
     # Cloudinary Settings
     CLOUDINARY_CLOUD_NAME: Optional[str] = None
