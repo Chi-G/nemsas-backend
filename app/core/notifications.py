@@ -69,7 +69,7 @@ class NotificationService:
 
     async def _exchange_apns_tokens(self, apns_tokens: List[str]) -> List[str]:
         if not apns_tokens:
-            return []
+            return [] 
         
         try:
             from google.oauth2 import service_account
@@ -130,7 +130,7 @@ class NotificationService:
             print(f"[Notification] APNs exchange error: {e}")
         return []
 
-    async def _push_to_fcm(self, tokens: List[str], title: str, body: str, data: Dict[str, str] = None, sound: str = None):
+    async def _push_to_fcm(self, tokens: List[str], title: str, body: str, data: Optional[Dict[str, str]] = None, sound: Optional[str] = None):
         if not tokens:
             return
         
@@ -209,16 +209,16 @@ class NotificationService:
     async def _cache_notification(self, user_id: str, notification_id: str, payload: Dict[str, Any]):
         key = f"notifications:{user_id}"
         # Store in a hash or list. Using a list for historical order.
-        await self.redis_client.lpush(key, json.dumps(payload))
+        await self.redis_client.lpush(key, json.dumps(payload))  # type: ignore[misc]
         # Keep only last 100
-        await self.redis_client.ltrim(key, 0, 99)
+        await self.redis_client.ltrim(key, 0, 99)  # type: ignore[misc]
         # Set expiration to 30 days
-        await self.redis_client.expire(key, 60*60*24*30)
+        await self.redis_client.expire(key, 60*60*24*30)  # type: ignore[misc]
 
-    async def send_to_user(self, db: AsyncSession, user_id: UUID, title: str, body: str, data: Dict[str, Any] = None, sound: str = None):
+    async def send_to_user(self, db: AsyncSession, user_id: UUID, title: str, body: str, data: Optional[Dict[str, Any]] = None, sound: Optional[str] = None):
         # 1. Get all devices
         devices = await device_crud.get_multi_by_user(db, user_id=user_id)
-        tokens = [d.push_token for d in devices]
+        tokens = [str(d.push_token) for d in devices]
         
         notification_id = f"notif_{int(time.time() * 1000)}"
         payload = {
@@ -240,7 +240,7 @@ class NotificationService:
         
         await self._push_to_fcm(tokens, title, body, fcm_data, sound=sound)
 
-    async def send_to_ambulance(self, db: AsyncSession, ambulance_id: int, title: str, body: str, data: Dict[str, Any] = None, sound: str = None):
+    async def send_to_ambulance(self, db: AsyncSession, ambulance_id: int, title: str, body: str, data: Optional[Dict[str, Any]] = None, sound: Optional[str] = None):
         # Find all devices linked to this ambulance
         devices = await device_crud.get_multi_by_ambulance(db, ambulance_id=ambulance_id)
         
@@ -264,7 +264,7 @@ class NotificationService:
             await self._cache_notification(uid, notification_id, payload)
             
         # Push to all tokens
-        tokens = [d.push_token for d in devices]
+        tokens = [str(d.push_token) for d in devices]
         fcm_data = {k: str(v) for k, v in (data or {}).items()}
         fcm_data["notificationId"] = notification_id
         
@@ -272,18 +272,18 @@ class NotificationService:
 
     async def get_pending_notifications(self, user_id: str) -> List[Dict[str, Any]]:
         key = f"notifications:{user_id}"
-        items = await self.redis_client.lrange(key, 0, -1)
+        items = await self.redis_client.lrange(key, 0, -1)  # type: ignore[misc]
         return [json.loads(i) for i in items]
 
     async def mark_as_read(self, user_id: str, notification_id: str):
         key = f"notifications:{user_id}"
-        items = await self.redis_client.lrange(key, 0, -1)
+        items = await self.redis_client.lrange(key, 0, -1)  # type: ignore[misc]
         
         for i, item_str in enumerate(items):
             item = json.loads(item_str)
             if item["id"] == notification_id:
                 item["read"] = True
-                await self.redis_client.lset(key, i, json.dumps(item))
+                await self.redis_client.lset(key, i, json.dumps(item))  # type: ignore[misc]
                 break
 
 notification_service = NotificationService()
