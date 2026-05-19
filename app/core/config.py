@@ -19,9 +19,14 @@ class Settings(BaseSettings):
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
+    REDIS_USERNAME: Optional[str] = None
+    REDIS_PASSWORD: Optional[str] = None
+    REDIS_SSL: bool = False
+    REDIS_URL: Optional[str] = None
     
     # Firebase Settings
     FIREBASE_SERVICE_ACCOUNT_PATH: Optional[str] = None # Path to service account json
+    FIREBASE_CREDENTIALS_JSON: Optional[str] = None # Raw JSON string of service account for production
 
     # Cloudinary Settings
     CLOUDINARY_CLOUD_NAME: Optional[str] = None
