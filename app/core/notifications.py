@@ -23,6 +23,10 @@ def log_fcm(message: str):
         pass
 
 # Initialize Firebase using JSON credentials string if available, or fall back to file path
+_firebase_cred_info = None
+_firebase_cred_path = None
+firebase_initialized = False
+
 if settings.FIREBASE_CREDENTIALS_JSON:
     try:
         cred_info = json.loads(settings.FIREBASE_CREDENTIALS_JSON)
@@ -59,9 +63,12 @@ if settings.FIREBASE_CREDENTIALS_JSON:
         cred = credentials.Certificate(cred_info)
         firebase_admin.initialize_app(cred)
         log_fcm("[Notification] Firebase successfully initialized using FIREBASE_CREDENTIALS_JSON environment variable.")
+        _firebase_cred_info = cred_info
+        firebase_initialized = True
     except Exception as e:
         log_fcm(f"[Notification] Error initializing Firebase using JSON string: {e}")
-elif settings.FIREBASE_SERVICE_ACCOUNT_PATH:
+
+if not firebase_initialized and settings.FIREBASE_SERVICE_ACCOUNT_PATH:
     path_str = settings.FIREBASE_SERVICE_ACCOUNT_PATH
     if path_str.startswith("/"):
         path_str = path_str[1:]  # strip leading slash to resolve relatively
@@ -83,10 +90,15 @@ elif settings.FIREBASE_SERVICE_ACCOUNT_PATH:
             cred = credentials.Certificate(str(resolved_path))
             firebase_admin.initialize_app(cred)
             log_fcm(f"[Notification] Firebase successfully initialized with: {resolved_path}")
+            _firebase_cred_path = str(resolved_path)
+            firebase_initialized = True
         except Exception as e:
-            log_fcm(f"[Notification] Error initializing Firebase: {e}")
+            log_fcm(f"[Notification] Error initializing Firebase using service account file: {e}")
     else:
         log_fcm(f"[Notification] Warning: Firebase service account credentials file not found at {full_path} or {cwd_path}")
+
+if not firebase_initialized:
+    log_fcm("[Notification] Warning: Firebase admin SDK is NOT initialized. Push notifications will fail.")
 
 class NotificationService:
     def __init__(self):
@@ -116,23 +128,20 @@ class NotificationService:
             import httpx
             import os
             
-            # Load credentials from JSON string if available, otherwise fall back to file path
-            if settings.FIREBASE_CREDENTIALS_JSON:
-                cred_info = json.loads(settings.FIREBASE_CREDENTIALS_JSON)
+            # Load credentials from the successful initialization source
+            if _firebase_cred_info:
                 creds = service_account.Credentials.from_service_account_info(
-                    cred_info,
+                    _firebase_cred_info,
+                    scopes=["https://www.googleapis.com/auth/cloud-platform"]
+                )
+            elif _firebase_cred_path:
+                creds = service_account.Credentials.from_service_account_file(
+                    _firebase_cred_path,
                     scopes=["https://www.googleapis.com/auth/cloud-platform"]
                 )
             else:
-                cred_path = os.getenv("FIREBASE_SERVICE_ACCOUNT_PATH", "nemsas-app-firebase.json")
-                if not os.path.isabs(cred_path):
-                    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-                    cred_path = os.path.join(base_dir, cred_path)
-                    
-                creds = service_account.Credentials.from_service_account_file(
-                    cred_path,
-                    scopes=["https://www.googleapis.com/auth/cloud-platform"]
-                )
+                log_fcm("[Notification] APNs exchange failed: No valid Firebase credentials loaded during initialization.")
+                return []
             
             request = google.auth.transport.requests.Request()
             creds.refresh(request)
