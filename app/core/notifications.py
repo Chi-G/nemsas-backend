@@ -13,8 +13,16 @@ import time
 import os
 from pathlib import Path
 
-# Initialize Firebase if service account path is provided
-if settings.FIREBASE_SERVICE_ACCOUNT_PATH:
+# Initialize Firebase using JSON credentials string if available, or fall back to file path
+if settings.FIREBASE_CREDENTIALS_JSON:
+    try:
+        cred_info = json.loads(settings.FIREBASE_CREDENTIALS_JSON)
+        cred = credentials.Certificate(cred_info)
+        firebase_admin.initialize_app(cred)
+        print("[Notification] Firebase successfully initialized using FIREBASE_CREDENTIALS_JSON environment variable.")
+    except Exception as e:
+        print(f"[Notification] Error initializing Firebase using JSON string: {e}")
+elif settings.FIREBASE_SERVICE_ACCOUNT_PATH:
     path_str = settings.FIREBASE_SERVICE_ACCOUNT_PATH
     if path_str.startswith("/"):
         path_str = path_str[1:]  # strip leading slash to resolve relatively
@@ -43,12 +51,21 @@ if settings.FIREBASE_SERVICE_ACCOUNT_PATH:
 
 class NotificationService:
     def __init__(self):
-        self.redis_client = redis.Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            db=settings.REDIS_DB,
-            decode_responses=True
-        )
+        if settings.REDIS_URL:
+            self.redis_client = redis.from_url(
+                settings.REDIS_URL,
+                decode_responses=True
+            )
+        else:
+            self.redis_client = redis.Redis(
+                host=settings.REDIS_HOST,
+                port=settings.REDIS_PORT,
+                db=settings.REDIS_DB,
+                username=settings.REDIS_USERNAME,
+                password=settings.REDIS_PASSWORD,
+                ssl=settings.REDIS_SSL,
+                decode_responses=True
+            )
 
     async def _exchange_apns_tokens(self, apns_tokens: List[str]) -> List[str]:
         if not apns_tokens:
@@ -60,16 +77,23 @@ class NotificationService:
             import httpx
             import os
             
-            # Load credentials
-            cred_path = os.getenv("FIREBASE_SERVICE_ACCOUNT_PATH", "nemsas-app-firebase.json")
-            if not os.path.isabs(cred_path):
-                base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-                cred_path = os.path.join(base_dir, cred_path)
-                
-            creds = service_account.Credentials.from_service_account_file(
-                cred_path,
-                scopes=["https://www.googleapis.com/auth/cloud-platform"]
-            )
+            # Load credentials from JSON string if available, otherwise fall back to file path
+            if settings.FIREBASE_CREDENTIALS_JSON:
+                cred_info = json.loads(settings.FIREBASE_CREDENTIALS_JSON)
+                creds = service_account.Credentials.from_service_account_info(
+                    cred_info,
+                    scopes=["https://www.googleapis.com/auth/cloud-platform"]
+                )
+            else:
+                cred_path = os.getenv("FIREBASE_SERVICE_ACCOUNT_PATH", "nemsas-app-firebase.json")
+                if not os.path.isabs(cred_path):
+                    base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+                    cred_path = os.path.join(base_dir, cred_path)
+                    
+                creds = service_account.Credentials.from_service_account_file(
+                    cred_path,
+                    scopes=["https://www.googleapis.com/auth/cloud-platform"]
+                )
             
             request = google.auth.transport.requests.Request()
             creds.refresh(request)
