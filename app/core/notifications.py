@@ -30,14 +30,31 @@ if settings.FIREBASE_CREDENTIALS_JSON:
             import hashlib
             pk = cred_info["private_key"]
             log_fcm(f"[Notification] Private key length before: {len(pk)}")
-            log_fcm(f"[Notification] Private key start before: {repr(pk[:50])}")
-            log_fcm(f"[Notification] Private key end before: {repr(pk[-50:])}")
             log_fcm(f"[Notification] Private key SHA256 before: {hashlib.sha256(pk.encode()).hexdigest()}")
+            
+            # Mask all alphanumeric base64 chars to 'x' to safely inspect structure
+            masked_chars = []
+            for c in pk:
+                if c.isalnum():
+                    masked_chars.append('x')
+                else:
+                    masked_chars.append(c)
+            masked_pk = "".join(masked_chars)
+            log_fcm(f"[Notification] Masked private key: {repr(masked_pk)}")
+            
             replaced_pk = pk.replace("\\n", "\n")
             log_fcm(f"[Notification] Private key length after: {len(replaced_pk)}")
-            log_fcm(f"[Notification] Private key start after: {repr(replaced_pk[:50])}")
-            log_fcm(f"[Notification] Private key end after: {repr(replaced_pk[-50:])}")
             log_fcm(f"[Notification] Private key SHA256 after: {hashlib.sha256(replaced_pk.encode()).hexdigest()}")
+            
+            masked_chars_after = []
+            for c in replaced_pk:
+                if c.isalnum():
+                    masked_chars_after.append('x')
+                else:
+                    masked_chars_after.append(c)
+            masked_pk_after = "".join(masked_chars_after)
+            log_fcm(f"[Notification] Masked private key after: {repr(masked_pk_after)}")
+            
             cred_info["private_key"] = replaced_pk
         cred = credentials.Certificate(cred_info)
         firebase_admin.initialize_app(cred)
