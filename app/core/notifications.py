@@ -9,9 +9,18 @@ from app.models.device import Device
 from app.crud.device import device_crud
 from sqlalchemy.ext.asyncio import AsyncSession
 import time
-
 import os
 from pathlib import Path
+
+def log_fcm(message: str):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    formatted = f"[{timestamp}] {message}"
+    print(formatted)
+    try:
+        with open("/tmp/fcm.log", "a") as f:
+            f.write(formatted + "\n")
+    except Exception:
+        pass
 
 # Initialize Firebase using JSON credentials string if available, or fall back to file path
 if settings.FIREBASE_CREDENTIALS_JSON:
@@ -19,9 +28,9 @@ if settings.FIREBASE_CREDENTIALS_JSON:
         cred_info = json.loads(settings.FIREBASE_CREDENTIALS_JSON)
         cred = credentials.Certificate(cred_info)
         firebase_admin.initialize_app(cred)
-        print("[Notification] Firebase successfully initialized using FIREBASE_CREDENTIALS_JSON environment variable.")
+        log_fcm("[Notification] Firebase successfully initialized using FIREBASE_CREDENTIALS_JSON environment variable.")
     except Exception as e:
-        print(f"[Notification] Error initializing Firebase using JSON string: {e}")
+        log_fcm(f"[Notification] Error initializing Firebase using JSON string: {e}")
 elif settings.FIREBASE_SERVICE_ACCOUNT_PATH:
     path_str = settings.FIREBASE_SERVICE_ACCOUNT_PATH
     if path_str.startswith("/"):
@@ -43,11 +52,11 @@ elif settings.FIREBASE_SERVICE_ACCOUNT_PATH:
         try:
             cred = credentials.Certificate(str(resolved_path))
             firebase_admin.initialize_app(cred)
-            print(f"[Notification] Firebase successfully initialized with: {resolved_path}")
+            log_fcm(f"[Notification] Firebase successfully initialized with: {resolved_path}")
         except Exception as e:
-            print(f"[Notification] Error initializing Firebase: {e}")
+            log_fcm(f"[Notification] Error initializing Firebase: {e}")
     else:
-        print(f"[Notification] Warning: Firebase service account credentials file not found at {full_path} or {cwd_path}")
+        log_fcm(f"[Notification] Warning: Firebase service account credentials file not found at {full_path} or {cwd_path}")
 
 class NotificationService:
     def __init__(self):
@@ -125,9 +134,9 @@ class NotificationService:
                             fcm_tokens.append(res.get("registration_token"))
                     return fcm_tokens
                 else:
-                    print(f"[Notification] APNs exchange API returned {response.status_code}: {response.text}")
+                    log_fcm(f"[Notification] APNs exchange API returned {response.status_code}: {response.text}")
         except Exception as e:
-            print(f"[Notification] APNs exchange error: {e}")
+            log_fcm(f"[Notification] APNs exchange error: {e}")
         return []
 
     async def _push_to_fcm(self, tokens: List[str], title: str, body: str, data: Optional[Dict[str, str]] = None, sound: Optional[str] = None):
@@ -145,13 +154,13 @@ class NotificationService:
                 
         # Exchange APNs tokens to FCM tokens
         if apns_tokens:
-            print(f"[Notification] Exchanging {len(apns_tokens)} native APNs tokens to FCM registration tokens...")
+            log_fcm(f"[Notification] Exchanging {len(apns_tokens)} native APNs tokens to FCM registration tokens...")
             exchanged = await self._exchange_apns_tokens(apns_tokens)
-            print(f"[Notification] Successfully exchanged to {len(exchanged)} FCM tokens")
+            log_fcm(f"[Notification] Successfully exchanged to {len(exchanged)} FCM tokens")
             fcm_tokens.extend(exchanged)
             
         if not fcm_tokens:
-            print("[Notification] No valid FCM registration tokens found to send message to.")
+            log_fcm("[Notification] No valid FCM registration tokens found to send message to.")
             return
         
         # Build Android notification config
@@ -197,14 +206,14 @@ class NotificationService:
         )
         try:
             response = messaging.send_each_for_multicast(message)
-            print(f"[Notification] Successfully sent {response.success_count} messages")
+            log_fcm(f"[Notification] Successfully sent {response.success_count} messages")
             if response.failure_count > 0:
-                print(f"[Notification] Failed to send {response.failure_count} messages")
+                log_fcm(f"[Notification] Failed to send {response.failure_count} messages")
                 for index, resp in enumerate(response.responses):
                     if not resp.success:
-                        print(f"  Failed token index {index} response: {resp.exception}")
+                        log_fcm(f"  Failed token index {index} response: {resp.exception}")
         except Exception as e:
-            print(f"[Notification] FCM error: {e}")
+            log_fcm(f"[Notification] FCM error: {e}")
 
     async def _cache_notification(self, user_id: str, notification_id: str, payload: Dict[str, Any]):
         key = f"notifications:{user_id}"
