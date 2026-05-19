@@ -28,10 +28,14 @@ if settings.FIREBASE_CREDENTIALS_JSON:
         cred_info = json.loads(settings.FIREBASE_CREDENTIALS_JSON)
         if "private_key" in cred_info:
             pk = cred_info["private_key"]
-            log_fcm(f"[Notification] Private key length: {len(pk)}")
-            log_fcm(f"[Notification] Private key start: {repr(pk[:50])}")
-            log_fcm(f"[Notification] Private key end: {repr(pk[-50:])}")
-            cred_info["private_key"] = pk.replace("\\n", "\n")
+            log_fcm(f"[Notification] Private key length before: {len(pk)}")
+            log_fcm(f"[Notification] Private key start before: {repr(pk[:50])}")
+            log_fcm(f"[Notification] Private key end before: {repr(pk[-50:])}")
+            replaced_pk = pk.replace("\\n", "\n")
+            log_fcm(f"[Notification] Private key length after: {len(replaced_pk)}")
+            log_fcm(f"[Notification] Private key start after: {repr(replaced_pk[:50])}")
+            log_fcm(f"[Notification] Private key end after: {repr(replaced_pk[-50:])}")
+            cred_info["private_key"] = replaced_pk
         cred = credentials.Certificate(cred_info)
         firebase_admin.initialize_app(cred)
         log_fcm("[Notification] Firebase successfully initialized using FIREBASE_CREDENTIALS_JSON environment variable.")
