@@ -43,12 +43,21 @@ if settings.FIREBASE_SERVICE_ACCOUNT_PATH:
 
 class NotificationService:
     def __init__(self):
-        self.redis_client = redis.Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            db=settings.REDIS_DB,
-            decode_responses=True
-        )
+        if settings.REDIS_URL:
+            self.redis_client = redis.from_url(
+                settings.REDIS_URL,
+                decode_responses=True
+            )
+        else:
+            self.redis_client = redis.Redis(
+                host=settings.REDIS_HOST,
+                port=settings.REDIS_PORT,
+                db=settings.REDIS_DB,
+                username=settings.REDIS_USERNAME,
+                password=settings.REDIS_PASSWORD,
+                ssl=settings.REDIS_SSL,
+                decode_responses=True
+            )
 
     async def _exchange_apns_tokens(self, apns_tokens: List[str]) -> List[str]:
         if not apns_tokens:
