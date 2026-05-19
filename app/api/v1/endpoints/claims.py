@@ -1,13 +1,12 @@
-from typing import Any, Optional
+from typing import Any, Optional, List, cast
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app.models.user import User
-from app.schemas.claim import ClaimPaginatedResponse, ClaimResponse, ClaimCreate
+from app.schemas.claim import ClaimPaginatedResponse, ClaimResponse, ClaimCreate, ClaimSummaryResponse
 from app.crud.claim import claim as crud_claim
 from app.crud.claim_setting import claim_setting as crud_setting
 from app.schemas.claim_setting import ClaimSetting
-from typing import List
 from fastapi import UploadFile, File
 import cloudinary
 import cloudinary.uploader
@@ -89,7 +88,8 @@ async def read_claims(
     status: Optional[str] = None,
     query: Optional[str] = None,
     year: Optional[int] = None,
-    month: Optional[int] = None
+    month: Optional[int] = None,
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER"]))
 ) -> Any:
     """
     Get claims for ambulances or etc.
@@ -107,6 +107,64 @@ async def read_claims(
     return {
         "success": True,
         "message": "Claim(s) successfully fetched",
+        "data": {"items": items},
+        "totalCount": total
+    }
+
+@router.get("/summary", response_model=ClaimSummaryResponse)
+async def read_claim_summary(
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER"]))
+) -> Any:
+    """
+    Get aggregated summary counts of all claims.
+    """
+    summary_data = await crud_claim.get_summary(db)
+    return {
+        "success": True,
+        "message": "Claim summary retrieved successfully",
+        "data": summary_data,
+        "totalCount": 1,
+        "refreshToken": None,
+        "refreshTokenExpiryTime": "0001-01-01T00:00:00"
+    }
+
+
+@router.get("/ambulance", response_model=ClaimPaginatedResponse)
+async def read_ambulance_claims(
+    db: AsyncSession = Depends(deps.get_db),
+    skip: int = 0,
+    limit: int = 100,
+    status: Optional[str] = None,
+    query: Optional[str] = None,
+    year: Optional[int] = None,
+    month: Optional[int] = None,
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Get claims specifically for the signed-in ambulance user.
+    """
+    if not getattr(current_user, "ambulance_id", None):
+        raise HTTPException(
+            status_code=400,
+            detail="The current signed-in user is not associated with any ambulance."
+        )
+    
+    ambulance_id = cast(int, current_user.ambulance_id)
+    
+    items, total = await crud_claim.get_multi_with_count(
+        db,
+        skip=skip,
+        limit=limit,
+        status=status,
+        query_review=query,
+        year=year,
+        month=month,
+        ambulance_id=ambulance_id
+    )
+    return {
+        "success": True,
+        "message": "Ambulance claim(s) successfully fetched",
         "data": {"items": items},
         "totalCount": total
     }

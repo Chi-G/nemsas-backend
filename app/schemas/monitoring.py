@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
-from typing import Optional, Any
+from typing import Optional, Any, List
 from app.schemas.state import State
 
 class MonitoringBase(BaseModel):
@@ -39,3 +39,7 @@ class Monitoring(MonitoringBase):
     state: Optional[State] = None
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+class MonitoringListResponse(BaseModel):
+    message: str = "Monthly data fetched successfully"
+    data: List[Monitoring]

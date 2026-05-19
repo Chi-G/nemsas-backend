@@ -72,3 +72,17 @@ class ClaimResponse(BaseModel):
     success: bool
     message: str
     data: Claim
+
+class ClaimSummaryData(BaseModel):
+    total: int = 0
+    approved: int = 0
+    rejected: int = 0
+    pending: int = 0
+
+class ClaimSummaryResponse(BaseModel):
+    success: bool = True
+    message: str = "Claim summary retrieved successfully"
+    data: ClaimSummaryData
+    totalCount: int = 1
+    refreshToken: Optional[str] = None
+    refreshTokenExpiryTime: Optional[str] = "0001-01-01T00:00:00"

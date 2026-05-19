@@ -87,7 +87,8 @@ class CRUDClaim:
         query_review: Optional[str] = None,
         year: Optional[int] = None,
         month: Optional[int] = None,
-        is_etc: Optional[bool] = None
+        is_etc: Optional[bool] = None,
+        ambulance_id: Optional[int] = None
     ) -> Tuple[List[Claim], int]:
         base_filters = []
         
@@ -104,8 +105,12 @@ class CRUDClaim:
             pass
 
         stmt = select(Claim).options(*self._get_claim_options()).order_by(desc(Claim.id))
-        
         count_stmt = select(func.count()).select_from(Claim)
+        
+        if ambulance_id is not None:
+            stmt = stmt.join(Claim.incident)
+            count_stmt = count_stmt.join(Claim.incident)
+            base_filters.append(Incident.ambulance_id == ambulance_id)
         
         if base_filters:
             stmt = stmt.where(and_(*base_filters))
@@ -114,5 +119,23 @@ class CRUDClaim:
         total_count = await db.scalar(count_stmt)
         result = await db.execute(stmt.offset(skip).limit(limit))
         return list(result.scalars().all()), total_count or 0
+
+    async def get_summary(self, db: AsyncSession) -> dict:
+        stmt = select(Claim.status, func.count(Claim.id)).group_by(Claim.status)
+        result = await db.execute(stmt)
+        counts = {row[0]: row[1] for row in result.all()}
+        
+        # Standardize the keys based on the expected JSON response
+        approved = counts.get("Approved", 0) + counts.get("approved", 0)
+        rejected = counts.get("Rejected", 0) + counts.get("rejected", 0)
+        pending = counts.get("Pending", 0) + counts.get("pending", 0) + counts.get("New", 0) + counts.get("new", 0)
+        total = sum(counts.values())
+        
+        return {
+            "total": total,
+            "approved": approved,
+            "rejected": rejected,
+            "pending": pending
+        }
 
 claim = CRUDClaim()

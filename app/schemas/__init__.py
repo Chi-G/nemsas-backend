@@ -10,4 +10,5 @@ from app.schemas.hospital import Hospital, HospitalResponse
 from app.schemas.ambulance import Ambulance, AmbulanceResponse
 from app.schemas.fee_category import FeeCategory, FeeCategoryCreate, FeeCategoryUpdate
 from app.schemas.service import Service, ServiceCreate, ServiceUpdate
+from app.schemas.transfer_form import TransferFormBindingModel, TransferFormUpdateBindingModel, TransferFormModel
 
