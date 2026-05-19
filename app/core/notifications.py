@@ -26,6 +26,8 @@ def log_fcm(message: str):
 if settings.FIREBASE_CREDENTIALS_JSON:
     try:
         cred_info = json.loads(settings.FIREBASE_CREDENTIALS_JSON)
+        if "private_key" in cred_info:
+            cred_info["private_key"] = cred_info["private_key"].replace("\\n", "\n")
         cred = credentials.Certificate(cred_info)
         firebase_admin.initialize_app(cred)
         log_fcm("[Notification] Firebase successfully initialized using FIREBASE_CREDENTIALS_JSON environment variable.")
