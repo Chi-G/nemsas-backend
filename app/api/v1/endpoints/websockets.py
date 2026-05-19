@@ -20,7 +20,12 @@ async def get_current_user_ws(token: str, db: AsyncSession):
         user_id = payload.get("sub")
         if not user_id:
             return None
-        user = await user_crud.get(db, id=int(user_id))
+        import uuid
+        try:
+            user_uuid = uuid.UUID(user_id)
+        except (ValueError, TypeError):
+            return None
+        user = await user_crud.get(db, id=user_uuid)
         return user
     except Exception as e:
         logger.error(f"WebSocket auth error: {e}")

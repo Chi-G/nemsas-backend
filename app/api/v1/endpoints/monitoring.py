@@ -5,9 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app.crud.monitoring import monitoring as crud_monitoring
 
+from app.schemas.monitoring import MonthlyAggregateResponse
+
 router = APIRouter()
 
-@router.get("/", response_model=Any)
+@router.get("/", response_model=MonthlyAggregateResponse)
 async def read_monitoring(
     db: AsyncSession = Depends(deps.get_db),
     year: Optional[int] = None

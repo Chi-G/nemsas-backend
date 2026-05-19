@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api import deps
 from app.crud.monitoring import monitoring as crud_monitoring
+from app.schemas.monitoring import MonthlyAggregateResponse
 from app.models.ambulance import Ambulance
 from app.models.hospital import Hospital
 from app.models.incident import Incident
@@ -140,7 +141,7 @@ async def get_dashboard_stats(
     }
 
 
-@router.get("/monthly", response_model=Any)
+@router.get("/monthly", response_model=MonthlyAggregateResponse)
 async def get_dashboard_monthly(
     db: AsyncSession = Depends(deps.get_db),
     year: Optional[int] = None,

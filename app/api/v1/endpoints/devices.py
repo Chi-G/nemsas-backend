@@ -99,32 +99,3 @@ async def test_push_notification(
         "data": True
     }
 
-@router.get("/fcm-log", response_model=ResponseBase[str])
-async def get_fcm_log(
-    current_user: User = Depends(deps.get_current_user),
-):
-    """
-    Read the contents of the FCM debug log
-    """
-    import os
-    log_path = "/tmp/fcm.log"
-    if not os.path.exists(log_path):
-        return {
-            "success": True,
-            "message": "FCM log file does not exist yet",
-            "data": ""
-        }
-    try:
-        with open(log_path, "r") as f:
-            content = f.read()
-        return {
-            "success": True,
-            "message": "FCM log fetched successfully",
-            "data": content
-        }
-    except Exception as e:
-        return {
-            "success": False,
-            "message": f"Error reading log file: {str(e)}",
-            "data": ""
-        }

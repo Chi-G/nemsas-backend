@@ -56,6 +56,31 @@ class CRUDTransferForm:
         db.add(db_obj)
         await db.commit()
         await db.refresh(db_obj)
+
+        # Real-time Broadcast via Socket.IO
+        try:
+            from app.models.incident import Incident
+            from app.core.socket_manager import SocketManager
+            stmt = select(Incident.state_id).where(Incident.id == db_obj.incident_id)
+            state_id = await db.scalar(stmt)
+            if state_id:
+                await SocketManager.broadcast_incident_update(
+                    state_id,
+                    {
+                        "type": "NEW_TRANSFER_FORM",
+                        "transferFormId": db_obj.id,
+                        "incidentId": db_obj.incident_id,
+                        "patientId": db_obj.patient_id,
+                        "etcId": db_obj.etc_id,
+                        "runSheetId": db_obj.run_sheet_id,
+                        "approve": db_obj.approve
+                    }
+                )
+        except Exception as e:
+            # Prevent failures in websocket broadcasting from breaking the main db transaction
+            import logging
+            logging.getLogger(__name__).error(f"Failed to broadcast websocket update: {e}")
+
         return db_obj
 
     async def update(
@@ -71,6 +96,30 @@ class CRUDTransferForm:
         db.add(db_obj)
         await db.commit()
         await db.refresh(db_obj)
+
+        # Real-time Broadcast via Socket.IO
+        try:
+            from app.models.incident import Incident
+            from app.core.socket_manager import SocketManager
+            stmt = select(Incident.state_id).where(Incident.id == db_obj.incident_id)
+            state_id = await db.scalar(stmt)
+            if state_id:
+                await SocketManager.broadcast_incident_update(
+                    state_id,
+                    {
+                        "type": "TRANSFER_FORM_UPDATE",
+                        "transferFormId": db_obj.id,
+                        "incidentId": db_obj.incident_id,
+                        "patientId": db_obj.patient_id,
+                        "etcId": db_obj.etc_id,
+                        "runSheetId": db_obj.run_sheet_id,
+                        "approve": db_obj.approve
+                    }
+                )
+        except Exception as e:
+            import logging
+            logging.getLogger(__name__).error(f"Failed to broadcast websocket update: {e}")
+
         return db_obj
 
     async def remove(self, db: AsyncSession, *, id: int) -> Optional[TransferForm]:
