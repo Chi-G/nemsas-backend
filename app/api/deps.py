@@ -36,10 +36,18 @@ async def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
         )
-    
+    import uuid
+    try:
+        user_uuid = uuid.UUID(token_data.sub)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+        )
+
     result = await db.execute(
         select(User)
-        .where(User.id == token_data.sub)
+        .where(User.id == user_uuid)
         .options(
             selectinload(User.state),
             selectinload(User.lga),
@@ -57,7 +65,7 @@ async def get_current_user(
 
 
 class PermissionChecker:
-    def __init__(self, allowed_roles: List[str] = None, allowed_users: List[str] = None):
+    def __init__(self, allowed_roles: list[str] | None = None, allowed_users: list[str] | None = None):
         """
         Check if the current user has the required roles or is one of the allowed users.
         If both are provided, the user must satisfy AT LEAST one condition.

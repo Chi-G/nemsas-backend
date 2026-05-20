@@ -14,6 +14,9 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7  # 1 week
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30 # 30 days
+    
+    # Redis Settings
+    REDIS_URL: str = "redis://localhost:6379/0"
 
     # Redis Settings
     REDIS_HOST: str = "localhost"
@@ -21,12 +24,14 @@ class Settings(BaseSettings):
     REDIS_DB: int = 0
     REDIS_USERNAME: Optional[str] = None
     REDIS_PASSWORD: Optional[str] = None
-    REDIS_SSL: bool = False
-    REDIS_URL: Optional[str] = None
+    REDIS_SSL: bool = False 
     
     # Firebase Settings
     FIREBASE_SERVICE_ACCOUNT_PATH: Optional[str] = None # Path to service account json
     FIREBASE_CREDENTIALS_JSON: Optional[str] = None # Raw JSON string of service account for production
+
+    # Upload Provider Settings
+    UPLOAD_PROVIDER: str = "local"
 
     # Cloudinary Settings
     CLOUDINARY_CLOUD_NAME: Optional[str] = None

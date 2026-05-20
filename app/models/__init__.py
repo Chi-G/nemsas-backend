@@ -14,6 +14,7 @@ from app.models.fee_category import FeeCategory
 from app.models.service import Service
 from app.models.etc_intervention import EtcIntervention
 from app.models.claim import ClaimImage
+from app.models.transfer_form import TransferForm
 
 
 

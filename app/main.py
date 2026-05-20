@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.api.v1.api import api_router
 import app.models.base # Force register all models to load relationships
 from app.core.config import settings
@@ -7,13 +8,25 @@ from app.core.middleware import LoggingMiddleware
 from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
 
+from contextlib import asynccontextmanager
+from app.services.notification_service import notification_service
+from app.core.notifications import notification_service as fcm_notification_service
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await notification_service.connect_redis()
+    yield
+    # Shutdown
+    await notification_service.disconnect_redis()
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
-
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    lifespan=lifespan,
 )
 
 from fastapi.exceptions import RequestValidationError
@@ -130,6 +143,13 @@ import socketio
 from app.core.socket_manager import sio
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+# Ensure static upload directory exists
+import os
+os.makedirs("static/uploads", exist_ok=True)
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Mount Socket.IO
 socket_app = socketio.ASGIApp(sio, socketio_path='socket.io')

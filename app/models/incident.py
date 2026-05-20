@@ -83,13 +83,13 @@ class Incident(Base):
     patients = relationship("Patient", back_populates="incident")
 
     @property
-    def incident_type_name(self) -> Optional[str]:
+    def incident_type_name(self) -> str | None:
         if self.incident_type:
             return self.incident_type.name
         return None
 
     @property
-    def state_name_computed(self) -> Optional[str]:
+    def state_name_computed(self) -> str | None:
         if self.state:
             return self.state.name
         return None

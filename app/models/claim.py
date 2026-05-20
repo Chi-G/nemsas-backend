@@ -44,7 +44,7 @@ class Claim(Base):
     
     # Submission Meta
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True) 
-    claim_type = Column(SQLAlchemyEnum(ClaimType, native_enum=False), nullable=True)
+    claim_type: str | None = Column(SQLAlchemyEnum(ClaimType, native_enum=False), nullable=True)  # type: ignore
     
     # Descriptive Fields
     title = Column(String(255), nullable=True)
