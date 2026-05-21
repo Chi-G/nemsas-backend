@@ -7,6 +7,12 @@ from app.models.run_sheet import RunSheet
 from app.models.user import User
 from uuid import UUID
 
+from app.models.incident import Incident
+from app.models.ambulance import Ambulance
+from app.models.hospital import Hospital
+from app.models.claim import Claim
+from app.models.patient import Patient
+
 class CRUDRunSheet:
     async def get_multi_with_count(
         self, 
@@ -22,6 +28,17 @@ class CRUDRunSheet:
             selectinload(RunSheet.medic_user).selectinload(User.state),
             selectinload(RunSheet.medic_user).selectinload(User.lga),
             selectinload(RunSheet.medic_user).selectinload(User.ward),
+            selectinload(RunSheet.incident).selectinload(Incident.patients),
+            selectinload(RunSheet.incident).selectinload(Incident.claims).selectinload(Claim.images),
+            selectinload(RunSheet.incident).selectinload(Incident.hospital).selectinload(Hospital.state),
+            selectinload(RunSheet.incident).selectinload(Incident.hospital).selectinload(Hospital.lga),
+            selectinload(RunSheet.incident).selectinload(Incident.hospital).selectinload(Hospital.hospital_type),
+            selectinload(RunSheet.incident).selectinload(Incident.state),
+            selectinload(RunSheet.patient).selectinload(Patient.interventions),
+            selectinload(RunSheet.ambulance).selectinload(Ambulance.state),
+            selectinload(RunSheet.ambulance).selectinload(Ambulance.lga),
+            selectinload(RunSheet.ambulance).selectinload(Ambulance.ward),
+            selectinload(RunSheet.ambulance).selectinload(Ambulance.ambulance_type)
         ).order_by(desc(RunSheet.id))
         count_stmt = select(func.count()).select_from(RunSheet)
         

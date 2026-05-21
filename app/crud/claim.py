@@ -88,7 +88,8 @@ class CRUDClaim:
         year: Optional[int] = None,
         month: Optional[int] = None,
         is_etc: Optional[bool] = None,
-        ambulance_id: Optional[int] = None
+        ambulance_id: Optional[int] = None,
+        state_id: Optional[int] = None
     ) -> Tuple[List[Claim], int]:
         base_filters = []
         
@@ -107,10 +108,16 @@ class CRUDClaim:
         stmt = select(Claim).options(*self._get_claim_options()).order_by(desc(Claim.id))
         count_stmt = select(func.count()).select_from(Claim)
         
-        if ambulance_id is not None:
+        need_incident_join = (ambulance_id is not None) or (state_id is not None)
+        if need_incident_join:
             stmt = stmt.join(Claim.incident)
             count_stmt = count_stmt.join(Claim.incident)
+            
+        if ambulance_id is not None:
             base_filters.append(Incident.ambulance_id == ambulance_id)
+            
+        if state_id is not None:
+            base_filters.append(Incident.state_id == state_id)
         
         if base_filters:
             stmt = stmt.where(and_(*base_filters))
@@ -120,8 +127,11 @@ class CRUDClaim:
         result = await db.execute(stmt.offset(skip).limit(limit))
         return list(result.scalars().all()), total_count or 0
 
-    async def get_summary(self, db: AsyncSession) -> dict:
-        stmt = select(Claim.status, func.count(Claim.id)).group_by(Claim.status)
+    async def get_summary(self, db: AsyncSession, state_id: Optional[int] = None) -> dict:
+        stmt = select(Claim.status, func.count(Claim.id))
+        if state_id is not None:
+            stmt = stmt.join(Claim.incident).where(Incident.state_id == state_id)
+        stmt = stmt.group_by(Claim.status)
         result = await db.execute(stmt)
         counts = {row[0]: row[1] for row in result.all()}
         

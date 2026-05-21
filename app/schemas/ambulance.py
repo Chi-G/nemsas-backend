@@ -3,8 +3,6 @@ from datetime import datetime
 from typing import Optional, List, Union, Any
 
 class AmbulanceBase(BaseModel):
-    name: str
-    code: str
     location: Optional[str] = None
     ambulance_type_id: Optional[int] = Field(None, alias="ambulanceTypeId")
     state_id: Optional[int] = Field(None, alias="stateId")
@@ -31,6 +29,7 @@ class AmbulanceBase(BaseModel):
 
 
 class AmbulanceCreate(AmbulanceBase):
+    name: str
     code: Optional[str] = None
 
 
@@ -40,6 +39,8 @@ class AmbulanceUpdate(AmbulanceBase):
 
 class AmbulanceInDBBase(AmbulanceBase):
     id: int
+    name: str
+    code: str
     date_added: Optional[datetime] = Field(None, alias="dateAdded")
     
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
@@ -79,6 +80,7 @@ class AmbulanceSummary(BaseModel):
     state_name: Optional[str] = Field(None, alias="stateName")
     lga_name: Optional[str] = Field(None, alias="lgaName")
     ambulance_type_name: Optional[str] = Field(None, alias="ambulanceTypeName")
+    plate_number: Optional[str] = Field(None, alias="plateNumber")
     date_added: Optional[datetime] = Field(None, alias="dateAdded")
 
     @model_validator(mode='before')

@@ -85,26 +85,26 @@ async def get_dashboard_stats(
     role = getattr(current_user, "user_type", "")
 
     # Determine effective state scoping
-    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN"]:
+    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER"]:
         effective_state_id = state_id
     else:
         effective_state_id = current_user.state_id
 
-    # 1. Count distinct states that have active users
-    stmt_states = select(func.count(distinct(User.state_id))).where(
-        User.state_id.isnot(None), User.is_active == True
-    )
-    if effective_state_id is not None:
-        stmt_states = stmt_states.where(User.state_id == effective_state_id)
-    no_of_states = (await db.execute(stmt_states)).scalar() or 0
+    # 1. Count distinct states: 29 globally, 1 if filtered, 0 if SEMSAS user (blocked)
+    if "SEMSAS" in role or "STATE" in role:
+        no_of_states = 0
+    else:
+        if effective_state_id is not None:
+            no_of_states = 1
+        else:
+            no_of_states = 29
 
-    # 2. Count distinct LGAs that have active users
-    stmt_lgas = select(func.count(distinct(User.lga_id))).where(
-        User.lga_id.isnot(None), User.is_active == True
-    )
+    # 2. Count distinct LGAs where ambulances (Mamii transport assets) are registered
+    stmt_amb_lgas = select(distinct(Ambulance.lga_id)).where(Ambulance.lga_id.isnot(None))
     if effective_state_id is not None:
-        stmt_lgas = stmt_lgas.where(User.state_id == effective_state_id)
-    no_of_lgas = (await db.execute(stmt_lgas)).scalar() or 0
+        stmt_amb_lgas = stmt_amb_lgas.where(Ambulance.state_id == effective_state_id)
+    amb_lgas_res = await db.execute(stmt_amb_lgas)
+    no_of_lgas = len(set(amb_lgas_res.scalars().all()))
 
     # 3. Count Incidents (with optional period filter)
     stmt_incidents = select(func.count(Incident.id))

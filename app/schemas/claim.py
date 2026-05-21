@@ -12,6 +12,7 @@ class ClaimBase(BaseModel):
     nhia: Optional[str] = Field(None, alias="nhia")
     location: Optional[str] = Field(None, alias="location")
     service_provider: Optional[str] = Field(None, alias="serviceProvider")
+    claim_type: Optional[str] = Field(None, alias="claimType")
     
     total_price: Optional[float] = Field(None, alias="totalPrice")
     distance_covered: Optional[float] = Field(None, alias="distanceCovered")
@@ -23,6 +24,7 @@ class ClaimBase(BaseModel):
     
     incident_id: Optional[int] = Field(None, alias="incidentId")
     patient_id: Optional[int] = Field(None, alias="patientId")
+    rejection_reason: Optional[str] = Field(None, alias="rejectionReason")
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
@@ -52,9 +54,99 @@ class Claim(ClaimBase):
         if isinstance(data, dict):
             if 'incident' in data:
                 data['incident_view_model'] = data['incident']
-        elif hasattr(data, "__dict__") and "incident" in data.__dict__:
-            if data.incident:
+            
+            claim_type = data.get('claim_type') or data.get('claimType')
+            patient = data.get('patient')
+            
+            details = []
+            med_interventions = []
+            
+            if patient:
+                interventions = patient.get('interventions') if isinstance(patient, dict) else getattr(patient, 'interventions', None)
+                if not interventions:
+                    interventions = patient.get('medical_interventions') if isinstance(patient, dict) else getattr(patient, 'medical_interventions', None)
+                if not isinstance(interventions, list):
+                    interventions = []
+                
+                drugs = patient.get('drugs') if isinstance(patient, dict) else getattr(patient, 'drugs', None)
+                if isinstance(drugs, list):
+                    drugs_list = drugs
+                elif isinstance(drugs, dict):
+                    drugs_list = [drugs]
+                elif isinstance(drugs, str) and drugs:
+                    import json
+                    try:
+                        parsed = json.loads(drugs)
+                        if isinstance(parsed, list):
+                            drugs_list = parsed
+                        else:
+                            drugs_list = [parsed]
+                    except Exception:
+                        drugs_list = [drugs]
+                elif drugs:
+                    drugs_list = [drugs]
+                else:
+                    drugs_list = []
+                
+                claim_type_str = str(claim_type).upper() if claim_type else ""
+                if claim_type_str == "ETC":
+                    details = interventions
+                    med_interventions = interventions
+                else:
+                    details = drugs_list
+                    med_interventions = []
+            
+            data['details'] = details
+            data['medical_interventions'] = med_interventions
+            
+        elif hasattr(data, "__dict__"):
+            if "incident" in data.__dict__ and data.incident:
                 data.incident_view_model = data.incident
+            
+            claim_type = getattr(data, 'claim_type', None)
+            patient = getattr(data, 'patient', None)
+            
+            details = []
+            med_interventions = []
+            
+            if patient:
+                interventions = getattr(patient, 'interventions', None)
+                if not interventions:
+                    interventions = getattr(patient, 'medical_interventions', None)
+                if not isinstance(interventions, list):
+                    interventions = []
+                
+                drugs = getattr(patient, 'drugs', None)
+                if isinstance(drugs, list):
+                    drugs_list = drugs
+                elif isinstance(drugs, dict):
+                    drugs_list = [drugs]
+                elif isinstance(drugs, str) and drugs:
+                    import json
+                    try:
+                        parsed = json.loads(drugs)
+                        if isinstance(parsed, list):
+                            drugs_list = parsed
+                        else:
+                            drugs_list = [parsed]
+                    except Exception:
+                        drugs_list = [drugs]
+                elif drugs:
+                    drugs_list = [drugs]
+                else:
+                    drugs_list = []
+                
+                claim_type_str = str(claim_type).upper() if claim_type else ""
+                if claim_type_str == "ETC":
+                    details = interventions
+                    med_interventions = interventions
+                else:
+                    details = drugs_list
+                    med_interventions = []
+            
+            data.details = details
+            data.medical_interventions = med_interventions
+            
         return data
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)

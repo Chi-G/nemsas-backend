@@ -89,12 +89,17 @@ async def read_claims(
     query: Optional[str] = None,
     year: Optional[int] = None,
     month: Optional[int] = None,
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
 ) -> Any:
     """
     Get claims for ambulances or etc.
     Supports standard filtering parameters provided by the user workflow.
     """
+    state_id = None
+    user_type = getattr(current_user, "user_type", None)
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        state_id = getattr(current_user, "state_id", None)
+
     items, total = await crud_claim.get_multi_with_count(
         db,
         skip=skip,
@@ -102,7 +107,8 @@ async def read_claims(
         status=status,
         query_review=query,
         year=year,
-        month=month
+        month=month,
+        state_id=state_id
     )
     return {
         "success": True,
@@ -114,12 +120,17 @@ async def read_claims(
 @router.get("/summary", response_model=ClaimSummaryResponse)
 async def read_claim_summary(
     db: AsyncSession = Depends(deps.get_db),
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
 ) -> Any:
     """
     Get aggregated summary counts of all claims.
     """
-    summary_data = await crud_claim.get_summary(db)
+    state_id = None
+    user_type = getattr(current_user, "user_type", None)
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        state_id = getattr(current_user, "state_id", None)
+
+    summary_data = await crud_claim.get_summary(db, state_id=state_id)
     return {
         "success": True,
         "message": "Claim summary retrieved successfully",
@@ -139,18 +150,26 @@ async def read_ambulance_claims(
     query: Optional[str] = None,
     year: Optional[int] = None,
     month: Optional[int] = None,
+    ambulance_id: Optional[int] = None,
     current_user: User = Depends(deps.get_current_user)
 ) -> Any:
     """
-    Get claims specifically for the signed-in ambulance user.
+    Get claims specifically for the signed-in ambulance user or all ambulance claims for administrators.
     """
-    if not getattr(current_user, "ambulance_id", None):
+    user_ambulance_id = getattr(current_user, "ambulance_id", None)
+    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"}
+    user_role = getattr(current_user, "user_type", None)
+    is_admin = user_role in admin_roles
+
+    if not is_admin and not user_ambulance_id:
         raise HTTPException(
             status_code=400,
             detail="The current signed-in user is not associated with any ambulance."
         )
     
-    ambulance_id = cast(int, current_user.ambulance_id)
+    # If the user is an ambulance provider, they can only view their own claims.
+    # If the user is an admin, they can view all claims or filter by query param ambulance_id.
+    filter_ambulance_id = user_ambulance_id if not is_admin else (ambulance_id or user_ambulance_id)
     
     items, total = await crud_claim.get_multi_with_count(
         db,
@@ -160,7 +179,7 @@ async def read_ambulance_claims(
         query_review=query,
         year=year,
         month=month,
-        ambulance_id=ambulance_id
+        ambulance_id=filter_ambulance_id
     )
     return {
         "success": True,
@@ -209,4 +228,81 @@ async def read_claim(
         "success": True,
         "message": "Claim successfully fetched",
         "data": item
+    }
+
+from pydantic import BaseModel, Field, model_validator
+from datetime import datetime
+
+class ClaimRejectionRequest(BaseModel):
+    rejection_reason: str = Field(..., alias="rejectionReason")
+
+    @model_validator(mode='before')
+    @classmethod
+    def validate_reason(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            reason = data.get("rejection_reason") or data.get("rejectionReason")
+            if not reason or not str(reason).strip():
+                raise ValueError("rejectionReason is mandatory and cannot be empty")
+        return data
+
+@router.post("/{id}/approve", response_model=ClaimResponse)
+async def approve_claim(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
+) -> Any:
+    claim_obj = await crud_claim.get(db, id=id)
+    if not claim_obj:
+        raise HTTPException(status_code=404, detail="Claim not found")
+        
+    user_type = getattr(current_user, "user_type", None)
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
+            raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to approve claims in this state")
+            
+    claim_obj.status = "Approved"  # type: ignore
+    claim_obj.processed_at = datetime.now()  # type: ignore
+    claim_obj.processed_by_id = current_user.id  # type: ignore
+    db.add(claim_obj)
+    await db.commit()
+    
+    updated_item = await crud_claim.get(db, id=id)
+    return {
+        "success": True,
+        "message": "Claim approved successfully",
+        "data": updated_item
+    }
+
+@router.post("/{id}/reject", response_model=ClaimResponse)
+async def reject_claim(
+    id: int,
+    body: ClaimRejectionRequest,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
+) -> Any:
+    claim_obj = await crud_claim.get(db, id=id)
+    if not claim_obj:
+        raise HTTPException(status_code=404, detail="Claim not found")
+        
+    user_type = getattr(current_user, "user_type", None)
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
+            raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to reject claims in this state")
+            
+    reason = body.rejection_reason
+    if not reason or not reason.strip():
+        raise HTTPException(status_code=422, detail="rejectionReason is mandatory and cannot be empty")
+        
+    claim_obj.status = "Rejected"  # type: ignore
+    claim_obj.rejection_reason = reason  # type: ignore
+    claim_obj.processed_at = datetime.now()  # type: ignore
+    claim_obj.processed_by_id = current_user.id  # type: ignore
+    db.add(claim_obj)
+    await db.commit()
+    
+    updated_item = await crud_claim.get(db, id=id)
+    return {
+        "success": True,
+        "message": "Claim rejected successfully",
+        "data": updated_item
     }
