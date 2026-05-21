@@ -148,4 +148,13 @@ class CRUDClaim:
             "pending": pending
         }
 
+    async def remove(self, db: AsyncSession, *, id: int) -> Optional[Claim]:
+        stmt = select(Claim).where(Claim.id == id)
+        result = await db.execute(stmt)
+        db_obj = result.scalars().first()
+        if db_obj:
+            await db.delete(db_obj)
+            await db.commit()
+        return db_obj
+
 claim = CRUDClaim()

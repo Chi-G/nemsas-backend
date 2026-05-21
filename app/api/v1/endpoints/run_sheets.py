@@ -2,7 +2,7 @@ from typing import Any, Optional, cast
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
-from app.schemas.run_sheet import RunSheetPaginatedResponse
+from app.schemas.run_sheet import RunSheetPaginatedResponse, RunSheetCreate, RunSheetSingleResponse
 from app.crud.run_sheet import run_sheet as crud_run_sheet
 from app.models.user import User
 from uuid import UUID
@@ -52,4 +52,25 @@ async def read_runsheets(
         "message": "Runsheet(s) successfully fetched",
         "data": {"items": items},
         "totalCount": total
+    }
+
+@router.post("/add", response_model=RunSheetSingleResponse)
+async def create_runsheet(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    obj_in: RunSheetCreate,
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Create a new runsheet.
+    """
+    # Auto-assign medic_user_id if not provided
+    if not obj_in.medic_user_id:
+        obj_in.medic_user_id = cast(UUID, current_user.id)
+        
+    runsheet = await crud_run_sheet.create(db, obj_in=obj_in)
+    return {
+        "success": True,
+        "message": "Runsheet successfully created",
+        "data": runsheet
     }

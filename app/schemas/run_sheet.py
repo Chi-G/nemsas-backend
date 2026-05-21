@@ -37,7 +37,8 @@ class RunSheetBase(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
 class RunSheetCreate(RunSheetBase):
-    pass
+    emergency_treatment_center_id: Optional[int] = Field(None, alias="emergencyTreatmentCenterId")
+    price: Optional[float] = None
 
 class RunSheetUpdate(RunSheetBase):
     pass
@@ -188,3 +189,8 @@ class RunSheetPaginatedResponse(BaseModel):
     message: str
     data: RunSheetListContainer
     totalCount: int = 0
+
+class RunSheetSingleResponse(BaseModel):
+    success: bool
+    message: str
+    data: RunSheet

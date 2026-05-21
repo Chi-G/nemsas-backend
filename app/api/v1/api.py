@@ -28,7 +28,10 @@ api_router.include_router(medical_interventions.router, prefix="/medical-interve
 # Operations Resource Map
 api_router.include_router(incidents.router, prefix="/incidents", tags=["incidents"])
 api_router.include_router(claims.router, prefix="/claims", tags=["claims"])
+api_router.include_router(claims.router, prefix="/Claims", tags=["claims"])
 api_router.include_router(run_sheets.router, prefix="/run-sheets", tags=["runsheets"])
+api_router.include_router(run_sheets.router, prefix="/Runsheets", tags=["runsheets"])
+api_router.include_router(run_sheets.router, prefix="/runsheets", tags=["runsheets"])
 api_router.include_router(monitoring.router, prefix="/monitoring", tags=["monitoring"])
 api_router.include_router(patient_transfer_forms.router, prefix="/TransferForms", tags=["TransferForms"])
 api_router.include_router(websockets.router, prefix="/ws", tags=["websockets"])
