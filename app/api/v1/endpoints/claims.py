@@ -99,6 +99,8 @@ async def read_claims(
     user_type = getattr(current_user, "user_type", None)
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
         state_id = getattr(current_user, "state_id", None)
+        if state_id is None:
+            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
 
     items, total = await crud_claim.get_multi_with_count(
         db,
@@ -129,6 +131,8 @@ async def read_claim_summary(
     user_type = getattr(current_user, "user_type", None)
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
         state_id = getattr(current_user, "state_id", None)
+        if state_id is None:
+            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
 
     summary_data = await crud_claim.get_summary(db, state_id=state_id)
     return {
@@ -257,6 +261,8 @@ async def approve_claim(
         
     user_type = getattr(current_user, "user_type", None)
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        if current_user.state_id is None:
+            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
         if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
             raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to approve claims in this state")
             
@@ -286,6 +292,8 @@ async def reject_claim(
         
     user_type = getattr(current_user, "user_type", None)
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        if current_user.state_id is None:
+            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
         if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
             raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to reject claims in this state")
             

@@ -47,6 +47,7 @@ class Claim(ClaimBase):
     # Response Compatibility fields
     details: List[Any] = Field(default_factory=list, alias="details")
     medical_interventions: List[Any] = Field(default_factory=list, alias="medicalInterventions")
+    drugs_list: Optional[List[Any]] = Field(default_factory=list, alias="drugsList")
 
     @model_validator(mode='before')
     @classmethod
@@ -60,6 +61,7 @@ class Claim(ClaimBase):
             
             details = []
             med_interventions = []
+            drugs_list = []
             
             if patient:
                 interventions = patient.get('interventions') if isinstance(patient, dict) else getattr(patient, 'interventions', None)
@@ -98,6 +100,7 @@ class Claim(ClaimBase):
             
             data['details'] = details
             data['medical_interventions'] = med_interventions
+            data['drugs_list'] = drugs_list
             
         elif hasattr(data, "__dict__"):
             if "incident" in data.__dict__ and data.incident:
@@ -108,6 +111,7 @@ class Claim(ClaimBase):
             
             details = []
             med_interventions = []
+            drugs_list = []
             
             if patient:
                 interventions = getattr(patient, 'interventions', None)
@@ -146,6 +150,7 @@ class Claim(ClaimBase):
             
             data.details = details
             data.medical_interventions = med_interventions
+            data.drugs_list = drugs_list
             
         return data
 
