@@ -225,6 +225,114 @@ async def create_claim(
         "data": item
     }
 
+@router.get("/getAllAmbulance", response_model=ClaimPaginatedResponse)
+async def get_all_ambulance_claims(
+    db: AsyncSession = Depends(deps.get_db),
+    page: int = 1,
+    pageSize: int = 10,
+    year: Optional[int] = None,
+    month: Optional[int] = None,
+    stateId: Optional[int] = None,
+    status: Optional[str] = None,
+    claimQuery: Optional[str] = None,
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Get all ambulance claims with paginated filters matching legacy API.
+    """
+    skip = (page - 1) * pageSize
+    limit = pageSize
+
+    # Resolve state_id constraint for SEMSAS users
+    user_type = getattr(current_user, "user_type", None)
+    filter_state_id = stateId
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        user_state_id = getattr(current_user, "state_id", None)
+        if user_state_id is None:
+            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
+        filter_state_id = user_state_id
+
+    user_ambulance_id = getattr(current_user, "ambulance_id", None)
+    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"}
+    is_admin = user_type in admin_roles
+
+    if not is_admin and not user_ambulance_id:
+        raise HTTPException(
+            status_code=400,
+            detail="The current signed-in user is not associated with any ambulance."
+        )
+
+    filter_ambulance_id = user_ambulance_id if not is_admin else None
+
+    items, total = await crud_claim.get_multi_with_count(
+        db,
+        skip=skip,
+        limit=limit,
+        status=status,
+        query_review=claimQuery,
+        year=year,
+        month=month,
+        ambulance_id=filter_ambulance_id,
+        state_id=filter_state_id
+    )
+    
+    ambulance_claims = [item for item in items if getattr(item, "claim_type", None) != "ETC"]
+
+    return {
+        "success": True,
+        "message": "Ambulance claim(s) successfully fetched",
+        "data": {"items": ambulance_claims},
+        "totalCount": len(ambulance_claims)
+    }
+
+
+@router.get("/getAllETC", response_model=ClaimPaginatedResponse)
+async def get_all_etc_claims(
+    db: AsyncSession = Depends(deps.get_db),
+    page: int = 1,
+    pageSize: int = 10,
+    year: Optional[int] = None,
+    month: Optional[int] = None,
+    stateId: Optional[int] = None,
+    status: Optional[str] = None,
+    claimQuery: Optional[str] = None,
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Get all ETC claims with paginated filters matching legacy API.
+    """
+    skip = (page - 1) * pageSize
+    limit = pageSize
+
+    user_type = getattr(current_user, "user_type", None)
+    filter_state_id = stateId
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        user_state_id = getattr(current_user, "state_id", None)
+        if user_state_id is None:
+            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
+        filter_state_id = user_state_id
+
+    items, total = await crud_claim.get_multi_with_count(
+        db,
+        skip=skip,
+        limit=limit,
+        status=status,
+        query_review=claimQuery,
+        year=year,
+        month=month,
+        state_id=filter_state_id
+    )
+    
+    etc_claims = [item for item in items if getattr(item, "claim_type", None) == "ETC"]
+
+    return {
+        "success": True,
+        "message": "ETC claim(s) successfully fetched",
+        "data": {"items": etc_claims},
+        "totalCount": len(etc_claims)
+    }
+
+
 @router.get("/{id}", response_model=ClaimResponse)
 async def read_claim(
     id: int,
@@ -797,112 +905,4 @@ async def update_claim_legacy(
         "success": True,
         "message": "Claim successfully updated",
         "data": updated_item
-    }
-
-
-@router.get("/getAllAmbulance", response_model=ClaimPaginatedResponse)
-async def get_all_ambulance_claims(
-    db: AsyncSession = Depends(deps.get_db),
-    page: int = 1,
-    pageSize: int = 10,
-    year: Optional[int] = None,
-    month: Optional[int] = None,
-    stateId: Optional[int] = None,
-    status: Optional[str] = None,
-    claimQuery: Optional[str] = None,
-    current_user: User = Depends(deps.get_current_user)
-) -> Any:
-    """
-    Get all ambulance claims with paginated filters matching legacy API.
-    """
-    skip = (page - 1) * pageSize
-    limit = pageSize
-
-    # Resolve state_id constraint for SEMSAS users
-    user_type = getattr(current_user, "user_type", None)
-    filter_state_id = stateId
-    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
-        user_state_id = getattr(current_user, "state_id", None)
-        if user_state_id is None:
-            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
-        filter_state_id = user_state_id
-
-    user_ambulance_id = getattr(current_user, "ambulance_id", None)
-    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"}
-    is_admin = user_type in admin_roles
-
-    if not is_admin and not user_ambulance_id:
-        raise HTTPException(
-            status_code=400,
-            detail="The current signed-in user is not associated with any ambulance."
-        )
-
-    filter_ambulance_id = user_ambulance_id if not is_admin else None
-
-    items, total = await crud_claim.get_multi_with_count(
-        db,
-        skip=skip,
-        limit=limit,
-        status=status,
-        query_review=claimQuery,
-        year=year,
-        month=month,
-        ambulance_id=filter_ambulance_id,
-        state_id=filter_state_id
-    )
-    
-    ambulance_claims = [item for item in items if getattr(item, "claim_type", None) != "ETC"]
-
-    return {
-        "success": True,
-        "message": "Ambulance claim(s) successfully fetched",
-        "data": {"items": ambulance_claims},
-        "totalCount": len(ambulance_claims)
-    }
-
-
-@router.get("/getAllETC", response_model=ClaimPaginatedResponse)
-async def get_all_etc_claims(
-    db: AsyncSession = Depends(deps.get_db),
-    page: int = 1,
-    pageSize: int = 10,
-    year: Optional[int] = None,
-    month: Optional[int] = None,
-    stateId: Optional[int] = None,
-    status: Optional[str] = None,
-    claimQuery: Optional[str] = None,
-    current_user: User = Depends(deps.get_current_user)
-) -> Any:
-    """
-    Get all ETC claims with paginated filters matching legacy API.
-    """
-    skip = (page - 1) * pageSize
-    limit = pageSize
-
-    user_type = getattr(current_user, "user_type", None)
-    filter_state_id = stateId
-    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
-        user_state_id = getattr(current_user, "state_id", None)
-        if user_state_id is None:
-            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
-        filter_state_id = user_state_id
-
-    items, total = await crud_claim.get_multi_with_count(
-        db,
-        skip=skip,
-        limit=limit,
-        status=status,
-        query_review=claimQuery,
-        year=year,
-        month=month,
-        state_id=filter_state_id
-    )
-    
-    etc_claims = [item for item in items if getattr(item, "claim_type", None) == "ETC"]
-
-    return {
-        "success": True,
-        "message": "ETC claim(s) successfully fetched",
-        "data": {"items": etc_claims},
-        "totalCount": len(etc_claims)
     }
