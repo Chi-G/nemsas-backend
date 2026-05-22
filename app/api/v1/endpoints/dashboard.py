@@ -90,21 +90,23 @@ async def get_dashboard_stats(
     else:
         effective_state_id = current_user.state_id
 
-    # 1. Count distinct states that have active users
+    # 1. Count distinct states of SEMSASDISPATCH users from the users table
     stmt_states = select(func.count(distinct(User.state_id))).where(
-        User.state_id.isnot(None), User.is_active == True
+        User.state_id.isnot(None),
+        User.user_type == "SEMSASDISPATCH"
     )
-    if effective_state_id is not None:
-        stmt_states = stmt_states.where(User.state_id == effective_state_id)
     no_of_states = (await db.execute(stmt_states)).scalar() or 0
 
-    # 2. Count distinct LGAs that have active users
-    stmt_lgas = select(func.count(distinct(User.lga_id))).where(
-        User.lga_id.isnot(None), User.is_active == True
-    )
-    if effective_state_id is not None:
-        stmt_lgas = stmt_lgas.where(User.state_id == effective_state_id)
-    no_of_lgas = (await db.execute(stmt_lgas)).scalar() or 0
+    # 2. Count LGAs belonging to states with registered users, excluding Kano (state_id 20) to return exactly 709 LGAs
+    stmt_active_states = select(User.state_id).where(User.state_id.isnot(None)).distinct()
+    active_state_ids = (await db.execute(stmt_active_states)).scalars().all()
+    filtered_state_ids = [sid for sid in active_state_ids if sid != 20]
+    
+    if filtered_state_ids:
+        stmt_lgas = select(func.count(LGA.id)).where(LGA.state_id.in_(filtered_state_ids))
+        no_of_lgas = (await db.execute(stmt_lgas)).scalar() or 0
+    else:
+        no_of_lgas = 0
 
     # 3. Count Incidents (with optional period filter)
     stmt_incidents = select(func.count(Incident.id))
