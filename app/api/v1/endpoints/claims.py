@@ -272,17 +272,16 @@ async def get_all_ambulance_claims(
         query_review=claimQuery,
         year=year,
         month=month,
+        is_etc=False,
         ambulance_id=filter_ambulance_id,
         state_id=filter_state_id
     )
-    
-    ambulance_claims = [item for item in items if getattr(item, "claim_type", None) != "ETC"]
 
     return {
         "success": True,
         "message": "Ambulance claim(s) successfully fetched",
-        "data": {"items": ambulance_claims},
-        "totalCount": len(ambulance_claims)
+        "data": {"items": items},
+        "totalCount": total
     }
 
 
@@ -320,16 +319,15 @@ async def get_all_etc_claims(
         query_review=claimQuery,
         year=year,
         month=month,
+        is_etc=True,
         state_id=filter_state_id
     )
-    
-    etc_claims = [item for item in items if getattr(item, "claim_type", None) == "ETC"]
 
     return {
         "success": True,
         "message": "ETC claim(s) successfully fetched",
-        "data": {"items": etc_claims},
-        "totalCount": len(etc_claims)
+        "data": {"items": items},
+        "totalCount": total
     }
 
 

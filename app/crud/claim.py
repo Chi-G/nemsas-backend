@@ -103,7 +103,9 @@ class CRUDClaim:
             pass
 
         if is_etc is True:
-            pass
+            base_filters.append(Claim.claim_type == "ETC")
+        elif is_etc is False:
+            base_filters.append((Claim.claim_type != "ETC") | (Claim.claim_type.is_(None)))
 
         stmt = select(Claim).options(*self._get_claim_options()).order_by(desc(Claim.id))
         count_stmt = select(func.count()).select_from(Claim)
