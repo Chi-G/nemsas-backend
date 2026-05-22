@@ -18,8 +18,10 @@ class RunSheet(Base):
     
     # Linking Identity Context
     title = Column(String(255), nullable=True) # Maps to titles in payload
-    patient_id = Column(Integer, ForeignKey("patients.id"), index=True, nullable=True)
+    patient_id = Column(JSON, nullable=True)
     ambulance_id = Column(Integer, ForeignKey("ambulances.id"), index=True, nullable=True)
+    emergency_treatment_center_id = Column(Integer, ForeignKey("hospitals.id"), index=True, nullable=True)
+    price = Column(Float, nullable=True)
     
     # Logistics Routing
     route_from = Column(String(255), nullable=True)
@@ -67,8 +69,8 @@ class RunSheet(Base):
     # Relationships
     incident = relationship("Incident")
     dispatch = relationship("Dispatch")
-    patient = relationship("Patient", back_populates="run_sheets")
     ambulance = relationship("Ambulance")
+    emergency_treatment_center = relationship("Hospital")
     
     medic_user = relationship("User", foreign_keys=[medic_user_id])
     hospice_user = relationship("User", foreign_keys=[hospice_user_id])

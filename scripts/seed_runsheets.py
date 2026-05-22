@@ -24,7 +24,7 @@ async def seed_runsheets():
     with open(json_path, 'r') as f:
         payload = json.load(f)
 
-    data = payload.get("data", {}).get("items", [])
+    data = payload if isinstance(payload, list) else payload.get("data", {}).get("items", [])
     if not data:
         print("⚠️ No runsheets found in JSON.")
         return
@@ -34,6 +34,8 @@ async def seed_runsheets():
         valid_inc_ids = set((await session.execute(select(Incident.id))).scalars().all())
         valid_pat_ids = set((await session.execute(select(Patient.id))).scalars().all())
         valid_amb_ids = set((await session.execute(select(Ambulance.id))).scalars().all())
+        from app.models.hospital import Hospital
+        valid_hosp_ids = set((await session.execute(select(Hospital.id))).scalars().all())
         valid_usr_ids = set(str(uid) for uid in (await session.execute(select(User.id))).scalars().all())
 
         print(f"📈 DB counts for validation: Incidents={len(valid_inc_ids)}, Patients={len(valid_pat_ids)}, Ambulances={len(valid_amb_ids)}, Users={len(valid_usr_ids)}")
@@ -48,8 +50,12 @@ async def seed_runsheets():
                 inc_id = None
                 
             pat_id = item.get("patientId")
-            if pat_id not in valid_pat_ids:
-                pat_id = None
+            if isinstance(pat_id, list):
+                pat_id = [p for p in pat_id if p in valid_pat_ids]
+            elif pat_id in valid_pat_ids:
+                pat_id = [pat_id]
+            else:
+                pat_id = []
                 
             amb_id = item.get("ambulanceId")
             if amb_id not in valid_amb_ids:
@@ -62,6 +68,10 @@ async def seed_runsheets():
             hospice_uid = item.get("hospiceUserId")
             if hospice_uid not in valid_usr_ids:
                 hospice_uid = None
+                
+            etc_id = item.get("emergencyTreatmentCenterId")
+            if etc_id not in valid_hosp_ids:
+                etc_id = None
 
             # Date Parsing
             take_off_time = None
@@ -98,6 +108,8 @@ async def seed_runsheets():
                 "take_off_time": take_off_time,
                 "arrival_time": arrival_time,
                 "total_minutes_to_hospital": float(item.get("totalMinutesToHospital")) if item.get("totalMinutesToHospital") is not None else None,
+                "emergency_treatment_center_id": etc_id,
+                "price": float(item.get("price")) if item.get("price") is not None else None,
                 "medic_user_id": medic_uid,
                 "hospice_user_id": hospice_uid,
                 "patient_name": item.get("patientName") or (item.get("title") if item.get("title") else None),
