@@ -94,10 +94,14 @@ async def run_all_seeds():
     from scripts.seed_runsheets import seed_runsheets
     await seed_runsheets()
 
+    print("\n--- Seeding Monitoring Data ---")
+    from scripts.seed_monitoring import seed as seed_monitoring
+    await seed_monitoring()
+
     print("\n--- Synchronizing Database Sequences ---")
     from sqlalchemy import text
     from app.db.session import SessionLocal
-    tables_to_sync = ['claims', 'hospitals', 'ambulances', 'patients', 'incidents', 'medical_interventions', 'run_sheets']
+    tables_to_sync = ['claims', 'hospitals', 'ambulances', 'patients', 'incidents', 'medical_interventions', 'run_sheets', 'monitoring']
     async with SessionLocal() as session:
         for t in tables_to_sync:
             try:
