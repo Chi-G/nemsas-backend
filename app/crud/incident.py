@@ -192,7 +192,7 @@ class CRUDIncident:
                     "type": "NEW_INCIDENT",
                     "incidentId": final_obj.id,
                     "serialNo": final_obj.serial_no,
-                    "status": final_obj.incident_status_type,
+                    "status": final_obj.event_status_type or final_obj.incident_status_type,
                     "triage": final_obj.triage_category
                 }
             )
@@ -255,7 +255,7 @@ class CRUDIncident:
                 {
                     "type": "INCIDENT_UPDATE",
                     "incidentId": final_obj.id,
-                    "status": final_obj.incident_status_type,
+                    "status": final_obj.event_status_type or final_obj.incident_status_type,
                     "triage": final_obj.triage_category
                 }
             )

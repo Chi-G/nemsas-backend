@@ -91,8 +91,17 @@ class CRUDAmbulance:
         db_obj = Ambulance(**obj_in_data)
         db.add(db_obj)
         await db.commit()
-        await db.refresh(db_obj)
-        return db_obj
+        # Re-fetch with eager-loaded relationships to avoid lazy load in async context
+        result = await db.execute(
+            select(Ambulance)
+            .filter(Ambulance.id == db_obj.id)
+            .options(
+                selectinload(Ambulance.state),
+                selectinload(Ambulance.lga),
+                selectinload(Ambulance.ambulance_type)
+            )
+        )
+        return result.scalars().first()
 
 
 

@@ -20,17 +20,20 @@ class RunSheetBase(BaseModel):
     patient_id: Optional[int] = Field(None, alias="patientId")
     ambulance_id: Optional[int] = Field(None, alias="ambulanceId")
     medic_user_id: Optional[UUID] = Field(None, alias="medicUserId")
+    user_id: Optional[UUID] = Field(None, alias="userId")
     hospice_user_id: Optional[UUID] = Field(None, alias="hospiceUserId")
 
     @model_validator(mode='before')
     @classmethod
     def map_incoming_payload(cls, data: Any) -> Any:
         if isinstance(data, dict):
-            # 1. Map userId / medicuserId / user_id to medic_user_id
-            for k in ["userId", "medicuserId", "user_id"]:
+            # 1. Map userId / medicUserId / medicuserId / user_id to medic_user_id and user_id
+            for k in ["userId", "medicUserId", "medicuserId", "user_id"]:
                 if k in data and data[k] is not None:
                     if not data.get("medic_user_id") and not data.get("medicUserId"):
                         data["medic_user_id"] = data[k]
+                    if not data.get("user_id") and not data.get("userId"):
+                        data["user_id"] = data[k]
                     break
         return data
 

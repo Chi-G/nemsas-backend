@@ -15,11 +15,15 @@ async def read_runsheets(
     skip: int = 0,
     limit: int = 100,
     state_id: Optional[int] = None,
+    month: Optional[int] = None,
+    year: Optional[int] = None,
+    incident_category_id: Optional[int] = None,
+    patient_name: Optional[str] = None,
     current_user: User = Depends(deps.get_current_user)
 ) -> Any:
     """
     Get list of runsheets matching the authenticated user's permissions and scope.
-    - SUPERADMINISTRATOR & NEMSASADMIN can list globally and filter by state_id.
+    - SUPERADMINISTRATOR, NEMSASADMIN, NEMSASUSER, NATIONALVIEWER can list globally and filter by state_id.
     - SEMSAS users list runsheets strictly within their own state.
     - AMBULANCEUSER list runsheets strictly matching their ambulance_id.
     - Other staff (medic/hospice/etc.) list runsheets matching their medic_user_id.
@@ -30,9 +34,9 @@ async def read_runsheets(
     
     role = getattr(current_user, "user_type", "")
     
-    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN"]:
+    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER"]:
         effective_state_id = state_id
-    elif role in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+    elif role in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "SEMSASPIUUSER", "STATEVIEWER"]:
         effective_state_id = cast(Optional[int], current_user.state_id)
     elif role == "AMBULANCEUSER":
         effective_ambulance_id = cast(Optional[int], current_user.ambulance_id)
@@ -45,7 +49,11 @@ async def read_runsheets(
         limit=limit,
         medic_user_id=effective_medic_user_id,
         ambulance_id=effective_ambulance_id,
-        state_id=effective_state_id
+        state_id=effective_state_id,
+        month=month,
+        year=year,
+        incident_category_id=incident_category_id,
+        patient_name=patient_name
     )
     return {
         "success": True,

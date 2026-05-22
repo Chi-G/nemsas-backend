@@ -345,8 +345,8 @@ async def read_claim(
         "data": item
     }
 
-from pydantic import BaseModel, Field, model_validator
 from datetime import datetime
+from app.models.claim import ClaimAuditLog, ClaimAction, ClaimStatus
 
 class ClaimRejectionRequest(BaseModel):
     rejection_reason: str = Field(..., alias="rejectionReason")
@@ -372,15 +372,23 @@ async def approve_claim(
         
     user_type = getattr(current_user, "user_type", None)
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
-        if current_user.state_id is None:
-            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
-        if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
-            raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to approve claims in this state")
+        raise HTTPException(
+            status_code=403,
+            detail="SEMSAS users cannot directly approve claims. They must endorse them instead."
+        )
             
     claim_obj.status = "Approved"  # type: ignore
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
     db.add(claim_obj)
+    
+    audit_log = ClaimAuditLog(
+        claim_id=claim_obj.id,
+        action=ClaimAction.APPROVE,
+        processed_by_id=current_user.id
+    )
+    db.add(audit_log)
+    
     await db.commit()
     
     updated_item = await crud_claim.get(db, id=id)
@@ -417,12 +425,59 @@ async def reject_claim(
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
     db.add(claim_obj)
+    
+    audit_log = ClaimAuditLog(
+        claim_id=claim_obj.id,
+        action=ClaimAction.REJECT,
+        processed_by_id=current_user.id,
+        rejection_reason=reason
+    )
+    db.add(audit_log)
+    
     await db.commit()
     
     updated_item = await crud_claim.get(db, id=id)
     return {
         "success": True,
         "message": "Claim rejected successfully",
+        "data": updated_item
+    }
+
+@router.post("/{id}/endorse", response_model=ClaimResponse)
+async def endorse_claim(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
+) -> Any:
+    claim_obj = await crud_claim.get(db, id=id)
+    if not claim_obj:
+        raise HTTPException(status_code=404, detail="Claim not found")
+        
+    user_type = getattr(current_user, "user_type", None)
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        if current_user.state_id is None:
+            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
+        if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
+            raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to endorse claims in this state")
+            
+    claim_obj.status = "Endorsed"  # type: ignore
+    claim_obj.processed_at = datetime.now()  # type: ignore
+    claim_obj.processed_by_id = current_user.id  # type: ignore
+    db.add(claim_obj)
+    
+    audit_log = ClaimAuditLog(
+        claim_id=claim_obj.id,
+        action=ClaimAction.ENDORSE,
+        processed_by_id=current_user.id
+    )
+    db.add(audit_log)
+    
+    await db.commit()
+    
+    updated_item = await crud_claim.get(db, id=id)
+    return {
+        "success": True,
+        "message": "Claim endorsed successfully",
         "data": updated_item
     }
 
@@ -796,17 +851,37 @@ async def accept_or_reject_claim(
             raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to modify claims in this state")
 
     status_str = body.claimStatusType
+    action = None
     if status_str.lower() in ["approved", "approve"]:
+        if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+            raise HTTPException(
+                status_code=403,
+                detail="SEMSAS users cannot directly approve claims. They must endorse them instead."
+            )
         setattr(claim_obj, "status", "Approved")
+        action = ClaimAction.APPROVE
     elif status_str.lower() in ["rejected", "reject"]:
         setattr(claim_obj, "status", "Rejected")
         setattr(claim_obj, "rejection_reason", body.rejectionReason)
+        action = ClaimAction.REJECT
     else:
         setattr(claim_obj, "status", status_str)
+        if "endorse" in status_str.lower():
+            action = ClaimAction.ENDORSE
 
     setattr(claim_obj, "processed_at", datetime.now())
     setattr(claim_obj, "processed_by_id", current_user.id)
     db.add(claim_obj)
+
+    if action:
+        audit_log = ClaimAuditLog(
+            claim_id=claim_obj.id,
+            action=action,
+            processed_by_id=current_user.id,
+            rejection_reason=getattr(claim_obj, "rejection_reason", None)
+        )
+        db.add(audit_log)
+
     await db.commit()
 
     updated_item = await crud_claim.get(db, id=body.id)

@@ -24,7 +24,10 @@ async def seed_runsheets():
     with open(json_path, 'r') as f:
         payload = json.load(f)
 
-    data = payload.get("data", {}).get("items", [])
+    if isinstance(payload, list):
+        data = payload
+    else:
+        data = payload.get("data", {}).get("items", [])
     if not data:
         print("⚠️ No runsheets found in JSON.")
         return
