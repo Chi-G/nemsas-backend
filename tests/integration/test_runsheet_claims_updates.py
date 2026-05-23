@@ -120,6 +120,7 @@ async def test_runsheet_filtering_and_searching(
     response = await client.get("/api/v1/run-sheets/?patient_name=Alice", headers=headers)
     assert response.status_code == 200
     data = response.json()
+    print("DEBUG_RUNSHEET:", data["data"]["items"][0])
     assert data["totalCount"] >= 1
     assert data["data"]["items"][0]["patientViewModel"]["firstName"] == "Alice"
     
@@ -137,6 +138,32 @@ async def test_runsheet_filtering_and_searching(
     response = await client.get("/api/v1/run-sheets/?incident_category_id=5", headers=headers)
     assert response.status_code == 200
     assert response.json()["totalCount"] >= 1
+
+@pytest.mark.asyncio
+async def test_create_runsheet_via_api(
+    client: AsyncClient,
+    get_user_token_headers,
+    setup_test_users_and_records
+):
+    records = setup_test_users_and_records
+    headers = get_user_token_headers(records["semsas_user"])
+    
+    # Payload including 'userId' which maps to 'user_id' in schemas and causes the DB model issue
+    runsheet_payload = {
+        "title": "API Test Runsheet",
+        "routeFrom": "Scene",
+        "routeTo": "Hospital",
+        "incidentId": records["incident"].id,
+        "patientId": records["patient"].id,
+        "userId": str(records["semsas_user"].id),
+    }
+    
+    response = await client.post("/api/v1/run-sheets/add", json=runsheet_payload, headers=headers)
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["success"] is True
+    assert data["data"]["title"] == "API Test Runsheet"
+    assert data["data"]["medicUserId"] == str(records["semsas_user"].id)
 
 @pytest.mark.asyncio
 async def test_claims_approval_restrictions_and_endorsement(

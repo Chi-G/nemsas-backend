@@ -8,6 +8,57 @@ from app.schemas.incident import Incident
 from app.schemas.ambulance import AmbulanceSummary
 from app.schemas.hospital import HospitalSummary
 
+def get_loaded_relation(obj: Any, attr_name: str) -> Any:
+    if obj is None:
+        return None
+    if isinstance(obj, dict):
+        return obj.get(attr_name)
+    try:
+        from sqlalchemy import inspect
+        cls = type(obj)
+        if hasattr(cls, "__mapper__"):
+            if attr_name in cls.__mapper__.relationships:
+                inspected = inspect(obj)
+                if inspected is not None:
+                    attr = inspected.attrs.get(attr_name)
+                    if attr is not None and attr.loaded:
+                        return getattr(obj, attr_name, None)
+                return None
+    except Exception:
+        return None
+    return getattr(obj, attr_name, None)
+
+def orm_to_dict(obj: Any) -> Any:
+    if obj is None:
+        return None
+    if isinstance(obj, list):
+        return [orm_to_dict(item) for item in obj]
+    if isinstance(obj, dict):
+        return {k: orm_to_dict(v) for k, v in obj.items()}
+        
+    cls = type(obj)
+    if hasattr(cls, "__mapper__"):
+        try:
+            from sqlalchemy import inspect
+            inspected = inspect(obj)
+            if inspected is not None:
+                res = {}
+                for col in inspected.mapper.column_attrs:
+                    res[col.key] = getattr(obj, col.key, None)
+                for rel in inspected.mapper.relationships:
+                    attr = inspected.attrs.get(rel.key)
+                    if attr is not None and attr.loaded:
+                        val = getattr(obj, rel.key, None)
+                        res[rel.key] = orm_to_dict(val)
+                for k, v in obj.__dict__.items():
+                    if k not in res and not k.startswith('_'):
+                        res[k] = orm_to_dict(v)
+                return res
+        except Exception:
+            pass
+            
+    return obj
+
 class RunSheetBase(BaseModel):
     title: Optional[str] = Field(None, alias="title")
     route_from: Optional[str] = Field(None, alias="routeFrom")
@@ -64,16 +115,15 @@ class RunSheet(RunSheetBase):
     emergency_treatment_center_view_model: Optional[HospitalSummary] = Field(None, alias="emergencyTreatmentCenterViewModel")
     price: Optional[float] = None
     state_name: Optional[str] = Field(None, alias="stateName")
-    
     @model_validator(mode='before')
     @classmethod
     def map_fields_and_defaults(cls, data: Any) -> Any:
         # Route From Defaulting logic
-        route_from_val = getattr(data, "route_from", None) or (isinstance(data, dict) and data.get("route_from"))
+        route_from_val = get_loaded_relation(data, "route_from")
         if not route_from_val:
-            incident = getattr(data, "incident", None) or (isinstance(data, dict) and data.get("incident"))
+            incident = get_loaded_relation(data, "incident")
             if incident:
-                incident_loc = getattr(incident, "incident_location", None) or (isinstance(incident, dict) and incident.get("incident_location"))
+                incident_loc = get_loaded_relation(incident, "incident_location")
                 if incident_loc:
                     if isinstance(data, dict):
                         data["route_from"] = incident_loc
@@ -81,7 +131,7 @@ class RunSheet(RunSheetBase):
                         setattr(data, "route_from", incident_loc)
 
         # Map user
-        medic_user = getattr(data, "medic_user", None) or (isinstance(data, dict) and data.get("medic_user"))
+        medic_user = get_loaded_relation(data, "medic_user")
         if medic_user:
             if isinstance(data, dict):
                 data["user"] = medic_user
@@ -89,9 +139,9 @@ class RunSheet(RunSheetBase):
                 setattr(data, "user", medic_user)
 
         # Populate patients and patientViewModels
-        incident = getattr(data, "incident", None) or (isinstance(data, dict) and data.get("incident"))
+        incident = get_loaded_relation(data, "incident")
         if incident:
-            incident_patients = getattr(incident, "patients", None) or (isinstance(incident, dict) and incident.get("patients"))
+            incident_patients = get_loaded_relation(incident, "patients")
             if incident_patients:
                 if isinstance(data, dict):
                     data["patients"] = incident_patients
@@ -101,7 +151,7 @@ class RunSheet(RunSheetBase):
                     setattr(data, "patientViewModels", incident_patients)
 
         # Map patientViewModel from runsheet.patient relationship
-        patient_obj = getattr(data, "patient", None) or (isinstance(data, dict) and data.get("patient"))
+        patient_obj = get_loaded_relation(data, "patient")
         if patient_obj:
             if isinstance(data, dict):
                 data["patient_view_model"] = patient_obj
@@ -110,7 +160,7 @@ class RunSheet(RunSheetBase):
         else:
             # Fallback to the first patient from the incident if no specific runsheet.patient is assigned
             if incident:
-                patients_list = getattr(incident, "patients", None) or (isinstance(incident, dict) and incident.get("patients"))
+                patients_list = get_loaded_relation(incident, "patients")
                 if patients_list and len(patients_list) > 0:
                     if isinstance(data, dict):
                         data["patient_view_model"] = patients_list[0]
@@ -125,17 +175,17 @@ class RunSheet(RunSheetBase):
                 setattr(data, "incident_view_model", incident)
                 
             # Map emergencyTreatmentCenterViewModel from incident.hospital
-            etc_obj = getattr(incident, "hospital", None) or (isinstance(incident, dict) and incident.get("hospital"))
+            etc_obj = get_loaded_relation(incident, "hospital")
             if etc_obj:
                 if isinstance(data, dict):
                     data["emergency_treatment_center_view_model"] = etc_obj
                 else:
-                    setattr(data, "emergency_treatment_center_view_model", etc_obj)
+                    setattr(data["emergency_treatment_center_view_model"] if isinstance(data, dict) else data, "emergency_treatment_center_view_model", etc_obj)
 
         # Map ambulanceViewModel from runsheet.ambulance relationship (or fallback to incident.ambulance)
-        amb_obj = getattr(data, "ambulance", None) or (isinstance(data, dict) and data.get("ambulance"))
+        amb_obj = get_loaded_relation(data, "ambulance")
         if not amb_obj and incident:
-            amb_obj = getattr(incident, "ambulance", None) or (isinstance(incident, dict) and incident.get("ambulance"))
+            amb_obj = get_loaded_relation(incident, "ambulance")
             
         if amb_obj:
             if isinstance(data, dict):
@@ -146,12 +196,12 @@ class RunSheet(RunSheetBase):
         # Map price (dynamically from incident claims of type Ambulance)
         price_val = 0.0
         if incident:
-            claims_list = getattr(incident, "claims", None) or (isinstance(incident, dict) and incident.get("claims"))
+            claims_list = get_loaded_relation(incident, "claims")
             if claims_list:
                 for claim in claims_list:
-                    claim_type_val = getattr(claim, "claim_type", None) or (isinstance(claim, dict) and claim.get("claim_type"))
+                    claim_type_val = get_loaded_relation(claim, "claim_type")
                     if claim_type_val and str(claim_type_val).lower() == "ambulance":
-                        claim_price = getattr(claim, "total_price", 0.0) or (isinstance(claim, dict) and claim.get("total_price", 0.0))
+                        claim_price = get_loaded_relation(claim, "total_price") or 0.0
                         price_val = float(claim_price)
                         break
         # Fallback default price for valid ambulance claims
@@ -165,13 +215,17 @@ class RunSheet(RunSheetBase):
 
         # Map stateName
         state_name_val = None
-        medic_user = getattr(data, "medic_user", None) or (isinstance(data, dict) and data.get("medic_user"))
-        if medic_user and getattr(medic_user, "state", None):
-            state_name_val = medic_user.state.name
+        medic_user = get_loaded_relation(data, "medic_user")
+        if medic_user:
+            medic_state = get_loaded_relation(medic_user, "state")
+            if medic_state:
+                state_name_val = get_loaded_relation(medic_state, "name")
         if not state_name_val and incident:
-            state_name_val = getattr(incident, "state_name", None) or (isinstance(incident, dict) and incident.get("state_name"))
-            if not state_name_val and getattr(incident, "state", None):
-                state_name_val = incident.state.name
+            state_name_val = get_loaded_relation(incident, "state_name")
+            if not state_name_val:
+                incident_state = get_loaded_relation(incident, "state")
+                if incident_state:
+                    state_name_val = get_loaded_relation(incident_state, "name")
         if not state_name_val:
             state_name_val = "Borno"
             

@@ -2,6 +2,10 @@ import asyncio
 import json
 import os
 import sys
+
+# Add the project root to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from datetime import datetime
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
@@ -11,9 +15,6 @@ from app.models.incident import Incident
 from app.models.patient import Patient
 from app.models.ambulance import Ambulance
 from app.models.user import User
-
-# Add the project root to sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 async def seed_runsheets():
     json_path = os.path.join(os.path.dirname(__file__), "runsheet.json")

@@ -110,6 +110,7 @@ class CRUDRunSheet:
         obj_in_data = obj_in.model_dump(exclude_none=True, by_alias=False)
         obj_in_data.pop("emergency_treatment_center_id", None)
         obj_in_data.pop("price", None)
+        obj_in_data.pop("user_id", None)
         
         incident_id = obj_in_data.get("incident_id")
         if incident_id:

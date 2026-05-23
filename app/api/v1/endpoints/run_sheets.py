@@ -2,7 +2,7 @@ from typing import Any, Optional, cast
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
-from app.schemas.run_sheet import RunSheetPaginatedResponse, RunSheetCreate, RunSheetSingleResponse
+from app.schemas.run_sheet import RunSheetPaginatedResponse, RunSheetCreate, RunSheetSingleResponse, orm_to_dict
 from app.crud.run_sheet import run_sheet as crud_run_sheet
 from app.models.user import User
 from uuid import UUID
@@ -58,7 +58,7 @@ async def read_runsheets(
     return {
         "success": True,
         "message": "Runsheet(s) successfully fetched",
-        "data": {"items": items},
+        "data": {"items": [orm_to_dict(item) for item in items]},
         "totalCount": total
     }
 
@@ -80,5 +80,5 @@ async def create_runsheet(
     return {
         "success": True,
         "message": "Runsheet successfully created",
-        "data": runsheet
+        "data": orm_to_dict(runsheet)
     }
