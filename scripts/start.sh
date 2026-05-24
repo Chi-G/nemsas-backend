@@ -56,6 +56,10 @@ python -m scripts.seed_all
 echo "[$(date)] 📑 Seeding operational data (Claims, Incidents, Run Sheets)..."
 PYTHONPATH=. python scripts/seed_ops.py
 
+# Seed detailed runsheet operational data with vitals, status, and signatures
+echo "[$(date)] 📝 Seeding detailed runsheets..."
+PYTHONPATH=. python scripts/seed_runsheets.py
+
 # Seed monitoring data (Monthly analytics Jan-Dec)
 echo "[$(date)] 📊 Seeding monthly monitoring data..."
 PYTHONPATH=. python scripts/seed_monitoring.py
