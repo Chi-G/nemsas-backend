@@ -41,4 +41,3 @@ nemsas-app-firebase.json
  
 # Local Uploads Cache
 static/uploads/
-scripts/runsheet.json
