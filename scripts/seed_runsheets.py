@@ -507,7 +507,7 @@ async def seed_runsheets():
         print(f"📈 DB counts after upserting nested: Incidents={len(valid_inc_ids)}, Patients={len(valid_pat_ids)}, Ambulances={len(valid_amb_ids)}, Users={len(valid_usr_ids)}")
 
         # 8. Seed Runsheets
-        to_insert = []
+        to_insert_dict = {}
         for item in data:
             rs_id = item.get("id")
             if not rs_id: continue
@@ -566,7 +566,9 @@ async def seed_runsheets():
                 "etc_signed_at": parse_datetime(item.get("arrivalTime")),
                 "date_added": parse_datetime(item.get("dateAdded")) or datetime.now()
             }
-            to_insert.append(rs_data)
+            to_insert_dict[rs_id] = rs_data
+
+        to_insert = list(to_insert_dict.values())
 
         if not to_insert:
             print("🏁 No new runsheets to seed.")

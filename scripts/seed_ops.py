@@ -240,13 +240,16 @@ async def seed_operational_data():
                     rs_items = rs_dat.get("data", {}).get("items", [])
                 else:
                     rs_items = []
+                
+                # Deduplicate by ID to prevent primary key constraint errors in a single statement
+                rs_dict = {}
                 for r in rs_items:
                     rid = r.get("id")
                     if not rid: continue
                     
                     amb_id = r.get("ambulanceId")
                     
-                    rs_recs.append({
+                    rs_dict[rid] = {
                         "id": rid,
                         "title": r.get("title"),
                         "incident_id": r.get("incidentId") if r.get("incidentId") != 0 else None,
@@ -260,7 +263,8 @@ async def seed_operational_data():
                         "medic_user_id": r.get("medicUserId") if is_uuid(r.get("medicUserId")) else None,
                         "hospice_user_id": r.get("hospiceUserId") if is_uuid(r.get("hospiceUserId")) else None,
                         "date_added": parse_dt(r.get("dateAdded")),
-                    })
+                    }
+                rs_recs = list(rs_dict.values())
             rs_count = await upsert_data(session, RunSheet, rs_recs)
             print(f"✅ Seeded {rs_count} Run Sheets.")
             await fix_sequence(session, "run_sheets")
@@ -274,11 +278,13 @@ async def seed_operational_data():
             with open(m_path) as f:
                 m_items = json.load(f)
                 if isinstance(m_items, list):
+                    # Deduplicate by ID to prevent primary key constraint errors in a single statement
+                    m_dict = {}
                     for m in m_items:
                         m_id = m.get("id")
                         if not m_id: continue
                         
-                        m_recs.append({
+                        m_dict[m_id] = {
                             "id": m_id,
                             "year": parse_int(m.get("year")),
                             "month": parse_int(m.get("month")),
@@ -298,10 +304,11 @@ async def seed_operational_data():
                             "state_id": m.get("stateId"),
                             "added_by": m.get("addedBy"),
                             "date_added": parse_dt(m.get("dateAdded")),
-                        })
+                        }
+                    m_recs = list(m_dict.values())
             m_count = await upsert_data(session, Monitoring, m_recs)
             print(f"✅ Seeded {m_count} Monitoring Evaluation Logs.")
-            await fix_sequence(session, "monitoring_evaluations")
+            await fix_sequence(session, "monitoring")
 
     print("🏁 All operations seeding procedures have concluded successfully.")
 
