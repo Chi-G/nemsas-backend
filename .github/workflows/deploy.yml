@@ -354,6 +354,8 @@ jobs:
               echo "✅ Deployment completed successfully"
             else
               echo "❌ Deployment failed with exit code: \$DEPLOYMENT_RESULT"
+              echo "📋 Printing docker compose logs (last 100 lines) for diagnostics:"
+              docker compose logs --tail 100 || docker-compose logs --tail 100
               exit 1
             fi
           ENDSSH
