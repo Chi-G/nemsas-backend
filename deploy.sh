@@ -92,27 +92,27 @@ echo -e "\n${YELLOW}[3/6] Building new container images...${NC}"
 echo "Checking disk space before building..."
 df -h /
 
-# Build the images (keeps the old app running while building)
-echo "Building images (this may take a while)..."
-if ! $DOCKER_COMPOSE_CMD build --no-cache --progress=plain; then
+# Build the images (keeps the old app running while building, uses cache for speed)
+echo "Building ${APP_SERVICE_NAME} image (utilizing layer cache)..."
+if ! $DOCKER_COMPOSE_CMD build --progress=plain ${APP_SERVICE_NAME}; then
     echo -e "${RED}❌ Image build failed! Checking Docker system info...${NC}"
     docker info | grep -E "Storage|Space|Disk"
     exit 1
 fi
-echo -e "${GREEN}✅ Images built successfully${NC}"
+echo -e "${GREEN}✅ ${APP_SERVICE_NAME} image built successfully${NC}"
 
 # ============================================================================
 # START/UP CONTAINERS (INSTANT SWITCHOVER)
 # ============================================================================
 echo -e "\n${YELLOW}[4/6] Performing zero-downtime container switchover...${NC}"
 
-echo "Recreating and starting containers..."
-if ! $DOCKER_COMPOSE_CMD up -d --force-recreate; then
+echo "Recreating and starting ${APP_SERVICE_NAME} container..."
+if ! $DOCKER_COMPOSE_CMD up -d --force-recreate ${APP_SERVICE_NAME}; then
     echo -e "${RED}❌ Container switchover failed!${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}✅ Containers restarted and running successfully${NC}"
+echo -e "${GREEN}✅ ${APP_SERVICE_NAME} container restarted and running successfully${NC}"
 
 # ============================================================================
 # HEALTH CHECK
