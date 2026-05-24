@@ -82,6 +82,9 @@ class AmbulanceSummary(BaseModel):
     ambulance_type_name: Optional[str] = Field(None, alias="ambulanceTypeName")
     plate_number: Optional[str] = Field(None, alias="plateNumber")
     date_added: Optional[datetime] = Field(None, alias="dateAdded")
+    ambulance_type_view_model: Optional[Any] = Field(None, alias="ambulanceTypeViewModel")
+    runsheet_view_model: Optional[Any] = Field(None, alias="runsheetViewModel")
+    event_status_type: Optional[str] = Field(None, alias="eventStatusType")
 
     @model_validator(mode='before')
     @classmethod

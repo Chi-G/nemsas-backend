@@ -20,8 +20,7 @@ def get_loaded_relation(obj: Any, attr_name: str) -> Any:
             if attr_name in cls.__mapper__.relationships:
                 inspected = inspect(obj)
                 if inspected is not None:
-                    attr = inspected.attrs.get(attr_name)
-                    if attr is not None and attr.loaded:
+                    if attr_name not in inspected.unloaded:
                         return getattr(obj, attr_name, None)
                 return None
     except Exception:
@@ -33,7 +32,7 @@ def orm_to_dict(obj: Any) -> Any:
         return None
     if isinstance(obj, list):
         return [orm_to_dict(item) for item in obj]
-    if isinstance(obj, dict):
+    if isinstance(obj, dict): 
         return {k: orm_to_dict(v) for k, v in obj.items()}
         
     cls = type(obj)
@@ -46,8 +45,7 @@ def orm_to_dict(obj: Any) -> Any:
                 for col in inspected.mapper.column_attrs:
                     res[col.key] = getattr(obj, col.key, None)
                 for rel in inspected.mapper.relationships:
-                    attr = inspected.attrs.get(rel.key)
-                    if attr is not None and attr.loaded:
+                    if rel.key not in inspected.unloaded:
                         val = getattr(obj, rel.key, None)
                         res[rel.key] = orm_to_dict(val)
                 for k, v in obj.__dict__.items():
