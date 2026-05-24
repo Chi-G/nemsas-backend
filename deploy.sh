@@ -90,11 +90,11 @@ fi
 # ============================================================================
 echo -e "\n${YELLOW}[3/6] Stopping existing containers...${NC}"
 
-cd "${DEPLOY_PATH}"
-$DOCKER_COMPOSE_CMD down || true
+$DOCKER_COMPOSE_CMD stop || true
+$DOCKER_COMPOSE_CMD rm -f || true
 sleep 2
 
-echo -e "${GREEN}✅ Containers stopped (or none were running)${NC}"
+echo -e "${GREEN}✅ Containers stopped and removed (network preserved)${NC}"
 
 # ============================================================================
 # BUILD AND START CONTAINERS

@@ -173,7 +173,7 @@ jobs:
           SSH_USER="${{ env.SSH_USER }}"
           SERVER_IP="${{ env.SERVER_IP }}"
           
-          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 "${SSH_USER}@${SERVER_IP}" << 'ENDSSH'
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o TCPKeepAlive=yes "${SSH_USER}@${SERVER_IP}" << 'ENDSSH'
             echo "Creating deployment directory..."
             mkdir -p "$DEPLOY_PATH"
             
@@ -295,12 +295,12 @@ jobs:
           echo "$ENV_FILE_CONTENT" > temp_env
           echo "$FIREBASE_JSON_CONTENT" > temp_firebase.json
           
-          # Copy to server as temporary files using scp
-          scp -o StrictHostKeyChecking=no temp_env "${SSH_USER}@${SERVER_IP}:${DEPLOY_PATH}/.env.example_github"
-          scp -o StrictHostKeyChecking=no temp_firebase.json "${SSH_USER}@${SERVER_IP}:${DEPLOY_PATH}/nemsas-app-firebase.json.example_github"
+           # Copy to server as temporary files using scp
+          scp -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o TCPKeepAlive=yes temp_env "${SSH_USER}@${SERVER_IP}:${DEPLOY_PATH}/.env.example_github"
+          scp -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o TCPKeepAlive=yes temp_firebase.json "${SSH_USER}@${SERVER_IP}:${DEPLOY_PATH}/nemsas-app-firebase.json.example_github"
           
           # On the server, only move them to target location if they do not exist
-          ssh -o StrictHostKeyChecking=no "${SSH_USER}@${SERVER_IP}" << ENDSSH
+          ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o TCPKeepAlive=yes "${SSH_USER}@${SERVER_IP}" << ENDSSH
             if [ ! -f "${DEPLOY_PATH}/.env" ]; then
               echo "Creating new .env from GitHub secrets..."
               cp "${DEPLOY_PATH}/.env.example_github" "${DEPLOY_PATH}/.env"
@@ -339,7 +339,7 @@ jobs:
           DEPLOY_PATH="${{ env.DEPLOY_PATH }}"
           DEPLOY_PORT="${{ env.DEPLOY_PORT }}"
           
-          ssh -o StrictHostKeyChecking=no "${SSH_USER}@${SERVER_IP}" << ENDSSH
+          ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o TCPKeepAlive=yes "${SSH_USER}@${SERVER_IP}" << ENDSSH
             cd "${DEPLOY_PATH}"
             
             # Make deploy script executable
@@ -378,7 +378,7 @@ jobs:
           ATTEMPT=0
           
           while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-            if ssh -o StrictHostKeyChecking=no "${SSH_USER}@${SERVER_IP}" \
+            if ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o TCPKeepAlive=yes "${SSH_USER}@${SERVER_IP}" \
               "curl -f -s http://localhost:${DEPLOY_PORT}/health" > /dev/null 2>&1; then
               echo "✅ API health check passed"
               break
