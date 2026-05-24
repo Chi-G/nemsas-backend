@@ -156,7 +156,7 @@ fi
 
 echo -e "${BLUE}========================================${NC}"
 echo -e "${YELLOW}📡 STARTUP LOGS (Check Seeding Status):${NC}"
-$DOCKER_COMPOSE_CMD logs --tail 50 ${APP_SERVICE_NAME}
+$DOCKER_COMPOSE_CMD logs --tail 300 ${APP_SERVICE_NAME}
 echo -e "${BLUE}========================================${NC}"
 
 # ============================================================================
