@@ -86,40 +86,33 @@ if [ -f "${DOCKER_COMPOSE_FILE}" ]; then
 fi
 
 # ============================================================================
-# STOP EXISTING CONTAINERS
+# BUILD IMAGES (ZERO-DOWNTIME PREPARATION)
 # ============================================================================
-echo -e "\n${YELLOW}[3/6] Stopping existing containers...${NC}"
-
-$DOCKER_COMPOSE_CMD stop || true
-$DOCKER_COMPOSE_CMD rm -f || true
-sleep 2
-
-echo -e "${GREEN}✅ Containers stopped and removed (network preserved)${NC}"
-
-# ============================================================================
-# BUILD AND START CONTAINERS
-# ============================================================================
-echo -e "\n${YELLOW}[4/6] Building and starting containers...${NC}"
-
-# Check disk space before building
-echo "Checking disk space..."
+echo -e "\n${YELLOW}[3/6] Building new container images...${NC}"
+echo "Checking disk space before building..."
 df -h /
 
-# Split build and up steps for better error tracking and compatibility
+# Build the images (keeps the old app running while building)
 echo "Building images (this may take a while)..."
 if ! $DOCKER_COMPOSE_CMD build --no-cache --progress=plain; then
-    echo -e "${RED}❌ Build failed! Checking Docker system info...${NC}"
+    echo -e "${RED}❌ Image build failed! Checking Docker system info...${NC}"
     docker info | grep -E "Storage|Space|Disk"
     exit 1
 fi
+echo -e "${GREEN}✅ Images built successfully${NC}"
 
-echo "Starting containers..."
-if ! $DOCKER_COMPOSE_CMD up -d; then
-    echo -e "${RED}❌ Container startup failed!${NC}"
+# ============================================================================
+# START/UP CONTAINERS (INSTANT SWITCHOVER)
+# ============================================================================
+echo -e "\n${YELLOW}[4/6] Performing zero-downtime container switchover...${NC}"
+
+echo "Recreating and starting containers..."
+if ! $DOCKER_COMPOSE_CMD up -d --force-recreate; then
+    echo -e "${RED}❌ Container switchover failed!${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}✅ Containers started and built successfully${NC}"
+echo -e "${GREEN}✅ Containers restarted and running successfully${NC}"
 
 # ============================================================================
 # HEALTH CHECK
