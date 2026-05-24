@@ -234,7 +234,12 @@ async def seed_operational_data():
         if os.path.exists(rs_path):
             with open(rs_path) as f:
                 rs_dat = json.load(f)
-                rs_items = rs_dat.get("data", {}).get("items", []) if isinstance(rs_dat, dict) else []
+                if isinstance(rs_dat, list):
+                    rs_items = rs_dat
+                elif isinstance(rs_dat, dict):
+                    rs_items = rs_dat.get("data", {}).get("items", [])
+                else:
+                    rs_items = []
                 for r in rs_items:
                     rid = r.get("id")
                     if not rid: continue
