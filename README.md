@@ -23,7 +23,7 @@ The backend system for the National Emergency Medical Service and Ambulance Syst
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/goodnessaig1/nemsas-backend.git
+   git clone https://github.com/Sydani-Tech/nemsas-backend.git
    cd nemsas-backend
    ```
 
@@ -99,7 +99,7 @@ Alternatively, use the helper script:
 
 The API will be accessible at `http://localhost:8000` (or the configured port).
 Interactive API Documentation is available at `/docs`.
-
+ 
 ### Running Tests
 
 ```bash
