@@ -84,14 +84,32 @@ class Incident(Base):
 
     @property
     def incident_type_name(self) -> str | None:
-        if self.incident_type:
-            return self.incident_type.name
+        try:
+            from sqlalchemy import inspect
+            inspected = inspect(self)
+            if inspected is not None:
+                attr = inspected.attrs.get("incident_type")
+                if attr is not None and not attr.loaded:
+                    return None
+            if self.incident_type:
+                return self.incident_type.name
+        except Exception:
+            pass
         return None
 
     @property
     def state_name_computed(self) -> str | None:
-        if self.state:
-            return self.state.name
+        try:
+            from sqlalchemy import inspect
+            inspected = inspect(self)
+            if inspected is not None:
+                attr = inspected.attrs.get("state")
+                if attr is not None and not attr.loaded:
+                    return None
+            if self.state:
+                return self.state.name
+        except Exception:
+            pass
         return None
 
 class IncidentStatusHistory(Base):

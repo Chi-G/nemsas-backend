@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field
 from datetime import datetime
-from typing import Optional, Any
+from typing import Optional, Any, List
 from app.schemas.state import State
 
 class MonitoringBase(BaseModel):
@@ -39,3 +39,29 @@ class Monitoring(MonitoringBase):
     state: Optional[State] = None
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+class MonitoringListResponse(BaseModel):
+    message: str = "Monthly data fetched successfully"
+    data: List[Monitoring]
+
+class MonthlyAggregateData(BaseModel):
+    month: str = Field(..., alias="month")
+    no_of_transport: int = Field(0, alias="noOfTransport")
+    no_of_mamii_lgas: int = Field(0, alias="noOfMamiiLGAs")
+    by_tricycle_ambulance: int = Field(0, alias="byTricycleAmbulance")
+    by_nurtw_driver: int = Field(0, alias="byNurtwDriver")
+    bls: int = Field(0, alias="bls")
+    labor_transportation: int = Field(0, alias="laborTransportation")
+    obstetric_transportation: int = Field(0, alias="obstetricTransportation")
+    neonatal_transportation: int = Field(0, alias="neonatalTransportation")
+    bemonc: int = Field(0, alias="bemonc")
+    cemonc: int = Field(0, alias="cemonc")
+    maternal_mortalities: int = Field(0, alias="maternalMortalities")
+    neonatal_mortalities: int = Field(0, alias="neonatalMortalities")
+
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+class MonthlyAggregateResponse(BaseModel):
+    message: str = "Monthly data fetched successfully"
+    data: List[MonthlyAggregateData]
+

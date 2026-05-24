@@ -9,12 +9,66 @@ from app.models.device import Device
 from app.crud.device import device_crud
 from sqlalchemy.ext.asyncio import AsyncSession
 import time
-
 import os
 from pathlib import Path
 
-# Initialize Firebase if service account path is provided
-if settings.FIREBASE_SERVICE_ACCOUNT_PATH:
+def log_fcm(message: str):
+    timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+    formatted = f"[{timestamp}] {message}"
+    print(formatted)
+    try:
+        with open("/tmp/fcm.log", "a") as f:
+            f.write(formatted + "\n")
+    except Exception:
+        pass
+
+# Initialize Firebase using JSON credentials string if available, or fall back to file path
+_firebase_cred_info = None
+_firebase_cred_path = None
+firebase_initialized = False
+
+if settings.FIREBASE_CREDENTIALS_JSON:
+    try:
+        cred_info = json.loads(settings.FIREBASE_CREDENTIALS_JSON)
+        if "private_key" in cred_info:
+            import hashlib
+            pk = cred_info["private_key"]
+            log_fcm(f"[Notification] Private key length before: {len(pk)}")
+            log_fcm(f"[Notification] Private key SHA256 before: {hashlib.sha256(pk.encode()).hexdigest()}")
+            
+            # Mask all alphanumeric base64 chars to 'x' to safely inspect structure
+            masked_chars = []
+            for c in pk:
+                if c.isalnum():
+                    masked_chars.append('x')
+                else:
+                    masked_chars.append(c)
+            masked_pk = "".join(masked_chars)
+            log_fcm(f"[Notification] Masked private key: {repr(masked_pk)}")
+            
+            replaced_pk = pk.replace("\\n", "\n")
+            log_fcm(f"[Notification] Private key length after: {len(replaced_pk)}")
+            log_fcm(f"[Notification] Private key SHA256 after: {hashlib.sha256(replaced_pk.encode()).hexdigest()}")
+            
+            masked_chars_after = []
+            for c in replaced_pk:
+                if c.isalnum():
+                    masked_chars_after.append('x')
+                else:
+                    masked_chars_after.append(c)
+            masked_pk_after = "".join(masked_chars_after)
+            log_fcm(f"[Notification] Masked private key after: {repr(masked_pk_after)}")
+            
+            cred_info["private_key"] = replaced_pk
+        cred = credentials.Certificate(cred_info)
+        firebase_admin.initialize_app(cred)
+        log_fcm("[Notification] Firebase successfully initialized using FIREBASE_CREDENTIALS_JSON environment variable.")
+        _firebase_cred_info = cred_info
+        firebase_initialized = True
+    except Exception as e:
+        log_fcm(f"[Notification] Error initializing Firebase using JSON string: {e}")
+
+if not firebase_initialized and settings.FIREBASE_SERVICE_ACCOUNT_PATH:
     path_str = settings.FIREBASE_SERVICE_ACCOUNT_PATH
     if path_str.startswith("/"):
         path_str = path_str[1:]  # strip leading slash to resolve relatively
@@ -35,54 +89,184 @@ if settings.FIREBASE_SERVICE_ACCOUNT_PATH:
         try:
             cred = credentials.Certificate(str(resolved_path))
             firebase_admin.initialize_app(cred)
-            print(f"[Notification] Firebase successfully initialized with: {resolved_path}")
+            log_fcm(f"[Notification] Firebase successfully initialized with: {resolved_path}")
+            _firebase_cred_path = str(resolved_path)
+            firebase_initialized = True
         except Exception as e:
-            print(f"[Notification] Error initializing Firebase: {e}")
+            log_fcm(f"[Notification] Error initializing Firebase using service account file: {e}")
     else:
-        print(f"[Notification] Warning: Firebase service account credentials file not found at {full_path} or {cwd_path}")
+        log_fcm(f"[Notification] Warning: Firebase service account credentials file not found at {full_path} or {cwd_path}")
+
+if not firebase_initialized:
+    log_fcm("[Notification] Warning: Firebase admin SDK is NOT initialized. Push notifications will fail.")
 
 class NotificationService:
     def __init__(self):
-        self.redis_client = redis.Redis(
-            host=settings.REDIS_HOST,
-            port=settings.REDIS_PORT,
-            db=settings.REDIS_DB,
-            decode_responses=True
-        )
+        if settings.REDIS_URL:
+            self.redis_client = redis.from_url(
+                settings.REDIS_URL,
+                decode_responses=True
+            )
+        else:
+            self.redis_client = redis.Redis(
+                host=settings.REDIS_HOST,
+                port=settings.REDIS_PORT,
+                db=settings.REDIS_DB,
+                username=settings.REDIS_USERNAME,
+                password=settings.REDIS_PASSWORD,
+                ssl=settings.REDIS_SSL,
+                decode_responses=True
+            )
 
-    async def _push_to_fcm(self, tokens: List[str], title: str, body: str, data: Dict[str, str] = None):
+    async def _exchange_apns_tokens(self, apns_tokens: List[str]) -> List[str]:
+        if not apns_tokens:
+            return [] 
+        
+        try:
+            from google.oauth2 import service_account
+            import google.auth.transport.requests
+            import httpx
+            import os
+            
+            # Load credentials from the successful initialization source
+            if _firebase_cred_info:
+                creds = service_account.Credentials.from_service_account_info(
+                    _firebase_cred_info,
+                    scopes=["https://www.googleapis.com/auth/cloud-platform"]
+                )
+            elif _firebase_cred_path:
+                creds = service_account.Credentials.from_service_account_file(
+                    _firebase_cred_path,
+                    scopes=["https://www.googleapis.com/auth/cloud-platform"]
+                )
+            else:
+                log_fcm("[Notification] APNs exchange failed: No valid Firebase credentials loaded during initialization.")
+                return []
+            
+            request = google.auth.transport.requests.Request()
+            creds.refresh(request)
+            access_token = creds.token
+            
+            payload = {
+                "application": "com.sydani.niems",
+                "sandbox": True,  # Expo sandbox builds
+                "apns_tokens": apns_tokens
+            }
+            
+            headers = {
+                "Authorization": f"Bearer {access_token}",
+                "access_token_auth": "true",
+                "Content-Type": "application/json"
+            }
+            
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "https://iid.googleapis.com/iid/v1:batchImport",
+                    json=payload,
+                    headers=headers
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    fcm_tokens = []
+                    for res in data.get("results", []):
+                        if res.get("status") == "OK":
+                            fcm_tokens.append(res.get("registration_token"))
+                    return fcm_tokens
+                else:
+                    log_fcm(f"[Notification] APNs exchange API returned {response.status_code}: {response.text}")
+        except Exception as e:
+            log_fcm(f"[Notification] APNs exchange error: {e}")
+        return []
+
+    async def _push_to_fcm(self, tokens: List[str], title: str, body: str, data: Optional[Dict[str, str]] = None, sound: Optional[str] = None):
         if not tokens:
             return
+        
+        # Separate APNs tokens (64-character hex strings) from FCM tokens
+        apns_tokens = []
+        fcm_tokens = []
+        for token in tokens:
+            if len(token) == 64 and all(c in "0123456789abcdefABCDEF" for c in token):
+                apns_tokens.append(token)
+            else:
+                fcm_tokens.append(token)
+                
+        # Exchange APNs tokens to FCM tokens
+        if apns_tokens:
+            log_fcm(f"[Notification] Exchanging {len(apns_tokens)} native APNs tokens to FCM registration tokens...")
+            exchanged = await self._exchange_apns_tokens(apns_tokens)
+            log_fcm(f"[Notification] Successfully exchanged to {len(exchanged)} FCM tokens")
+            fcm_tokens.extend(exchanged)
+            
+        if not fcm_tokens:
+            log_fcm("[Notification] No valid FCM registration tokens found to send message to.")
+            return
+        
+        # Build Android notification config
+        android_config = None
+        if sound:
+            # Android expects sound file name without extension in res/raw
+            android_sound = sound.split(".")[0]
+            android_config = messaging.AndroidConfig(
+                notification=messaging.AndroidNotification(
+                    sound=android_sound,
+                    channel_id="incident-channel" if android_sound == "incident_sound" else "default"
+                )
+            )
+        else:
+            android_config = messaging.AndroidConfig(
+                notification=messaging.AndroidNotification(
+                    channel_id="default"
+                )
+            )
+            
+        # Build APNS (iOS) config
+        apns_config = None
+        if sound:
+            # iOS expects sound file name with extension
+            ios_sound = sound if sound.endswith(".mp3") else f"{sound}.mp3"
+            apns_config = messaging.APNSConfig(
+                payload=messaging.APNSPayload(
+                    aps=messaging.Aps(
+                        sound=ios_sound
+                    )
+                )
+            )
         
         message = messaging.MulticastMessage(
             notification=messaging.Notification(
                 title=title,
                 body=body,
             ),
+            android=android_config,
+            apns=apns_config,
             data=data or {},
-            tokens=tokens,
+            tokens=fcm_tokens,
         )
         try:
-            response = messaging.send_multicast(message)
-            print(f"[Notification] Successfully sent {response.success_count} messages")
+            response = messaging.send_each_for_multicast(message)
+            log_fcm(f"[Notification] Successfully sent {response.success_count} messages")
             if response.failure_count > 0:
-                print(f"[Notification] Failed to send {response.failure_count} messages")
+                log_fcm(f"[Notification] Failed to send {response.failure_count} messages")
+                for index, resp in enumerate(response.responses):
+                    if not resp.success:
+                        log_fcm(f"  Failed token index {index} response: {resp.exception}")
         except Exception as e:
-            print(f"[Notification] FCM error: {e}")
+            log_fcm(f"[Notification] FCM error: {e}")
 
     async def _cache_notification(self, user_id: str, notification_id: str, payload: Dict[str, Any]):
         key = f"notifications:{user_id}"
         # Store in a hash or list. Using a list for historical order.
-        await self.redis_client.lpush(key, json.dumps(payload))
+        await self.redis_client.lpush(key, json.dumps(payload))  # type: ignore[misc]
         # Keep only last 100
-        await self.redis_client.ltrim(key, 0, 99)
+        await self.redis_client.ltrim(key, 0, 99)  # type: ignore[misc]
         # Set expiration to 30 days
-        await self.redis_client.expire(key, 60*60*24*30)
+        await self.redis_client.expire(key, 60*60*24*30)  # type: ignore[misc]
 
-    async def send_to_user(self, db: AsyncSession, user_id: UUID, title: str, body: str, data: Dict[str, Any] = None):
+    async def send_to_user(self, db: AsyncSession, user_id: UUID, title: str, body: str, data: Optional[Dict[str, Any]] = None, sound: Optional[str] = None):
         # 1. Get all devices
         devices = await device_crud.get_multi_by_user(db, user_id=user_id)
-        tokens = [d.push_token for d in devices]
+        tokens = [str(d.push_token) for d in devices]
         
         notification_id = f"notif_{int(time.time() * 1000)}"
         payload = {
@@ -102,9 +286,9 @@ class NotificationService:
         fcm_data = {k: str(v) for k, v in (data or {}).items()}
         fcm_data["notificationId"] = notification_id
         
-        await self._push_to_fcm(tokens, title, body, fcm_data)
+        await self._push_to_fcm(tokens, title, body, fcm_data, sound=sound)
 
-    async def send_to_ambulance(self, db: AsyncSession, ambulance_id: int, title: str, body: str, data: Dict[str, Any] = None):
+    async def send_to_ambulance(self, db: AsyncSession, ambulance_id: int, title: str, body: str, data: Optional[Dict[str, Any]] = None, sound: Optional[str] = None):
         # Find all devices linked to this ambulance
         devices = await device_crud.get_multi_by_ambulance(db, ambulance_id=ambulance_id)
         
@@ -128,26 +312,26 @@ class NotificationService:
             await self._cache_notification(uid, notification_id, payload)
             
         # Push to all tokens
-        tokens = [d.push_token for d in devices]
+        tokens = [str(d.push_token) for d in devices]
         fcm_data = {k: str(v) for k, v in (data or {}).items()}
         fcm_data["notificationId"] = notification_id
         
-        await self._push_to_fcm(tokens, title, body, fcm_data)
+        await self._push_to_fcm(tokens, title, body, fcm_data, sound=sound)
 
     async def get_pending_notifications(self, user_id: str) -> List[Dict[str, Any]]:
         key = f"notifications:{user_id}"
-        items = await self.redis_client.lrange(key, 0, -1)
+        items = await self.redis_client.lrange(key, 0, -1)  # type: ignore[misc]
         return [json.loads(i) for i in items]
 
     async def mark_as_read(self, user_id: str, notification_id: str):
         key = f"notifications:{user_id}"
-        items = await self.redis_client.lrange(key, 0, -1)
+        items = await self.redis_client.lrange(key, 0, -1)  # type: ignore[misc]
         
         for i, item_str in enumerate(items):
             item = json.loads(item_str)
             if item["id"] == notification_id:
                 item["read"] = True
-                await self.redis_client.lset(key, i, json.dumps(item))
+                await self.redis_client.lset(key, i, json.dumps(item))  # type: ignore[misc]
                 break
 
 notification_service = NotificationService()

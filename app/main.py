@@ -15,10 +15,21 @@ from app.core.notifications import notification_service as fcm_notification_serv
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    await notification_service.connect_redis()
+    try:
+        await notification_service.connect_redis()
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(
+            f"[Redis] Failed to connect to Redis on startup: {e}. "
+            "Real-time pub-sub notifications will be disabled."
+        )
     yield
     # Shutdown
-    await notification_service.disconnect_redis()
+    try:
+        await notification_service.disconnect_redis()
+    except Exception as e:
+        pass
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -78,12 +89,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     logger.error(f"ValidationError: {exc.errors()} | Body: {body.decode()}")
     response = JSONResponse(
         status_code=400,
-        content={
+        content=jsonable_encoder({
             "success": False,
             "status": 400,
             "message": "Input validation failed",
             "error": exc.errors()
-        },
+        }),
     )
     origin = request.headers.get("origin")
     if origin:

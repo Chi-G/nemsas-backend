@@ -25,10 +25,37 @@ class CRUDDevice:
         return result.scalars().all()
 
     async def get_multi_by_ambulance(self, db: AsyncSession, ambulance_id: int) -> List[Device]:
-        result = await db.execute(select(Device).filter(Device.ambulance_id == ambulance_id))
+        from app.models.user import User as UserModel
+        
+        # Get users directly assigned to this ambulance
+        user_select = select(UserModel.id).filter(UserModel.ambulance_id == ambulance_id)
+        user_ids_result = await db.execute(user_select)
+        user_ids = user_ids_result.scalars().all()
+        
+        if user_ids:
+            query = select(Device).filter(
+                (Device.ambulance_id == ambulance_id) | (Device.user_id.in_(user_ids))
+            )
+        else:
+            query = select(Device).filter(Device.ambulance_id == ambulance_id)
+            
+        result = await db.execute(query)
         return result.scalars().all()
 
     async def create(self, db: AsyncSession, *, obj_in: DeviceCreate, user_id: UUID) -> Device:
+        # Check if device already exists by push_token (since push_token is unique)
+        db_obj = await self.get_by_token(db, push_token=obj_in.push_token)
+        if db_obj:
+            # Update fields
+            db_obj.user_id = user_id
+            db_obj.device_id = obj_in.device_id
+            db_obj.ambulance_id = obj_in.ambulance_id
+            db_obj.platform = obj_in.platform
+            db_obj.device_name = obj_in.device_name
+            await db.commit()
+            await db.refresh(db_obj)
+            return db_obj
+
         # Check if device already exists for this user by device_id
         if obj_in.device_id:
             db_obj = await self.get_by_device_id(db, user_id=user_id, device_id=obj_in.device_id)

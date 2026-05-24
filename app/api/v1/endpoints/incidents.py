@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, Any, cast
 from app.api import deps
@@ -20,6 +20,7 @@ async def read_incidents(
     mass_casualty: Optional[bool] = None,
     incident_category_id: Optional[int] = None,
     sort_by_state: bool = False,
+    event_status_type: Optional[str] = Query(default=None, alias="eventStatusType"),
     current_user: User = Depends(deps.get_current_user)
 ):
     """
@@ -33,6 +34,7 @@ async def read_incidents(
     - `mass_casualty`: Filter by mass casualty status (true/false).
     - `incident_category_id`: Filter by incident category ID.
     - `sort_by_state`: Sort results by state name (ascending).
+    - `eventStatusType`: Filter by event status type (alias: event_status_type).
     
     **Role-based Access:**
     - **Restricted Roles** (STATEVIEWER, ADMINSEMSASUSER, SEMSASDISPATCH, SEMSASPIUUSER, SEMSASUSER): 
@@ -68,7 +70,8 @@ async def read_incidents(
         state_id_filter=state_id_filter,
         mass_casualty=mass_casualty,
         incident_category_id=incident_category_id,
-        sort_by_state=sort_by_state
+        sort_by_state=sort_by_state,
+        event_status_type=event_status_type
     )
 
     return {
@@ -98,7 +101,7 @@ async def read_ambulance_incidents(
 
     incidents, total = await incident_crud.get_multi_by_ambulance(
         db,
-        ambulance_id=int(current_user.ambulance_id),
+        ambulance_id=cast(int, current_user.ambulance_id),
         skip=skip,
         limit=limit
     )
