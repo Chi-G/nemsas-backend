@@ -512,6 +512,14 @@ class CustomRequiredIdAndBoolModel(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
+    @model_validator(mode="after")
+    def validate_rejection(self) -> "CustomRequiredIdAndBoolModel":
+        if self.claimStatusType and self.claimStatusType.lower() in ["rejected", "reject"]:
+            if not self.rejectionReason or not self.rejectionReason.strip():
+                raise ValueError("rejectionReason is mandatory and cannot be empty when rejecting a claim")
+        return self
+
+
 
 class ClaimReviewBindingModel(BaseModel):
     id: int
@@ -545,7 +553,7 @@ class ClaimUpdateBindingModel(BaseModel):
 
 # ----------------- Legacy Compatibility Endpoints -----------------
 
-@router.post("/addClaim")
+@router.post("/addClaim", response_model=ClaimResponse)
 async def add_claim_legacy(
     request: Request,
     image: Optional[UploadFile] = File(None),
@@ -832,8 +840,8 @@ async def get_single_claim(
     }
 
 
-@router.post("/acceptOrRejectClaim")
-@router.post("/acceptOrRejectAmbulanceClaim")
+@router.post("/acceptOrRejectClaim", response_model=ClaimResponse)
+@router.post("/acceptOrRejectAmbulanceClaim", response_model=ClaimResponse)
 async def accept_or_reject_claim(
     body: CustomRequiredIdAndBoolModel,
     db: AsyncSession = Depends(deps.get_db),
@@ -934,7 +942,7 @@ async def add_etc_review_claim(
     }
 
 
-@router.post("/update")
+@router.post("/update", response_model=ClaimResponse)
 async def update_claim_legacy(
     body: ClaimUpdateBindingModel,
     db: AsyncSession = Depends(deps.get_db),
@@ -957,6 +965,10 @@ async def update_claim_legacy(
                 setattr(claim_obj, "patient_name", str(run_sheet_obj.patient_name))
     if body.status is not None:
         setattr(claim_obj, "status", body.status)
+        if body.status.lower() in ["rejected", "reject"]:
+            reason = body.rejectionReason or getattr(claim_obj, "rejection_reason", None)
+            if not reason or not str(reason).strip():
+                raise HTTPException(status_code=422, detail="rejectionReason is mandatory and cannot be empty when status is Rejected")
     if body.totalPrice is not None:
         setattr(claim_obj, "total_price", body.totalPrice)
     if body.nhiaOrSHIA is not None:

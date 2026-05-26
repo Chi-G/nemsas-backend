@@ -205,3 +205,43 @@ async def test_claims_approval_restrictions_and_endorsement(
     assert len(logs) == 2
     assert logs[1].action == "Approve"
     assert logs[1].processed_by_id == records["nemsas_admin"].id
+
+@pytest.mark.asyncio
+async def test_claims_rejection_validation(
+    client: AsyncClient,
+    get_user_token_headers,
+    db: AsyncSession,
+    setup_test_users_and_records
+):
+    records = setup_test_users_and_records
+    nemsas_headers = get_user_token_headers(records["nemsas_admin"])
+    claim = records["claim"]
+    
+    # 1. Attempt to reject via acceptOrRejectClaim without reason
+    reject_payload = {
+        "id": claim.id,
+        "claimStatusType": "Rejected",
+        "rejectionReason": ""
+    }
+    response = await client.post("/api/v1/claims/acceptOrRejectClaim", json=reject_payload, headers=nemsas_headers)
+    assert response.status_code == 400
+    assert "rejectionReason" in response.text
+    
+    # 2. Reject via acceptOrRejectClaim with reason
+    reject_payload_ok = {
+        "id": claim.id,
+        "claimStatusType": "Rejected",
+        "rejectionReason": "Invalid receipts"
+    }
+    response = await client.post("/api/v1/claims/acceptOrRejectClaim", json=reject_payload_ok, headers=nemsas_headers)
+    assert response.status_code == 200
+    data = response.json()
+    assert data["success"] is True
+    assert data["data"]["status"] == "Rejected"
+    assert data["data"]["rejectionReason"] == "Invalid receipts"
+    
+    # 3. Verify in database
+    await db.refresh(claim)
+    assert claim.status == "Rejected"
+    assert claim.rejection_reason == "Invalid receipts"
+
