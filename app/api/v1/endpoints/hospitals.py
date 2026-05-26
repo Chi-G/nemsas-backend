@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from app.api import deps
-from app.schemas.hospital import HospitalResponse, Hospital as HospitalSchema, HospitalCreate
+from app.schemas.hospital import HospitalResponse, Hospital as HospitalSchema, HospitalCreate, HospitalUpdate
 from app.crud.hospital import hospital_crud
 from app.models.user import User
 from datetime import datetime
@@ -117,3 +117,45 @@ async def read_hospitals_by_state(
         "refreshToken": None,
         "refreshTokenExpiryTime": "0001-01-01T00:00:00"
     }
+
+@router.patch("/{id}", response_model=HospitalResponse, summary="Edit Hospital")
+async def update_hospital(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    id: int,
+    hospital_in: HospitalUpdate,
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+) -> Any:
+    """
+    Update a hospital.
+    - SUPERADMINISTRATOR can update any hospital.
+    - ADMINSEMSASUSER can only update hospitals in their own state.
+    """
+    hospital_obj = await hospital_crud.get(db, id=id)
+    if not hospital_obj:
+        raise HTTPException(status_code=404, detail="Hospital not found")
+        
+    # Enforce state restriction for state admins
+    if current_user.user_type == "ADMINSEMSASUSER":
+        if current_user.state_id != hospital_obj.state_id:
+            raise HTTPException(
+                status_code=403,
+                detail="You are not authorized to edit hospitals from other states"
+            )
+        # Enforce state admin cannot change hospital state to another state
+        if hospital_in.state_id is not None and hospital_in.state_id != current_user.state_id:
+            raise HTTPException(
+                status_code=403,
+                detail=f"You can only assign hospitals to your own state (ID: {current_user.state_id})"
+            )
+            
+    updated_hospital = await hospital_crud.update(db, db_obj=hospital_obj, obj_in=hospital_in)
+    return {
+        "success": True,
+        "message": "Hospital successfully updated",
+        "data": updated_hospital,
+        "totalCount": 1,
+        "refreshToken": None,
+        "refreshTokenExpiryTime": "0001-01-01T00:00:00"
+    }
+

@@ -132,6 +132,30 @@ class CRUDAmbulance:
             await self._augment_busy_status(db, [obj])
         return obj
 
+    async def update(
+        self, db: AsyncSession, *, db_obj: Ambulance, obj_in: Any
+    ) -> Ambulance:
+        update_data = obj_in.model_dump(exclude_unset=True, by_alias=False)
+        for field, value in update_data.items():
+            setattr(db_obj, field, value)
+        db.add(db_obj)
+        await db.commit()
+        
+        result = await db.execute(
+            select(Ambulance)
+            .filter(Ambulance.id == db_obj.id)
+            .options(
+                selectinload(Ambulance.state),
+                selectinload(Ambulance.lga),
+                selectinload(Ambulance.ambulance_type)
+            )
+        )
+        obj = result.scalars().first()
+        if obj:
+            await self._augment_busy_status(db, [obj])
+        return obj
+
+
 
 
 ambulance = CRUDAmbulance()
