@@ -94,7 +94,7 @@ async def read_claims(
     query: Optional[str] = None,
     year: Optional[int] = None,
     month: Optional[int] = None,
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
     """
     Get claims for ambulances or etc.
@@ -127,7 +127,7 @@ async def read_claims(
 @router.get("/summary", response_model=ClaimSummaryResponse)
 async def read_claim_summary(
     db: AsyncSession = Depends(deps.get_db),
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
     """
     Get aggregated summary counts of all claims.
@@ -364,7 +364,7 @@ class ClaimRejectionRequest(BaseModel):
 async def approve_claim(
     id: int,
     db: AsyncSession = Depends(deps.get_db),
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
     claim_obj = await crud_claim.get(db, id=id)
     if not claim_obj:
@@ -403,7 +403,7 @@ async def reject_claim(
     id: int,
     body: ClaimRejectionRequest,
     db: AsyncSession = Depends(deps.get_db),
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
     claim_obj = await crud_claim.get(db, id=id)
     if not claim_obj:
@@ -447,7 +447,7 @@ async def reject_claim(
 async def endorse_claim(
     id: int,
     db: AsyncSession = Depends(deps.get_db),
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
     claim_obj = await crud_claim.get(db, id=id)
     if not claim_obj:
@@ -845,7 +845,7 @@ async def get_single_claim(
 async def accept_or_reject_claim(
     body: CustomRequiredIdAndBoolModel,
     db: AsyncSession = Depends(deps.get_db),
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
     claim_obj = await crud_claim.get(db, id=body.id)
     if not claim_obj:

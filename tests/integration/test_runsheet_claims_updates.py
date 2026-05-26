@@ -245,3 +245,35 @@ async def test_claims_rejection_validation(
     assert claim.status == "Rejected"
     assert claim.rejection_reason == "Invalid receipts"
 
+@pytest.mark.asyncio
+async def test_dispatcher_can_get_claims_and_summary(
+    client: AsyncClient,
+    get_user_token_headers,
+    db: AsyncSession,
+    setup_test_users_and_records
+):
+    # Setup dispatcher user in State 1
+    dispatch_user = User(
+        email="semsas_dispatch@test.com",
+        first_name="SEMSAS",
+        last_name="Dispatch",
+        user_name="semsasdispatch",
+        hashed_password="hash",
+        is_active=True,
+        user_type="SEMSASDISPATCH",
+        state_id=1
+    )
+    db.add(dispatch_user)
+    await db.commit()
+    
+    headers = get_user_token_headers(dispatch_user)
+    
+    # 1. Dispatcher fetches claims list
+    response = await client.get("/api/v1/claims/", headers=headers)
+    assert response.status_code == 200
+    
+    # 2. Dispatcher fetches claims summary
+    response = await client.get("/api/v1/claims/summary", headers=headers)
+    assert response.status_code == 200
+
+
