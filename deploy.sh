@@ -119,7 +119,7 @@ echo -e "${GREEN}✅ ${APP_SERVICE_NAME} container restarted and running success
 # ============================================================================
 echo -e "\n${YELLOW}[5/6] Checking container health...${NC}"
 
-MAX_ATTEMPTS=15
+MAX_ATTEMPTS=60
 ATTEMPT=0
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
