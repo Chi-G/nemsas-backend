@@ -145,6 +145,7 @@ async def get_dashboard_stats(
 async def get_dashboard_monthly(
     db: AsyncSession = Depends(deps.get_db),
     year: Optional[int] = None,
+    stateId: Optional[int] = None,
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
@@ -153,11 +154,21 @@ async def get_dashboard_monthly(
     so future months are never shown in the response.
 
     Supports an optional `year` query parameter to filter by a specific year.
+    Supports an optional `stateId` query parameter to filter by state.
+    For state-scoped roles, this defaults to the user's assigned state.
     """
+    role = getattr(current_user, "user_type", "")
+
+    # Determine effective state scoping
+    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER"]:
+        effective_state_id = stateId
+    else:
+        effective_state_id = current_user.state_id
+
     today = date.today()
     effective_year = year or today.year
 
-    items = await crud_monitoring.get_monthly_aggregates(db, year=effective_year)
+    items = await crud_monitoring.get_monthly_aggregates(db, year=effective_year, state_id=effective_state_id)
 
     data = []
     for row in items:

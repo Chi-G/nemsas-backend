@@ -141,8 +141,15 @@ async def test_get_monitoring_records_filtering(client: AsyncClient, setup_monit
     assert len(data_state) == 1
     assert data_state[0]["stateId"] == 8
 
+    # Filter by Remark (case-insensitive substring)
+    resp_remark = await client.get("/api/v1/monitoring/?remark=satisfac")
+    assert resp_remark.status_code == 200
+    data_remark = resp_remark.json()["data"]
+    assert len(data_remark) == 1
+    assert data_remark[0]["remark"] == "Satisfactory"
+
     # Filter by All
-    resp_all = await client.get("/api/v1/monitoring/?year=2025&month=12&stateId=8")
+    resp_all = await client.get("/api/v1/monitoring/?year=2025&month=12&stateId=8&remark=Satisfactory")
     assert resp_all.status_code == 200
     data_all = resp_all.json()["data"]
     assert len(data_all) == 1
@@ -155,3 +162,81 @@ async def test_get_monitoring_records_filtering(client: AsyncClient, setup_monit
     assert resp_none.status_code == 200
     data_none = resp_none.json()["data"]
     assert len(data_none) == 0
+
+@pytest.mark.asyncio
+async def test_create_single_monitoring_record(client: AsyncClient, setup_monitoring_data, admin_token_headers):
+    payload = {
+        "year": 2026,
+        "month": 2,
+        "noOfTransport": 5,
+        "noOfMamiiLGAs": 1,
+        "byTricycleAmbulance": 1,
+        "byNurtwDriver": 4,
+        "bls": 5,
+        "laborTransportation": 2,
+        "obstetricTransportation": 2,
+        "neonatalTransportation": 1,
+        "bemonc": 3,
+        "cemonc": 2,
+        "maternalMortalities": 0,
+        "neonatalMortalities": 0,
+        "remark": "Success Single",
+        "stateId": 8
+    }
+    response = await client.post("/api/v1/monitoring/", json=payload, headers=admin_token_headers)
+    assert response.status_code == 200
+    res_data = response.json()["data"]
+    assert res_data["remark"] == "Success Single"
+    assert res_data["stateId"] == 8
+    assert res_data["state"]["name"] == "Borno"
+    assert res_data["addedBy"] == "Admin User" # matching setup of admin user name
+
+@pytest.mark.asyncio
+async def test_create_batch_monitoring_records(client: AsyncClient, setup_monitoring_data, admin_token_headers):
+    payload = [
+        {
+            "year": 2026,
+            "month": 3,
+            "noOfTransport": 10,
+            "noOfMamiiLGAs": 2,
+            "byTricycleAmbulance": 2,
+            "byNurtwDriver": 8,
+            "bls": 10,
+            "laborTransportation": 4,
+            "obstetricTransportation": 4,
+            "neonatalTransportation": 2,
+            "bemonc": 6,
+            "cemonc": 4,
+            "maternalMortalities": 1,
+            "neonatalMortalities": 1,
+            "remark": "Success Batch 1",
+            "stateId": 8
+        },
+        {
+            "year": 2026,
+            "month": 4,
+            "noOfTransport": 15,
+            "noOfMamiiLGAs": 3,
+            "byTricycleAmbulance": 3,
+            "byNurtwDriver": 12,
+            "bls": 15,
+            "laborTransportation": 6,
+            "obstetricTransportation": 6,
+            "neonatalTransportation": 3,
+            "bemonc": 9,
+            "cemonc": 6,
+            "maternalMortalities": 2,
+            "neonatalMortalities": 2,
+            "remark": "Success Batch 2",
+            "stateId": 8
+        }
+    ]
+    response = await client.post("/api/v1/monitoring/batch", json=payload, headers=admin_token_headers)
+    assert response.status_code == 200
+    res_list = response.json()["data"]
+    assert len(res_list) == 2
+    assert res_list[0]["remark"] == "Success Batch 1"
+    assert res_list[1]["remark"] == "Success Batch 2"
+    assert res_list[0]["state"]["name"] == "Borno"
+    assert res_list[1]["state"]["name"] == "Borno"
+
