@@ -48,12 +48,16 @@ async def test_1_login_endpoint(client: AsyncClient, setup_data):
     data = response.json()
     assert "access_token" in data
     assert "refresh_token" in data
+    assert "expires_in" in data
+    assert "refresh_expires_in" in data
+    assert data["expires_in"] == 10080 * 60
+    assert data["refresh_expires_in"] == 43200 * 60
 
 @pytest.mark.asyncio
 async def test_2_token_expiration_config():
-    # Requirement 2: 15 min access, 7 day refresh
+    # Requirement 2: 7 day access, 30 day refresh
     from app.core.config import settings
-    assert settings.ACCESS_TOKEN_EXPIRE_MINUTES == 15
+    assert settings.ACCESS_TOKEN_EXPIRE_MINUTES == 10080
     assert settings.REFRESH_TOKEN_EXPIRE_MINUTES == 43200
 
 @pytest.mark.asyncio
@@ -108,3 +112,29 @@ async def test_5_change_password(client: AsyncClient, setup_data, get_user_token
     # Verify we can login with the new password
     login_resp = await client.post("/api/v1/auth/login", json={"email": "test@example.com", "password": "newpassword123"})
     assert login_resp.status_code == 200
+
+@pytest.mark.asyncio
+async def test_6_refresh_token(client: AsyncClient, setup_data):
+    # Get initial refresh token by logging in
+    login_resp = await client.post("/api/v1/auth/login", json={"email": "test@example.com", "password": "newpassword123"})
+    assert login_resp.status_code == 200
+    login_data = login_resp.json()
+    refresh_token = login_data["refresh_token"]
+    
+    # 1. Successful refresh
+    response = await client.post("/api/v1/auth/refresh", json={"refresh_token": refresh_token})
+    assert response.status_code == 200
+    data = response.json()
+    assert "access_token" in data
+    assert "refresh_token" in data
+    assert data["expires_in"] == 10080 * 60
+    assert data["refresh_expires_in"] == 43200 * 60
+    
+    # 2. Refresh with invalid/expired token
+    bad_response = await client.post("/api/v1/auth/refresh", json={"refresh_token": "invalid_token_here"})
+    assert bad_response.status_code == 401
+    
+    # 3. Refresh with access token (should be rejected as invalid type)
+    access_token = login_data["access_token"]
+    rejected_response = await client.post("/api/v1/auth/refresh", json={"refresh_token": access_token})
+    assert rejected_response.status_code == 401
