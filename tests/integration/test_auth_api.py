@@ -116,7 +116,7 @@ async def test_5_change_password(client: AsyncClient, setup_data, get_user_token
 @pytest.mark.asyncio
 async def test_6_refresh_token(client: AsyncClient, setup_data):
     # Get initial refresh token by logging in
-    login_resp = await client.post("/api/v1/auth/login", json={"email": "test@example.com", "password": "newpassword123"})
+    login_resp = await client.post("/api/v1/auth/login", json={"email": "test@example.com", "password": "password123"})
     assert login_resp.status_code == 200
     login_data = login_resp.json()
     refresh_token = login_data["refresh_token"]

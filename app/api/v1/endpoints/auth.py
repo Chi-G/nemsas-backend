@@ -78,7 +78,16 @@ async def refresh(
             detail="Invalid token payload",
         )
         
-    result = await db.execute(select(User).where(User.id == user_id))
+    import uuid
+    try:
+        user_uuid = uuid.UUID(user_id)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user ID format in token",
+        )
+        
+    result = await db.execute(select(User).where(User.id == user_uuid))
     user = result.scalar_one_or_none()
     
     if not user:
