@@ -311,4 +311,16 @@ class CRUDIncident:
         )
         return list(result.scalars().all()), total
 
+    async def get_last_event_status(self, db: AsyncSession, *, incident_category_id: int) -> Optional[str]:
+        result = await db.execute(
+            select(Incident)
+            .filter(Incident.incident_category_id == incident_category_id)
+            .order_by(Incident.date_added.desc(), Incident.id.desc())
+            .limit(1)
+        )
+        last_incident = result.scalars().first()
+        if last_incident:
+            return last_incident.event_status_type or last_incident.incident_status_type
+        return None
+
 incident_crud = CRUDIncident()

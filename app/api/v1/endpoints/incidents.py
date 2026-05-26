@@ -8,6 +8,24 @@ from app.models.user import User
 
 router = APIRouter()
 
+@router.get("/last-event-status", response_model=Any)
+async def get_last_event_status(
+    incident_category_id: int = Query(..., alias="incidentCategoryId"),
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Get the last event type status for a specific incident category.
+    """
+    last_status = await incident_crud.get_last_event_status(db, incident_category_id=incident_category_id)
+    return {
+        "success": True,
+        "message": "Last event status successfully fetched",
+        "data": {
+            "lastEventStatus": last_status
+        }
+    }
+
 @router.get("/", response_model=IncidentResponse)
 async def read_incidents(
     db: AsyncSession = Depends(deps.get_db),
@@ -194,6 +212,22 @@ async def create_incident(
         if category:
             incident_in.incident_category_id = cast(int, category.id)
 
+    # Check if assigned ambulance is busy
+    if incident_in.ambulance_id:
+        from app.models.incident import Incident
+        from sqlalchemy import select
+        busy_check = await db.execute(
+            select(Incident.id)
+            .filter(Incident.ambulance_id == incident_in.ambulance_id)
+            .filter(Incident.event_status_type == "Patient Picked Up")
+            .limit(1)
+        )
+        if busy_check.scalars().first():
+            raise HTTPException(
+                status_code=400,
+                detail="Assigned ambulance is currently busy with another patient"
+            )
+
     new_incident = await incident_crud.create(db, obj_in=incident_in)
     
     # Broadcast incident via Websockets
@@ -227,6 +261,46 @@ async def update_incident(
     restricted_roles = {"STATEVIEWER", "ADMINSEMSASUSER", "SEMSASDISPATCH", "SEMSASPIUUSER", "SEMSASUSER"}
     if current_user.user_type in restricted_roles and current_user.state_id != incident.state_id:
         raise HTTPException(status_code=403, detail="Not authorized to update this incident")
+
+    # Validation: Ambulance busy check
+    target_ambulance_id = incident_in.ambulance_id if incident_in.ambulance_id is not None else incident.ambulance_id
+
+    # 1. If assigning a new/different ambulance
+    if incident_in.ambulance_id is not None and incident_in.ambulance_id != incident.ambulance_id:
+        from app.models.incident import Incident
+        from sqlalchemy import select
+        busy_check = await db.execute(
+            select(Incident.id)
+            .filter(Incident.ambulance_id == incident_in.ambulance_id)
+            .filter(Incident.event_status_type == "Patient Picked Up")
+            .limit(1)
+        )
+        if busy_check.scalars().first():
+            raise HTTPException(
+                status_code=400,
+                detail="Assigned ambulance is currently busy with another patient"
+            )
+
+    # 2. If setting event_status_type to "Patient Picked Up"
+    if (
+        (incident_in.event_status_type == "Patient Picked Up") or
+        (incident.event_status_type == "Patient Picked Up" and incident_in.ambulance_id is not None and incident_in.ambulance_id != incident.ambulance_id)
+    ):
+        if target_ambulance_id:
+            from app.models.incident import Incident
+            from sqlalchemy import select
+            busy_check = await db.execute(
+                select(Incident.id)
+                .filter(Incident.id != incident.id)
+                .filter(Incident.ambulance_id == target_ambulance_id)
+                .filter(Incident.event_status_type == "Patient Picked Up")
+                .limit(1)
+            )
+            if busy_check.scalars().first():
+                raise HTTPException(
+                    status_code=400,
+                    detail="Ambulance is already busy with another picked up patient"
+                )
 
     updated_incident = await incident_crud.update(db, db_obj=incident, obj_in=incident_in)
     
