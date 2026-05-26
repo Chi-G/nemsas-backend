@@ -15,7 +15,8 @@ async def read_monitoring(
     year: Optional[int] = None,
     month: Optional[int] = None,
     stateId: Optional[int] = None,
-    remark: Optional[str] = None
+    remark: Optional[str] = None,
+    current_user: User = Depends(deps.get_current_user)
 ) -> Any:
     """
     Returns monthly monitoring records matching the production payload.

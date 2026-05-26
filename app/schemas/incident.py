@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, computed_field, Field, alias_generators
+from pydantic import BaseModel, ConfigDict, computed_field, Field, alias_generators, model_validator
 from typing import Optional, List, Any
 from datetime import datetime, date
 from uuid import UUID
@@ -93,7 +93,23 @@ class Incident(IncidentBase):
     state_name_computed: Optional[str] = Field(None, alias="stateName")
     claims: List[IncidentClaim] = Field(default_factory=list, alias="claims")
 
+    # Read etc_interventions from ORM but exclude from JSON serialization
+    etc_interventions: Optional[List[Any]] = Field(default=[], exclude=True)
+
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+    @model_validator(mode="after")
+    def inject_etc_interventions_into_patients(self) -> "Incident":
+        """
+        After the Incident model is built from ORM attributes, iterate over
+        each patient and inject the incident-level etc_interventions so that
+        each patient has its medical_interventions (Procedures) and drugs (Drugs)
+        populated correctly.
+        """
+        etc = self.etc_interventions or []
+        for patient in self.patients:
+            patient.populate_interventions_from_etc(etc)
+        return self
 
 class IncidentSummary(BaseModel):
     id: int
@@ -118,11 +134,23 @@ class IncidentSummary(BaseModel):
     state_name_computed: Optional[str] = Field(None, alias="stateName")
     claims: List[IncidentClaim] = Field(default_factory=list, alias="claims")
 
+    # Read etc_interventions from ORM but exclude from JSON serialization
+    etc_interventions: Optional[List[Any]] = Field(default=[], exclude=True)
+
     model_config = ConfigDict(
         from_attributes=True, 
         populate_by_name=True,
         alias_generator=alias_generators.to_camel
     )
+
+    @model_validator(mode="after")
+    def inject_etc_interventions_into_patients(self) -> "IncidentSummary":
+        """Inject incident-level etc_interventions into each patient's drugs/procedures lists."""
+        etc = self.etc_interventions or []
+        for patient in self.patients:
+            patient.populate_interventions_from_etc(etc)
+        return self
+
 
 class IncidentResponse(BaseModel):
     success: bool
@@ -134,3 +162,4 @@ class SingleIncidentResponse(BaseModel):
     success: bool
     message: str
     data: Incident
+

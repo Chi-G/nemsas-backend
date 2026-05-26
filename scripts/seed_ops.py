@@ -306,9 +306,45 @@ async def seed_operational_data():
                             "date_added": parse_dt(m.get("dateAdded")),
                         }
                     m_recs = list(m_dict.values())
-            m_count = await upsert_data(session, Monitoring, m_recs)
-            print(f"✅ Seeded {m_count} Monitoring Evaluation Logs.")
-            await fix_sequence(session, "monitoring")
+            if m_recs:
+                total_monitoring_added = 0
+                BATCH_SIZE = 500
+                for i in range(0, len(m_recs), BATCH_SIZE):
+                    chunk = m_recs[i:i + BATCH_SIZE]
+                    stmt = pg_insert(Monitoring).values(chunk)
+                    
+                    update_dict = {
+                        c.name: stmt.excluded[c.name]
+                        for c in Monitoring.__table__.columns
+                        if c.name not in ['id']
+                    }
+                    
+                    stmt = stmt.on_conflict_do_update(
+                        index_elements=['id'],
+                        set_=update_dict
+                    )
+                    try:
+                        await session.execute(stmt)
+                        await session.commit()
+                        total_monitoring_added += len(chunk)
+                    except Exception as e:
+                        await session.rollback()
+                        # fallback one by one
+                        for single_item in chunk:
+                            try:
+                                inner_stmt = pg_insert(Monitoring).values(single_item)
+                                inner_stmt = inner_stmt.on_conflict_do_update(
+                                    index_elements=['id'],
+                                    set_={k: v for k, v in single_item.items() if k != 'id'}
+                                )
+                                await session.execute(inner_stmt)
+                                await session.commit()
+                                total_monitoring_added += 1
+                            except Exception:
+                                await session.rollback()
+                                pass
+                print(f"✅ Seeded {total_monitoring_added} Monitoring Evaluation Logs.")
+                await fix_sequence(session, "monitoring")
 
     print("🏁 All operations seeding procedures have concluded successfully.")
 

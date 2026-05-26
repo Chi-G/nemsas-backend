@@ -21,7 +21,8 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-                selectinload(Incident.claims).selectinload(ClaimModel.images)
+                selectinload(Incident.claims).selectinload(ClaimModel.images),
+                selectinload(Incident.etc_interventions)
             )
         )
         return result.scalars().first()
@@ -53,7 +54,8 @@ class CRUDIncident:
             selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
             selectinload(Incident.hospital).selectinload(HospitalModel.state),
             selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-            selectinload(Incident.claims).selectinload(ClaimModel.images)
+            selectinload(Incident.claims).selectinload(ClaimModel.images),
+            selectinload(Incident.etc_interventions)
         )
 
         if search:

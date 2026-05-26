@@ -72,8 +72,8 @@ async def setup_monitoring_data(db: AsyncSession):
     await db.commit()
 
 @pytest.mark.asyncio
-async def test_get_all_monitoring_records(client: AsyncClient, setup_monitoring_data):
-    response = await client.get("/api/v1/monitoring/")
+async def test_get_all_monitoring_records(client: AsyncClient, setup_monitoring_data, admin_token_headers):
+    response = await client.get("/api/v1/monitoring/", headers=admin_token_headers)
     assert response.status_code == 200
     
     payload = response.json()
@@ -119,37 +119,37 @@ async def test_get_all_monitoring_records(client: AsyncClient, setup_monitoring_
     assert "isActive" in state
 
 @pytest.mark.asyncio
-async def test_get_monitoring_records_filtering(client: AsyncClient, setup_monitoring_data):
+async def test_get_monitoring_records_filtering(client: AsyncClient, setup_monitoring_data, admin_token_headers):
     # Filter by Year
-    resp_year = await client.get("/api/v1/monitoring/?year=2025")
+    resp_year = await client.get("/api/v1/monitoring/?year=2025", headers=admin_token_headers)
     assert resp_year.status_code == 200
     data_year = resp_year.json()["data"]
     assert len(data_year) == 1
     assert data_year[0]["year"] == 2025
 
     # Filter by Month
-    resp_month = await client.get("/api/v1/monitoring/?month=1")
+    resp_month = await client.get("/api/v1/monitoring/?month=1", headers=admin_token_headers)
     assert resp_month.status_code == 200
     data_month = resp_month.json()["data"]
     assert len(data_month) == 1
     assert data_month[0]["month"] == 1
 
     # Filter by State ID
-    resp_state = await client.get("/api/v1/monitoring/?stateId=8")
+    resp_state = await client.get("/api/v1/monitoring/?stateId=8", headers=admin_token_headers)
     assert resp_state.status_code == 200
     data_state = resp_state.json()["data"]
     assert len(data_state) == 1
     assert data_state[0]["stateId"] == 8
 
     # Filter by Remark (case-insensitive substring)
-    resp_remark = await client.get("/api/v1/monitoring/?remark=satisfac")
+    resp_remark = await client.get("/api/v1/monitoring/?remark=satisfac", headers=admin_token_headers)
     assert resp_remark.status_code == 200
     data_remark = resp_remark.json()["data"]
     assert len(data_remark) == 1
     assert data_remark[0]["remark"] == "Satisfactory"
 
     # Filter by All
-    resp_all = await client.get("/api/v1/monitoring/?year=2025&month=12&stateId=8&remark=Satisfactory")
+    resp_all = await client.get("/api/v1/monitoring/?year=2025&month=12&stateId=8&remark=Satisfactory", headers=admin_token_headers)
     assert resp_all.status_code == 200
     data_all = resp_all.json()["data"]
     assert len(data_all) == 1
@@ -158,7 +158,7 @@ async def test_get_monitoring_records_filtering(client: AsyncClient, setup_monit
     assert data_all[0]["month"] == 12
 
     # Filter with no match
-    resp_none = await client.get("/api/v1/monitoring/?year=2025&month=1")
+    resp_none = await client.get("/api/v1/monitoring/?year=2025&month=1", headers=admin_token_headers)
     assert resp_none.status_code == 200
     data_none = resp_none.json()["data"]
     assert len(data_none) == 0

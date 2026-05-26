@@ -81,6 +81,7 @@ class Incident(Base):
     dispatches = relationship("Dispatch", back_populates="incident")
     claims = relationship("Claim", back_populates="incident")
     patients = relationship("Patient", back_populates="incident")
+    etc_interventions = relationship("EtcIntervention", back_populates="incident")
 
     @property
     def incident_type_name(self) -> str | None:
