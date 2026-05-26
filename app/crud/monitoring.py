@@ -6,10 +6,24 @@ from typing import List, Optional
 from app.models.monitoring import Monitoring
 
 class CRUDMonitoring:
-    async def get_all(self, db: AsyncSession) -> List[Monitoring]:
+    async def get_all(
+        self, 
+        db: AsyncSession, 
+        *, 
+        year: Optional[int] = None, 
+        month: Optional[int] = None, 
+        state_id: Optional[int] = None
+    ) -> List[Monitoring]:
         stmt = select(Monitoring).options(selectinload(Monitoring.state))
+        if year is not None:
+            stmt = stmt.filter(Monitoring.year == year)
+        if month is not None:
+            stmt = stmt.filter(Monitoring.month == month)
+        if state_id is not None:
+            stmt = stmt.filter(Monitoring.state_id == state_id)
         result = await db.execute(stmt)
         return list(result.scalars().all())
+
 
     async def get_monthly_aggregates(self, db: AsyncSession, year: Optional[int] = None):
         stmt = select(

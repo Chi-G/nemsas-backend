@@ -1,7 +1,6 @@
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 from datetime import datetime
 from typing import Optional, Any, List
-from app.schemas.state import State
 
 class MonitoringBase(BaseModel):
     year: int
@@ -30,13 +29,45 @@ class MonitoringCreate(MonitoringBase):
 class MonitoringUpdate(MonitoringBase):
     pass
 
+class MonitoringState(BaseModel):
+    id: int
+    name: str
+    code: Optional[str] = ""
+    lgas: List[Any] = []
+    date_added: Optional[datetime] = Field(datetime.fromisoformat("2023-07-05T07:27:52+00:00"), alias="dateAdded")
+    added_by: Optional[str] = Field("", alias="addedBy")
+    updated_at: Optional[datetime] = Field(datetime.fromisoformat("2023-07-05T07:27:52+00:00"), alias="updatedAt")
+    updated_by: Optional[str] = Field(None, alias="updatedBy")
+    is_active: bool = Field(True, alias="isActive")
+
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+
+    @model_validator(mode="before")
+    @classmethod
+    def check_orm(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return {
+                "id": getattr(data, "id"),
+                "name": getattr(data, "name"),
+                "code": getattr(data, "code", "") or "",
+                "lgas": [],
+                "dateAdded": datetime.fromisoformat("2023-07-05T07:27:52+00:00"),
+                "addedBy": "",
+                "updatedAt": datetime.fromisoformat("2023-07-05T07:27:52+00:00"),
+                "updatedBy": None,
+                "isActive": True
+            }
+        return data
+
 class Monitoring(MonitoringBase):
     id: int
     date_added: Optional[datetime] = Field(None, alias="dateAdded")
     added_by: Optional[str] = Field(None, alias="addedBy")
+    updated_at: Optional[datetime] = Field(None, alias="updatedAt")
+    updated_by: Optional[str] = Field(None, alias="updatedBy")
     is_active: bool = Field(True, alias="isActive")
     
-    state: Optional[State] = None
+    state: Optional[MonitoringState] = None
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
