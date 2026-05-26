@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
+from uuid import UUID
 from app.api import deps
 from app.schemas.user import User as UserSchema, UserCreate
 from app.models.user import User
@@ -162,4 +163,35 @@ async def mark_notification_as_read(
         "success": True,
         "message": "Notification marked as read",
         "data": True
+    }
+
+@router.delete("/{id}", response_model=ResponseBase[UserSchema], summary="(Disable User)")
+async def delete_user(
+    id: UUID,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+):
+    """
+    Disable a user (set is_active to False) instead of deleting to preserve relationships.
+    """
+    user = await user_crud.get(db, id=id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    # Enforce state restriction for state admins
+    if current_user.user_type == "ADMINSEMSASUSER" and current_user.state_id != user.state_id:
+        raise HTTPException(
+            status_code=403,
+            detail="You are not authorized to disable users from other states"
+        )
+        
+    user.is_active = False
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    
+    return {
+        "success": True,
+        "message": "User successfully disabled",
+        "data": user
     }
