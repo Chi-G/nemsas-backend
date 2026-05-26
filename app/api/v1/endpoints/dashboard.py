@@ -1,10 +1,10 @@
 import calendar
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Literal, Optional
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel
-from sqlalchemy import distinct, func, select
+from sqlalchemy import distinct, func, select, desc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api import deps
@@ -13,9 +13,11 @@ from app.schemas.monitoring import MonthlyAggregateResponse
 from app.models.ambulance import Ambulance
 from app.models.hospital import Hospital
 from app.models.incident import Incident
+from app.models.claim import Claim
 from app.models.lga import LGA
 from app.models.state import State
 from app.models.user import User
+from app.schemas.dashboard import MobileDashboardResponse
 
 router = APIRouter()
 
@@ -200,3 +202,251 @@ async def get_dashboard_monthly(
         "message": "Monthly data fetched successfully",
         "data": data,
     }
+
+
+# ---------------------------------------------------------------------------
+# Mobile Dashboard & Recent Activity
+# ---------------------------------------------------------------------------
+
+class CustomRequiredIdModel(BaseModel):
+    id: int
+
+
+async def _build_mobile_dashboard_data(
+    db: AsyncSession,
+    current_user: User,
+    state_id: Optional[int],
+    skip: int,
+    limit: int
+) -> dict:
+    role = getattr(current_user, "user_type", "")
+
+    # Determine effective state scoping
+    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER"]:
+        effective_state_id = state_id
+    else:
+        effective_state_id = current_user.state_id
+
+    # 1. Claims Overview counts
+    stmt_claims = select(Claim.status, func.count(Claim.id))
+    if effective_state_id is not None:
+        stmt_claims = stmt_claims.join(Claim.incident).where(Incident.state_id == effective_state_id)
+    stmt_claims = stmt_claims.group_by(Claim.status)
+    res_claims = await db.execute(stmt_claims)
+    
+    claims_counts = {}
+    for row in res_claims.all():
+        status_val = row[0]
+        count_val = row[1]
+        if status_val:
+            normalized = status_val.value.strip().lower() if hasattr(status_val, "value") else str(status_val).strip().lower()
+            claims_counts[normalized] = claims_counts.get(normalized, 0) + count_val
+            
+    claims_pending = (
+        claims_counts.get("pending", 0)
+        + claims_counts.get("new", 0)
+    )
+    claims_approved = (
+        claims_counts.get("approved", 0)
+        + claims_counts.get("endorsed", 0)
+    )
+    claims_rejected = claims_counts.get("rejected", 0)
+    claims_paid = claims_counts.get("paid", 0)
+    claims_total = sum(claims_counts.values())
+
+    claims_overview = {
+        "pending": claims_pending,
+        "approved": claims_approved,
+        "rejected": claims_rejected,
+        "paid": claims_paid,
+        "total": claims_total
+    }
+
+    # 2. Incidents Overview counts
+    stmt_incidents = select(Incident.incident_status_type, func.count(Incident.id))
+    if effective_state_id is not None:
+        stmt_incidents = stmt_incidents.where(Incident.state_id == effective_state_id)
+    stmt_incidents = stmt_incidents.group_by(Incident.incident_status_type)
+    res_incidents = await db.execute(stmt_incidents)
+    
+    incidents_counts = {}
+    for row in res_incidents.all():
+        status_val = row[0]
+        count_val = row[1]
+        if status_val:
+            normalized = status_val.value.strip().lower() if hasattr(status_val, "value") else str(status_val).strip().lower()
+            incidents_counts[normalized] = incidents_counts.get(normalized, 0) + count_val
+
+    incidents_overview = {
+        "created": incidents_counts.get("created", 0),
+        "reported": incidents_counts.get("reported", 0),
+        "dispatched": incidents_counts.get("dispatched", 0),
+        "accepted": incidents_counts.get("accepted", 0),
+        "enRoute": incidents_counts.get("en route", 0),
+        "atScene": incidents_counts.get("at scene", 0),
+        "patientLoaded": incidents_counts.get("patient loaded", 0),
+        "enRouteToEtc": incidents_counts.get("en route to etc", 0),
+        "arrivedAtEtc": incidents_counts.get("arrived at etc", 0),
+        "completed": incidents_counts.get("completed", 0),
+        "closed": incidents_counts.get("closed", 0),
+        "total": sum(incidents_counts.values())
+    }
+
+    # 3. Recent Activity List
+    limit_val = skip + limit
+    
+    # Query incidents
+    stmt_inc = select(Incident).order_by(desc(Incident.date_added))
+    if effective_state_id is not None:
+        stmt_inc = stmt_inc.where(Incident.state_id == effective_state_id)
+    stmt_inc = stmt_inc.limit(limit_val)
+    res_inc = await db.execute(stmt_inc)
+    inc_list = res_inc.scalars().all()
+
+    # Query claims
+    stmt_cl = select(Claim).order_by(desc(Claim.created_at))
+    if effective_state_id is not None:
+        stmt_cl = stmt_cl.join(Claim.incident).where(Incident.state_id == effective_state_id)
+    stmt_cl = stmt_cl.limit(limit_val)
+    res_cl = await db.execute(stmt_cl)
+    cl_list = res_cl.scalars().all()
+
+    # Map activities
+    activities = []
+    for inc in inc_list:
+        status_val = inc.incident_status_type or "Reported"
+        status_str = status_val.value if hasattr(status_val, "value") else str(status_val)
+        activities.append({
+            "title": f"Incident {status_str}",
+            "desc": f"Incident {inc.serial_no or f'#{inc.id}'} is {status_str}.",
+            "metaData": {
+                "incidentId": inc.id,
+                "serialNo": inc.serial_no,
+                "type": "incident"
+            },
+            "meta-data": {
+                "incidentId": inc.id,
+                "serialNo": inc.serial_no,
+                "type": "incident"
+            },
+            "status": status_str,
+            "createdAt": inc.date_added or datetime.min.replace(tzinfo=timezone.utc)
+        })
+
+    for cl in cl_list:
+        status_val = cl.status or "New"
+        status_str = status_val.value if hasattr(status_val, "value") else str(status_val)
+        activities.append({
+            "title": f"Claim {status_str}",
+            "desc": f"Claim for {cl.patient_name or 'Patient'} is {status_str}.",
+            "metaData": {
+                "claimId": cl.id,
+                "incidentId": cl.incident_id,
+                "type": "claim"
+            },
+            "meta-data": {
+                "claimId": cl.id,
+                "incidentId": cl.incident_id,
+                "type": "claim"
+            },
+            "status": status_str,
+            "createdAt": cl.created_at or datetime.min.replace(tzinfo=timezone.utc)
+        })
+
+    # Helper to sort datetimes with potential None/tz mismatches
+    def normalize_dt(dt):
+        if dt is None:
+            return datetime(1970, 1, 1, tzinfo=timezone.utc)
+        if dt.tzinfo is None:
+            return dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+
+    activities.sort(key=lambda x: normalize_dt(x["createdAt"]), reverse=True)
+    paginated_activities = activities[skip : skip + limit]
+
+    # Query totals
+    stmt_total_inc = select(func.count(Incident.id))
+    if effective_state_id is not None:
+        stmt_total_inc = stmt_total_inc.where(Incident.state_id == effective_state_id)
+    total_inc = (await db.execute(stmt_total_inc)).scalar() or 0
+
+    stmt_total_cl = select(func.count(Claim.id))
+    if effective_state_id is not None:
+        stmt_total_cl = stmt_total_cl.join(Claim.incident).where(Incident.state_id == effective_state_id)
+    total_cl = (await db.execute(stmt_total_cl)).scalar() or 0
+
+    total_activities = total_inc + total_cl
+
+    return {
+        "success": True,
+        "message": "Mobile dashboard data retrieved successfully",
+        "data": {
+            "claimsOverview": claims_overview,
+            "incidentsOverview": incidents_overview,
+            "recentActivity": paginated_activities,
+            "pagination": {
+                "total": total_activities,
+                "skip": skip,
+                "limit": limit
+            }
+        }
+    }
+
+
+@router.get("/mobile", response_model=MobileDashboardResponse)
+async def get_mobile_dashboard(
+    db: AsyncSession = Depends(deps.get_db),
+    state_id: Optional[int] = Query(None, alias="stateId"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Get mobile dashboard statistics (claims overview & incidents overview)
+    and a paginated list of recent activity (merging claims and incidents).
+    """
+    return await _build_mobile_dashboard_data(
+        db=db,
+        current_user=current_user,
+        state_id=state_id,
+        skip=skip,
+        limit=limit
+    )
+
+
+@router.get("/dashboardMobile", response_model=MobileDashboardResponse)
+async def get_dashboard_mobile_alias(
+    db: AsyncSession = Depends(deps.get_db),
+    state_id: Optional[int] = Query(None, alias="stateId"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """Alias GET for dashboardMobile."""
+    return await _build_mobile_dashboard_data(
+        db=db,
+        current_user=current_user,
+        state_id=state_id,
+        skip=skip,
+        limit=limit
+    )
+
+
+@router.post("/dashboardMobile", response_model=MobileDashboardResponse)
+async def post_dashboard_mobile(
+    body: CustomRequiredIdModel,
+    db: AsyncSession = Depends(deps.get_db),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Legacy POST dashboardMobile handler matching C# specification.
+    """
+    return await _build_mobile_dashboard_data(
+        db=db,
+        current_user=current_user,
+        state_id=body.id,
+        skip=skip,
+        limit=limit
+    )
