@@ -177,12 +177,12 @@ async def test_claims_approval_restrictions_and_endorsement(
     nemsas_headers = get_user_token_headers(records["nemsas_admin"])
     claim = records["claim"]
     
-    # 1. Attempt to approve as SEMSAS user (should fail with 403)
+    # 1. Attempt to approve as SEMSAS user 
     response = await client.post(f"/api/v1/claims/{claim.id}/approve", headers=semsas_headers)
     assert response.status_code == 403
     assert "cannot directly approve" in response.json()["error"]
     
-    # 2. Endorse as SEMSAS user (should succeed)
+    # 2. Endorse as SEMSAS user
     response = await client.post(f"/api/v1/claims/{claim.id}/endorse", headers=semsas_headers)
     assert response.status_code == 200
     assert response.json()["data"]["status"] == "Endorsed"
@@ -194,7 +194,7 @@ async def test_claims_approval_restrictions_and_endorsement(
     assert logs[0].action == "Endorse"
     assert logs[0].processed_by_id == records["semsas_user"].id
     
-    # 3. Approve as NEMSAS Admin (should succeed)
+    # 3. Approve as NEMSAS Admin
     response = await client.post(f"/api/v1/claims/{claim.id}/approve", headers=nemsas_headers)
     assert response.status_code == 200
     assert response.json()["data"]["status"] == "Approved"
