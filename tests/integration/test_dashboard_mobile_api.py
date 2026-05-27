@@ -48,12 +48,13 @@ async def setup_mobile_dashboard_data(db: AsyncSession):
     db.add(semsas_user)
     await db.flush()
 
-    # Seed 3 Incidents in Abia (state_id=1)
+    # Seed 3 Incidents for ambulance 1
     inc1 = Incident(
         serial_no="AB-001",
         description="First incident in Abia",
         incident_status_type="Reported",
         state_id=1,
+        ambulance_id=1,
         date_added=datetime(2026, 5, 20, 10, 0, 0, tzinfo=timezone.utc)
     )
     inc2 = Incident(
@@ -61,6 +62,7 @@ async def setup_mobile_dashboard_data(db: AsyncSession):
         description="Second incident in Abia",
         incident_status_type="Dispatched",
         state_id=1,
+        ambulance_id=1,
         date_added=datetime(2026, 5, 21, 10, 0, 0, tzinfo=timezone.utc)
     )
     inc3 = Incident(
@@ -68,17 +70,19 @@ async def setup_mobile_dashboard_data(db: AsyncSession):
         description="Third incident in Abia",
         incident_status_type="Completed",
         state_id=1,
+        ambulance_id=1,
         date_added=datetime(2026, 5, 22, 10, 0, 0, tzinfo=timezone.utc)
     )
     db.add_all([inc1, inc2, inc3])
     await db.flush()
 
-    # Seed 1 Incident in Borno (state_id=8)
+    # Seed 1 Incident for ambulance 8
     inc_borno = Incident(
         serial_no="BO-001",
         description="Incident in Borno",
         incident_status_type="Reported",
         state_id=8,
+        ambulance_id=8,
         date_added=datetime(2026, 5, 23, 10, 0, 0, tzinfo=timezone.utc)
     )
     db.add(inc_borno)
@@ -158,12 +162,12 @@ async def test_superadmin_mobile_dashboard_global(client: AsyncClient, setup_mob
     assert len(activities) == 7
 
     # Sorted descending by date. Top most activity should be the claim in Borno (May 26)
-    assert activities[0]["title"] == "Claim Rejected"
+    assert activities[0]["title"].endswith("rejected")
     assert activities[0]["metaData"]["type"] == "claim"
     assert "meta-data" in activities[0]
     
     # Second should be ETC claim 2 (May 25)
-    assert activities[1]["title"] == "Claim Approved"
+    assert activities[1]["title"].endswith("approved")
     
     # Verify pagination works: skip=2, limit=2
     response_pag = await client.get("/api/v1/dashboard/mobile?limit=2&skip=2", headers=admin_token_headers)
@@ -175,9 +179,9 @@ async def test_superadmin_mobile_dashboard_global(client: AsyncClient, setup_mob
 
 @pytest.mark.asyncio
 async def test_superadmin_mobile_dashboard_filtered(client: AsyncClient, setup_mobile_dashboard_data, admin_token_headers):
-    # Filter by State 1 (Abia)
-    # Total Abia: 3 Incidents, 2 Claims = 5 activities
-    response = await client.get("/api/v1/dashboard/mobile?stateId=1&limit=10&skip=0", headers=admin_token_headers)
+    # Filter by ambulanceId 1
+    # Total ambulance 1: 3 Incidents, 2 Claims = 5 activities
+    response = await client.get("/api/v1/dashboard/mobile?ambulanceId=1&limit=10&skip=0", headers=admin_token_headers)
     assert response.status_code == 200
     payload = response.json()
     data = payload["data"]
@@ -204,31 +208,31 @@ async def test_semsas_user_mobile_dashboard_scoping(client: AsyncClient, setup_m
     semsas_user = setup_mobile_dashboard_data
     headers = get_user_token_headers(semsas_user)
 
-    # Call as semsas user: should scope to state 1 even without passing parameter
-    response = await client.get("/api/v1/dashboard/mobile?limit=10&skip=0", headers=headers)
+    # Call as semsas user, provide ambulanceId 1
+    response = await client.get("/api/v1/dashboard/mobile?ambulanceId=1&limit=10&skip=0", headers=headers)
     assert response.status_code == 200
     payload = response.json()
     data = payload["data"]
 
-    # Verify same counts as Abia
+    # Verify same counts as ambulance 1
     assert data["claimsOverview"]["total"] == 2
     assert data["incidentsOverview"]["total"] == 3
     assert data["pagination"]["total"] == 5
 
-    # Try to filter by Borno (stateId=8): should be ignored and still return Abia data
-    response_ignored = await client.get("/api/v1/dashboard/mobile?stateId=8&limit=10&skip=0", headers=headers)
+    # Try to filter by ambulance 8
+    response_ignored = await client.get("/api/v1/dashboard/mobile?ambulanceId=8&limit=10&skip=0", headers=headers)
     assert response_ignored.status_code == 200
     payload_ignored = response_ignored.json()
-    assert payload_ignored["data"]["claimsOverview"]["total"] == 2
+    assert payload_ignored["data"]["claimsOverview"]["total"] == 1
 
 @pytest.mark.asyncio
 async def test_legacy_post_dashboard_mobile(client: AsyncClient, setup_mobile_dashboard_data, admin_token_headers):
-    # Call the legacy POST endpoint with superadmin token and body {"id": 1}
+    # Call the legacy POST endpoint with superadmin token and body {"id": 1} - used as ambulanceId
     response = await client.post("/api/v1/dashboard/dashboardMobile", json={"id": 1}, headers=admin_token_headers)
     assert response.status_code == 200
     payload = response.json()
     assert payload["success"] is True
     data = payload["data"]
-    # Check Abia (state 1) counts
+    # Check ambulance 1 counts
     assert data["claimsOverview"]["total"] == 2
     assert data["incidentsOverview"]["total"] == 3

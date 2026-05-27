@@ -358,10 +358,11 @@ async def _build_mobile_dashboard_data(
             title = f"Incident {status_str}"
 
         location_str = inc.incident_location or inc.street or inc.district_ward or "Unknown Location"
+        activity_desc = location_str
         
         activities.append({
             "title": title,
-            "desc": location_str,
+            "desc": activity_desc,
             "metaData": {
                 "incidentId": inc.id,
                 "serialNo": inc.serial_no,
@@ -385,20 +386,20 @@ async def _build_mobile_dashboard_data(
         
         if status_str.lower() == "approved":
             title = f"Claim #{cl.id} approved"
-            desc = f"Patient: {cl.patient_name or 'Unknown'}"
+            activity_desc = f"Patient: {cl.patient_name or 'Unknown'}"
         elif status_str.lower() == "rejected":
             title = f"Claim #{cl.id} rejected"
-            desc = cl.rejection_reason or "Incomplete documents submitted"
+            activity_desc = cl.rejection_reason or "Incomplete documents submitted"
         elif status_str.lower() in ["pending", "new", "endorsed"]:
             title = f"Claim #{cl.id} pending review"
-            desc = "Awaiting hospital verification"
+            activity_desc = "Awaiting hospital verification"
         else:
             title = f"Claim #{cl.id} {status_str.lower()}"
-            desc = f"Patient: {cl.patient_name or 'Unknown'}"
+            activity_desc = f"Patient: {cl.patient_name or 'Unknown'}"
 
         activities.append({
             "title": title,
-            "desc": desc,
+            "desc": activity_desc,
             "metaData": {
                 "claimId": cl.id,
                 "incidentId": cl.incident_id,
