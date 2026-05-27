@@ -137,16 +137,17 @@ class RunSheet(RunSheetBase):
                 setattr(data, "user", medic_user)
 
         # Populate patients and patientViewModels
-        incident = get_loaded_relation(data, "incident")
-        if incident:
-            incident_patients = get_loaded_relation(incident, "patients")
-            if incident_patients:
-                if isinstance(data, dict):
-                    data["patients"] = incident_patients
-                    data["patientViewModels"] = incident_patients
-                else:
-                    setattr(data, "patients", incident_patients)
-                    setattr(data, "patientViewModels", incident_patients)
+        # REMOVED: Frontend complained about massive payload duplication (patients, patientViewModels, patientViewModel all had same data)
+        # incident = get_loaded_relation(data, "incident")
+        # if incident:
+        #     incident_patients = get_loaded_relation(incident, "patients")
+        #     if incident_patients:
+        #         if isinstance(data, dict):
+        #             data["patients"] = []
+        #             data["patientViewModels"] = []
+        #         else:
+        #             setattr(data, "patients", [])
+        #             setattr(data, "patientViewModels", [])
 
         # Map patientViewModel from runsheet.patient relationship
         patient_obj = get_loaded_relation(data, "patient")
