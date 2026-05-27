@@ -10,6 +10,7 @@ class RecentActivityItem(BaseModel):
     meta_data_hyphen: Dict[str, Any] = Field(..., alias="meta-data")
     status: str
     createdAt: datetime
+    date: Optional[str] = None
 
     model_config = ConfigDict(
         populate_by_name=True,
@@ -22,6 +23,9 @@ class ClaimsOverview(BaseModel):
     rejected: int = 0
     paid: int = 0
     total: int = 0
+    totalAmount: float = 0.0          # SUM of all claims total_price
+    etcTotalAmount: float = 0.0       # SUM of ETC claims total_price
+    ambulanceTotalAmount: float = 0.0 # SUM of Ambulance claims total_price
 
 class IncidentsOverview(BaseModel):
     created: int = 0
@@ -36,6 +40,8 @@ class IncidentsOverview(BaseModel):
     completed: int = 0
     closed: int = 0
     total: int = 0
+    averageResponseTime: int = 0
+
 
     model_config = ConfigDict(
         populate_by_name=True,
