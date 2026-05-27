@@ -181,7 +181,8 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-                selectinload(Incident.claims).selectinload(ClaimModel.images)
+                selectinload(Incident.claims).selectinload(ClaimModel.images),
+                selectinload(Incident.etc_interventions)
             )
         )
         final_obj = result.scalars().first()
@@ -243,7 +244,8 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-                selectinload(Incident.claims).selectinload(ClaimModel.images)
+                selectinload(Incident.claims).selectinload(ClaimModel.images),
+                selectinload(Incident.etc_interventions)
             )
         )
         final_obj = result.scalars().first()
@@ -298,7 +300,8 @@ class CRUDIncident:
             selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
             selectinload(Incident.hospital).selectinload(HospitalModel.state),
             selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-            selectinload(Incident.claims).selectinload(ClaimModel.images)
+            selectinload(Incident.claims).selectinload(ClaimModel.images),
+            selectinload(Incident.etc_interventions)
         ).order_by(Incident.date_added.desc())
 
         # Count - optimized to be extremely fast and avoid subquery compiling
