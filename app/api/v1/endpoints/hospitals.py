@@ -159,3 +159,27 @@ async def update_hospital(
         "refreshTokenExpiryTime": "0001-01-01T00:00:00"
     }
 
+@router.get("/{id}/patients", response_model=Any)
+async def read_hospital_patients(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
+):
+    """
+    Get all patients assigned to a specific ETC.
+    """
+    from app.models.patient import Patient
+    from sqlalchemy.future import select
+    from app.schemas.patient import Patient as PatientSchema
+    
+    stmt = select(Patient).where(Patient.etc_id == id)
+    result = await db.execute(stmt)
+    patients = list(result.scalars().all())
+    
+    return {
+        "success": True,
+        "message": "Patients successfully fetched for ETC",
+        "data": [PatientSchema.model_validate(p) for p in patients],
+        "totalCount": len(patients)
+    }
+

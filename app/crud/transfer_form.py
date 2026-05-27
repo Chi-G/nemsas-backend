@@ -49,6 +49,7 @@ class CRUDTransferForm:
             medic_user_id=obj_in.medic_user_id,
             hospice_user_id=obj_in.hospice_user_id,
             patient_id=obj_in.patient_id,
+            patient_ids=obj_in.patient_ids,
             etc_id=obj_in.etc_id,
             run_sheet_id=obj_in.run_sheet_id,
             approve=obj_in.approve
@@ -71,6 +72,7 @@ class CRUDTransferForm:
                         "transferFormId": db_obj.id,
                         "incidentId": db_obj.incident_id,
                         "patientId": db_obj.patient_id,
+                        "patientIds": db_obj.patient_ids,
                         "etcId": db_obj.etc_id,
                         "runSheetId": db_obj.run_sheet_id,
                         "approve": db_obj.approve
@@ -111,6 +113,7 @@ class CRUDTransferForm:
                         "transferFormId": db_obj.id,
                         "incidentId": db_obj.incident_id,
                         "patientId": db_obj.patient_id,
+                        "patientIds": db_obj.patient_ids,
                         "etcId": db_obj.etc_id,
                         "runSheetId": db_obj.run_sheet_id,
                         "approve": db_obj.approve
