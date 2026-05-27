@@ -102,14 +102,22 @@ async def read_incidents(
 @router.get("/ambulance", response_model=IncidentResponse)
 async def read_ambulance_incidents(
     db: AsyncSession = Depends(deps.get_db),
+    ambulanceId: Optional[int] = None,
     skip: int = 0,
     limit: int = 100,
     current_user: User = Depends(deps.get_current_user)
 ):
     """
-    Retrieve incidents assigned to the current user's ambulance.
+    Retrieve incidents assigned to the current user's ambulance or the provided ambulanceId (for admins).
     """
-    if current_user.ambulance_id is None:
+    role = getattr(current_user, "user_type", "")
+    is_admin = role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER"]
+    
+    effective_ambulance_id = current_user.ambulance_id
+    if is_admin and ambulanceId is not None:
+        effective_ambulance_id = ambulanceId
+
+    if effective_ambulance_id is None:
         return {
             "success": True,
             "message": "No incidents found: you have no assigned ambulance",
@@ -119,7 +127,7 @@ async def read_ambulance_incidents(
 
     incidents, total = await incident_crud.get_multi_by_ambulance(
         db,
-        ambulance_id=cast(int, current_user.ambulance_id),
+        ambulance_id=cast(int, effective_ambulance_id),
         skip=skip,
         limit=limit
     )
