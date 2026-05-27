@@ -198,8 +198,11 @@ class RunSheet(RunSheetBase):
             if claims_list:
                 for claim in claims_list:
                     claim_type_val = get_loaded_relation(claim, "claim_type")
-                    if claim_type_val and str(claim_type_val).lower() == "ambulance":
-                        claim_price = get_loaded_relation(claim, "total_price") or 0.0
+                    claim_type_str = claim_type_val.value if hasattr(claim_type_val, "value") else str(claim_type_val)
+                    if claim_type_str and claim_type_str.lower().endswith("ambulance"):
+                        claim_price = get_loaded_relation(claim, "total_price")
+                        if not claim_price:
+                            claim_price = get_loaded_relation(claim, "amount") or 0.0
                         price_val = float(claim_price)
                         break
         # Fallback default price for valid ambulance claims
