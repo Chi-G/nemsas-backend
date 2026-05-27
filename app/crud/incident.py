@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func, or_
 from sqlalchemy.orm import selectinload
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, cast
 from app.models.incident import Incident
 from app.schemas.incident import IncidentCreate, IncidentUpdate
 
@@ -21,7 +21,8 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-                selectinload(Incident.claims).selectinload(ClaimModel.images)
+                selectinload(Incident.claims).selectinload(ClaimModel.images),
+                selectinload(Incident.etc_interventions)
             )
         )
         return result.scalars().first()
@@ -39,7 +40,8 @@ class CRUDIncident:
         state_id_filter: Optional[int] = None,
         mass_casualty: Optional[bool] = None,
         incident_category_id: Optional[int] = None,
-        sort_by_state: bool = False
+        sort_by_state: bool = False,
+        event_status_type: Optional[str] = None
     ) -> Tuple[List[Incident], int]:
         from app.models.patient import Patient as PatientModel
         from app.models.hospital import Hospital as HospitalModel
@@ -52,7 +54,8 @@ class CRUDIncident:
             selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
             selectinload(Incident.hospital).selectinload(HospitalModel.state),
             selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-            selectinload(Incident.claims).selectinload(ClaimModel.images)
+            selectinload(Incident.claims).selectinload(ClaimModel.images),
+            selectinload(Incident.etc_interventions)
         )
 
         if search:
@@ -76,6 +79,8 @@ class CRUDIncident:
             query = query.filter(Incident.mass_casualty == mass_casualty)
         if incident_category_id is not None:
             query = query.filter(Incident.incident_category_id == incident_category_id)
+        if event_status_type:
+            query = query.filter(Incident.event_status_type == event_status_type)
         
         # Priority for strict state filtering (from role)
         if state_id_filter is not None:
@@ -98,6 +103,10 @@ class CRUDIncident:
             count_q = count_q.filter(Incident.triage_category == triage)
         if mass_casualty is not None:
             count_q = count_q.filter(Incident.mass_casualty == mass_casualty)
+        if incident_category_id is not None:
+            count_q = count_q.filter(Incident.incident_category_id == incident_category_id)
+        if event_status_type:
+            count_q = count_q.filter(Incident.event_status_type == event_status_type)
         if state_id_filter is not None:
             count_q = count_q.filter(Incident.state_id == state_id_filter)
         elif state_id is not None:
@@ -172,7 +181,8 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-                selectinload(Incident.claims).selectinload(ClaimModel.images)
+                selectinload(Incident.claims).selectinload(ClaimModel.images),
+                selectinload(Incident.etc_interventions)
             )
         )
         final_obj = result.scalars().first()
@@ -180,12 +190,12 @@ class CRUDIncident:
         # BROADCAST: New Incident
         if final_obj and final_obj.state_id:
             await SocketManager.broadcast_incident_update(
-                final_obj.state_id, 
+                cast(int, final_obj.state_id), 
                 {
                     "type": "NEW_INCIDENT",
                     "incidentId": final_obj.id,
                     "serialNo": final_obj.serial_no,
-                    "status": final_obj.incident_status_type,
+                    "status": final_obj.event_status_type or final_obj.incident_status_type,
                     "triage": final_obj.triage_category
                 }
             )
@@ -196,7 +206,7 @@ class CRUDIncident:
                 from app.core.notifications import notification_service
                 await notification_service.send_to_ambulance(
                     db, 
-                    final_obj.ambulance_id, 
+                    cast(int, final_obj.ambulance_id), 
                     title="New Incident Assigned", 
                     body=f"Incident {final_obj.serial_no} has been assigned to your ambulance.",
                     data={"incidentId": final_obj.id, "type": "NEW_ASSIGNMENT"},
@@ -234,17 +244,18 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-                selectinload(Incident.claims).selectinload(ClaimModel.images)
+                selectinload(Incident.claims).selectinload(ClaimModel.images),
+                selectinload(Incident.etc_interventions)
             )
         )
         final_obj = result.scalars().first()
 
-        new_ambulance_id = final_obj.ambulance_id
+        new_ambulance_id = final_obj.ambulance_id if final_obj else None
 
         # BROADCAST: Updated Incident
         if final_obj and final_obj.state_id:
             await SocketManager.broadcast_incident_update(
-                final_obj.state_id, 
+                cast(int, final_obj.state_id), 
                 {
                     "type": "INCIDENT_UPDATE",
                     "incidentId": final_obj.id,
@@ -259,7 +270,7 @@ class CRUDIncident:
                 from app.core.notifications import notification_service
                 await notification_service.send_to_ambulance(
                     db, 
-                    new_ambulance_id, 
+                    cast(int, new_ambulance_id), 
                     title="New Incident Assignment", 
                     body=f"A new incident ({final_obj.serial_no}) has been assigned to you.",
                     data={"incidentId": final_obj.id, "type": "NEW_ASSIGNMENT"},
@@ -289,7 +300,8 @@ class CRUDIncident:
             selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
             selectinload(Incident.hospital).selectinload(HospitalModel.state),
             selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-            selectinload(Incident.claims).selectinload(ClaimModel.images)
+            selectinload(Incident.claims).selectinload(ClaimModel.images),
+            selectinload(Incident.etc_interventions)
         ).order_by(Incident.date_added.desc())
 
         # Count - optimized to be extremely fast and avoid subquery compiling
@@ -303,5 +315,17 @@ class CRUDIncident:
             .limit(limit)
         )
         return list(result.scalars().all()), total
+
+    async def get_last_event_status(self, db: AsyncSession, *, incident_category_id: int) -> Optional[str]:
+        result = await db.execute(
+            select(Incident)
+            .filter(Incident.incident_category_id == incident_category_id)
+            .order_by(Incident.date_added.desc(), Incident.id.desc())
+            .limit(1)
+        )
+        last_incident = result.scalars().first()
+        if last_incident:
+            return last_incident.event_status_type or last_incident.incident_status_type
+        return None
 
 incident_crud = CRUDIncident()

@@ -234,14 +234,22 @@ async def seed_operational_data():
         if os.path.exists(rs_path):
             with open(rs_path) as f:
                 rs_dat = json.load(f)
-                rs_items = rs_dat.get("data", {}).get("items", []) if isinstance(rs_dat, dict) else []
+                if isinstance(rs_dat, list):
+                    rs_items = rs_dat
+                elif isinstance(rs_dat, dict):
+                    rs_items = rs_dat.get("data", {}).get("items", [])
+                else:
+                    rs_items = []
+                
+                # Deduplicate by ID to prevent primary key constraint errors in a single statement
+                rs_dict = {}
                 for r in rs_items:
                     rid = r.get("id")
                     if not rid: continue
                     
                     amb_id = r.get("ambulanceId")
                     
-                    rs_recs.append({
+                    rs_dict[rid] = {
                         "id": rid,
                         "title": r.get("title"),
                         "incident_id": r.get("incidentId") if r.get("incidentId") != 0 else None,
@@ -255,7 +263,8 @@ async def seed_operational_data():
                         "medic_user_id": r.get("medicUserId") if is_uuid(r.get("medicUserId")) else None,
                         "hospice_user_id": r.get("hospiceUserId") if is_uuid(r.get("hospiceUserId")) else None,
                         "date_added": parse_dt(r.get("dateAdded")),
-                    })
+                    }
+                rs_recs = list(rs_dict.values())
             rs_count = await upsert_data(session, RunSheet, rs_recs)
             print(f"✅ Seeded {rs_count} Run Sheets.")
             await fix_sequence(session, "run_sheets")
@@ -269,11 +278,13 @@ async def seed_operational_data():
             with open(m_path) as f:
                 m_items = json.load(f)
                 if isinstance(m_items, list):
+                    # Deduplicate by ID to prevent primary key constraint errors in a single statement
+                    m_dict = {}
                     for m in m_items:
                         m_id = m.get("id")
                         if not m_id: continue
                         
-                        m_recs.append({
+                        m_dict[m_id] = {
                             "id": m_id,
                             "year": parse_int(m.get("year")),
                             "month": parse_int(m.get("month")),
@@ -293,10 +304,47 @@ async def seed_operational_data():
                             "state_id": m.get("stateId"),
                             "added_by": m.get("addedBy"),
                             "date_added": parse_dt(m.get("dateAdded")),
-                        })
-            m_count = await upsert_data(session, Monitoring, m_recs)
-            print(f"✅ Seeded {m_count} Monitoring Evaluation Logs.")
-            await fix_sequence(session, "monitoring_evaluations")
+                        }
+                    m_recs = list(m_dict.values())
+            if m_recs:
+                total_monitoring_added = 0
+                BATCH_SIZE = 500
+                for i in range(0, len(m_recs), BATCH_SIZE):
+                    chunk = m_recs[i:i + BATCH_SIZE]
+                    stmt = pg_insert(Monitoring).values(chunk)
+                    
+                    update_dict = {
+                        c.name: stmt.excluded[c.name]
+                        for c in Monitoring.__table__.columns
+                        if c.name not in ['id']
+                    }
+                    
+                    stmt = stmt.on_conflict_do_update(
+                        index_elements=['id'],
+                        set_=update_dict
+                    )
+                    try:
+                        await session.execute(stmt)
+                        await session.commit()
+                        total_monitoring_added += len(chunk)
+                    except Exception as e:
+                        await session.rollback()
+                        # fallback one by one
+                        for single_item in chunk:
+                            try:
+                                inner_stmt = pg_insert(Monitoring).values(single_item)
+                                inner_stmt = inner_stmt.on_conflict_do_update(
+                                    index_elements=['id'],
+                                    set_={k: v for k, v in single_item.items() if k != 'id'}
+                                )
+                                await session.execute(inner_stmt)
+                                await session.commit()
+                                total_monitoring_added += 1
+                            except Exception:
+                                await session.rollback()
+                                pass
+                print(f"✅ Seeded {total_monitoring_added} Monitoring Evaluation Logs.")
+                await fix_sequence(session, "monitoring")
 
     print("🏁 All operations seeding procedures have concluded successfully.")
 

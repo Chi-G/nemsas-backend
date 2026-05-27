@@ -18,4 +18,4 @@ class EtcIntervention(Base):
     date_added = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships
-    incident = relationship("Incident")
+    incident = relationship("Incident", back_populates="etc_interventions")

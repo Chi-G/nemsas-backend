@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, Any, cast
 from app.api import deps
@@ -7,6 +7,24 @@ from app.crud.incident import incident_crud
 from app.models.user import User
 
 router = APIRouter()
+
+@router.get("/last-event-status", response_model=Any)
+async def get_last_event_status(
+    incident_category_id: int = Query(..., alias="incidentCategoryId"),
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Get the last event type status for a specific incident category.
+    """
+    last_status = await incident_crud.get_last_event_status(db, incident_category_id=incident_category_id)
+    return {
+        "success": True,
+        "message": "Last event status successfully fetched",
+        "data": {
+            "lastEventStatus": last_status
+        }
+    }
 
 @router.get("/", response_model=IncidentResponse)
 async def read_incidents(
@@ -20,6 +38,7 @@ async def read_incidents(
     mass_casualty: Optional[bool] = None,
     incident_category_id: Optional[int] = None,
     sort_by_state: bool = False,
+    event_status_type: Optional[str] = Query(default=None, alias="eventStatusType"),
     current_user: User = Depends(deps.get_current_user)
 ):
     """
@@ -33,6 +52,7 @@ async def read_incidents(
     - `mass_casualty`: Filter by mass casualty status (true/false).
     - `incident_category_id`: Filter by incident category ID.
     - `sort_by_state`: Sort results by state name (ascending).
+    - `eventStatusType`: Filter by event status type (alias: event_status_type).
     
     **Role-based Access:**
     - **Restricted Roles** (STATEVIEWER, ADMINSEMSASUSER, SEMSASDISPATCH, SEMSASPIUUSER, SEMSASUSER): 
@@ -68,7 +88,8 @@ async def read_incidents(
         state_id_filter=state_id_filter,
         mass_casualty=mass_casualty,
         incident_category_id=incident_category_id,
-        sort_by_state=sort_by_state
+        sort_by_state=sort_by_state,
+        event_status_type=event_status_type
     )
 
     return {
@@ -98,7 +119,7 @@ async def read_ambulance_incidents(
 
     incidents, total = await incident_crud.get_multi_by_ambulance(
         db,
-        ambulance_id=int(current_user.ambulance_id),
+        ambulance_id=cast(int, current_user.ambulance_id),
         skip=skip,
         limit=limit
     )
@@ -191,6 +212,22 @@ async def create_incident(
         if category:
             incident_in.incident_category_id = cast(int, category.id)
 
+    # Check if assigned ambulance is busy
+    if incident_in.ambulance_id:
+        from app.models.incident import Incident
+        from sqlalchemy import select
+        busy_check = await db.execute(
+            select(Incident.id)
+            .filter(Incident.ambulance_id == incident_in.ambulance_id)
+            .filter(Incident.event_status_type == "Patient Picked Up")
+            .limit(1)
+        )
+        if busy_check.scalars().first():
+            raise HTTPException(
+                status_code=400,
+                detail="Assigned ambulance is currently busy with another patient"
+            )
+
     new_incident = await incident_crud.create(db, obj_in=incident_in)
     
     # Broadcast incident via Websockets
@@ -224,6 +261,46 @@ async def update_incident(
     restricted_roles = {"STATEVIEWER", "ADMINSEMSASUSER", "SEMSASDISPATCH", "SEMSASPIUUSER", "SEMSASUSER"}
     if current_user.user_type in restricted_roles and current_user.state_id != incident.state_id:
         raise HTTPException(status_code=403, detail="Not authorized to update this incident")
+
+    # Validation: Ambulance busy check
+    target_ambulance_id = incident_in.ambulance_id if incident_in.ambulance_id is not None else incident.ambulance_id
+
+    # 1. If assigning a new/different ambulance
+    if incident_in.ambulance_id is not None and incident_in.ambulance_id != incident.ambulance_id:
+        from app.models.incident import Incident
+        from sqlalchemy import select
+        busy_check = await db.execute(
+            select(Incident.id)
+            .filter(Incident.ambulance_id == incident_in.ambulance_id)
+            .filter(Incident.event_status_type == "Patient Picked Up")
+            .limit(1)
+        )
+        if busy_check.scalars().first():
+            raise HTTPException(
+                status_code=400,
+                detail="Assigned ambulance is currently busy with another patient"
+            )
+
+    # 2. If setting event_status_type to "Patient Picked Up"
+    if (
+        (incident_in.event_status_type == "Patient Picked Up") or
+        (incident.event_status_type == "Patient Picked Up" and incident_in.ambulance_id is not None and incident_in.ambulance_id != incident.ambulance_id)
+    ):
+        if target_ambulance_id:
+            from app.models.incident import Incident
+            from sqlalchemy import select
+            busy_check = await db.execute(
+                select(Incident.id)
+                .filter(Incident.id != incident.id)
+                .filter(Incident.ambulance_id == target_ambulance_id)
+                .filter(Incident.event_status_type == "Patient Picked Up")
+                .limit(1)
+            )
+            if busy_check.scalars().first():
+                raise HTTPException(
+                    status_code=400,
+                    detail="Ambulance is already busy with another picked up patient"
+                )
 
     updated_incident = await incident_crud.update(db, db_obj=incident, obj_in=incident_in)
     

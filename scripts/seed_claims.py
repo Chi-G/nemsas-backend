@@ -80,6 +80,7 @@ async def seed_claims():
                 "review": item.get("review"),
                 "etc_review": item.get("etcReview"),
                 "status": item.get("status", "New"),
+                "claim_type": "ETC" if item.get("drugsList") else "Ambulance",
                 "incident_id": incident_id,
                 "patient_id": patient_id
             })

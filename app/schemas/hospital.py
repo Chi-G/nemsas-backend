@@ -67,10 +67,27 @@ class HospitalSummary(HospitalBase):
         populate_by_name=True
     )
 
+class HospitalUpdate(BaseModel):
+    name: Optional[str] = None
+    location: Optional[str] = None
+    address1: Optional[str] = None
+    address2: Optional[str] = None
+    landmark: Optional[str] = None
+    nhia_or_shia: Optional[str] = Field(None, alias="nhiAorSHIA")
+    latitude: Optional[str] = None
+    longitude: Optional[str] = None
+    hospital_type_id: Optional[int] = Field(None, alias="hospitalTypeId")
+    state_id: Optional[int] = Field(None, alias="stateId")
+    lga_id: Optional[int] = Field(None, alias="lgaId")
+    
+    model_config = ConfigDict(
+        populate_by_name=True
+    )
+
 class HospitalResponse(BaseModel):
     success: bool = True
     message: str = "Hospital(s) successfully fetched"
-    data: Union[Hospital, List[HospitalSummary], List[Hospital], None]
+    data: Union[Hospital, List[HospitalSummary], List[Hospital], HospitalUpdate, None]
     totalCount: int = 0
     refreshToken: Optional[str] = None
     refreshTokenExpiryTime: str = "0001-01-01T00:00:00"

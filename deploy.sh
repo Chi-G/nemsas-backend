@@ -86,47 +86,40 @@ if [ -f "${DOCKER_COMPOSE_FILE}" ]; then
 fi
 
 # ============================================================================
-# STOP EXISTING CONTAINERS
+# BUILD IMAGES (ZERO-DOWNTIME PREPARATION)
 # ============================================================================
-echo -e "\n${YELLOW}[3/6] Stopping existing containers...${NC}"
-
-cd "${DEPLOY_PATH}"
-$DOCKER_COMPOSE_CMD down || true
-sleep 2
-
-echo -e "${GREEN}✅ Containers stopped (or none were running)${NC}"
-
-# ============================================================================
-# BUILD AND START CONTAINERS
-# ============================================================================
-echo -e "\n${YELLOW}[4/6] Building and starting containers...${NC}"
-
-# Check disk space before building
-echo "Checking disk space..."
+echo -e "\n${YELLOW}[3/6] Building new container images...${NC}"
+echo "Checking disk space before building..."
 df -h /
 
-# Split build and up steps for better error tracking and compatibility
-echo "Building images (this may take a while)..."
-if ! $DOCKER_COMPOSE_CMD build --no-cache --progress=plain; then
-    echo -e "${RED}❌ Build failed! Checking Docker system info...${NC}"
+# Build the images (keeps the old app running while building, uses cache for speed)
+echo "Building ${APP_SERVICE_NAME} image (utilizing layer cache)..."
+if ! $DOCKER_COMPOSE_CMD build --progress=plain ${APP_SERVICE_NAME}; then
+    echo -e "${RED}❌ Image build failed! Checking Docker system info...${NC}"
     docker info | grep -E "Storage|Space|Disk"
     exit 1
 fi
+echo -e "${GREEN}✅ ${APP_SERVICE_NAME} image built successfully${NC}"
 
-echo "Starting containers..."
-if ! $DOCKER_COMPOSE_CMD up -d; then
-    echo -e "${RED}❌ Container startup failed!${NC}"
+# ============================================================================
+# START/UP CONTAINERS (INSTANT SWITCHOVER)
+# ============================================================================
+echo -e "\n${YELLOW}[4/6] Performing zero-downtime container switchover...${NC}"
+
+echo "Recreating and starting ${APP_SERVICE_NAME} container..."
+if ! $DOCKER_COMPOSE_CMD up -d --force-recreate ${APP_SERVICE_NAME}; then
+    echo -e "${RED}❌ Container switchover failed!${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}✅ Containers started and built successfully${NC}"
+echo -e "${GREEN}✅ ${APP_SERVICE_NAME} container restarted and running successfully${NC}"
 
 # ============================================================================
 # HEALTH CHECK
 # ============================================================================
 echo -e "\n${YELLOW}[5/6] Checking container health...${NC}"
 
-MAX_ATTEMPTS=15
+MAX_ATTEMPTS=60
 ATTEMPT=0
 
 while [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
@@ -156,7 +149,7 @@ fi
 
 echo -e "${BLUE}========================================${NC}"
 echo -e "${YELLOW}📡 STARTUP LOGS (Check Seeding Status):${NC}"
-$DOCKER_COMPOSE_CMD logs --tail 50 ${APP_SERVICE_NAME}
+$DOCKER_COMPOSE_CMD logs --tail 300 ${APP_SERVICE_NAME}
 echo -e "${BLUE}========================================${NC}"
 
 # ============================================================================

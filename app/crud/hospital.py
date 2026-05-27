@@ -87,4 +87,15 @@ class CRUDHospital:
         )
         return list(result.scalars().all())
 
+    async def update(
+        self, db: AsyncSession, *, db_obj: Hospital, obj_in: Any
+    ) -> Hospital:
+        update_data = obj_in.model_dump(exclude_unset=True, by_alias=False)
+        for field, value in update_data.items():
+            setattr(db_obj, field, value)
+        db.add(db_obj)
+        await db.commit()
+        return await self.get(db, id=db_obj.id)
+
+
 hospital_crud = CRUDHospital()
