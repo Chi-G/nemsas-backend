@@ -17,7 +17,10 @@ from app.models.claim import Claim
 from app.models.lga import LGA
 from app.models.state import State
 from app.models.user import User
-from app.schemas.dashboard import MobileDashboardResponse
+from app.schemas.dashboard import (
+    MobileDashboardResponse,
+    MobileDashboardActivitiesResponse
+)
 
 router = APIRouter()
 
@@ -215,98 +218,115 @@ class CustomRequiredIdModel(BaseModel):
 async def _build_mobile_dashboard_data(
     db: AsyncSession,
     current_user: User,
-    ambulance_id: Optional[int],
-    skip: int,
-    limit: int
+    skip: int = 0,
+    limit: int = 8,
+    activities_only: bool = False
 ) -> dict:
-    role = getattr(current_user, "user_type", "")
-
     # Scope by ambulance_id instead of state_id for mobile users
-    effective_ambulance_id = ambulance_id
+    effective_ambulance_id = current_user.ambulance_id
 
-    # 1. Claims Overview counts
-    stmt_claims = select(Claim.status, func.count(Claim.id))
-    if effective_ambulance_id is not None:
-        stmt_claims = stmt_claims.join(Claim.incident).where(Incident.ambulance_id == effective_ambulance_id)
-    stmt_claims = stmt_claims.group_by(Claim.status)
-    res_claims = await db.execute(stmt_claims)
+    # If only fetching activities, skip overview queries
+    claims_overview = {"total": 0, "approved": 0, "rejected": 0, "pending": 0}
+    incidents_overview = {"reported": 0, "dispatched": 0, "completed": 0, "total": 0, "averageResponseTime": 6}
+
+    if effective_ambulance_id is None:
+        response_data = {
+            "recentActivity": [],
+            "pagination": {"total": 0, "skip": skip, "limit": limit}
+        }
+        if not activities_only:
+            response_data["claimsOverview"] = claims_overview
+            response_data["incidentsOverview"] = incidents_overview
+        return {
+            "success": True,
+            "message": "No assigned ambulance",
+            "data": response_data
+        }
+
+    if not activities_only:
+        # 1. Claims Overview counts
+        stmt_claims = select(Claim.status, func.count(Claim.id))
+        if effective_ambulance_id is not None:
+            stmt_claims = stmt_claims.join(Claim.incident).where(Incident.ambulance_id == effective_ambulance_id)
+        stmt_claims = stmt_claims.group_by(Claim.status)
+        res_claims = await db.execute(stmt_claims)
     
-    claims_counts = {}
-    for row in res_claims.all():
-        status_val = row[0]
-        count_val = row[1]
-        if status_val:
-            normalized = status_val.value.strip().lower() if hasattr(status_val, "value") else str(status_val).strip().lower()
-            claims_counts[normalized] = claims_counts.get(normalized, 0) + count_val
+        claims_counts = {}
+        for row in res_claims.all():
+            status_val = row[0]
+            count_val = row[1]
+            if status_val:
+                normalized = status_val.value.strip().lower() if hasattr(status_val, "value") else str(status_val).strip().lower()
+                claims_counts[normalized] = claims_counts.get(normalized, 0) + count_val
             
-    claims_pending = (
-        claims_counts.get("pending", 0)
-        + claims_counts.get("new", 0)
-    )
-    claims_approved = (
-        claims_counts.get("approved", 0)
-        + claims_counts.get("endorsed", 0)
-    )
-    claims_rejected = claims_counts.get("rejected", 0)
-    claims_paid = claims_counts.get("paid", 0)
-    claims_total = sum(claims_counts.values())
+        claims_pending = (
+            claims_counts.get("pending", 0)
+            + claims_counts.get("new", 0)
+        )
+        claims_approved = (
+            claims_counts.get("approved", 0)
+            + claims_counts.get("endorsed", 0)
+        )
+        claims_rejected = claims_counts.get("rejected", 0)
+        claims_paid = claims_counts.get("paid", 0)
+        claims_total = sum(claims_counts.values())
 
-    # Calculate claim amounts
-    stmt_claims_amount = select(
-        func.sum(Claim.total_price).label('totalAmount'),
-        func.sum(func.coalesce(Claim.total_price, 0)).filter(Claim.claim_type == 'ETC').label('etcTotalAmount'),
-        func.sum(func.coalesce(Claim.total_price, 0)).filter(Claim.claim_type == 'Ambulance').label('ambulanceTotalAmount')
-    )
-    if effective_ambulance_id is not None:
-        stmt_claims_amount = stmt_claims_amount.join(Claim.incident).where(Incident.ambulance_id == effective_ambulance_id)
-    res_claims_amount = await db.execute(stmt_claims_amount)
-    row_claims_amount = res_claims_amount.first()
+        # Calculate claim amounts
+        stmt_claims_amount = select(
+            func.sum(Claim.total_price).label('totalAmount'),
+            func.sum(func.coalesce(Claim.total_price, 0)).filter(Claim.claim_type == 'ETC').label('etcTotalAmount'),
+            func.sum(func.coalesce(Claim.total_price, 0)).filter(Claim.claim_type == 'Ambulance').label('ambulanceTotalAmount')
+        )
+        if effective_ambulance_id is not None:
+            stmt_claims_amount = stmt_claims_amount.join(Claim.incident).where(Incident.ambulance_id == effective_ambulance_id)
+        res_claims_amount = await db.execute(stmt_claims_amount)
+        row_claims_amount = res_claims_amount.first()
     
-    total_amount = float(getattr(row_claims_amount, 'totalAmount', 0.0) or 0.0) if row_claims_amount else 0.0
-    etc_total_amount = float(getattr(row_claims_amount, 'etcTotalAmount', 0.0) or 0.0) if row_claims_amount else 0.0
-    ambulance_total_amount = float(getattr(row_claims_amount, 'ambulanceTotalAmount', 0.0) or 0.0) if row_claims_amount else 0.0
+        total_amount = float(getattr(row_claims_amount, 'totalAmount', 0.0) or 0.0) if row_claims_amount else 0.0
+        etc_total_amount = float(getattr(row_claims_amount, 'etcTotalAmount', 0.0) or 0.0) if row_claims_amount else 0.0
+        ambulance_total_amount = float(getattr(row_claims_amount, 'ambulanceTotalAmount', 0.0) or 0.0) if row_claims_amount else 0.0
 
-    claims_overview = {
-        "pending": claims_pending,
-        "approved": claims_approved,
-        "rejected": claims_rejected,
-        "paid": claims_paid,
-        "total": claims_total,
-        "totalAmount": total_amount,
-        "etcTotalAmount": etc_total_amount,
-        "ambulanceTotalAmount": ambulance_total_amount
-    }
+        claims_overview = {
+            "pending": claims_pending,
+            "approved": claims_approved,
+            "rejected": claims_rejected,
+            "paid": claims_paid,
+            "total": claims_total,
+            "totalAmount": total_amount,
+            "etcTotalAmount": etc_total_amount,
+            "ambulanceTotalAmount": ambulance_total_amount
+        }
 
-    # 2. Incidents Overview counts
-    stmt_incidents = select(Incident.incident_status_type, func.count(Incident.id))
-    if effective_ambulance_id is not None:
-        stmt_incidents = stmt_incidents.where(Incident.ambulance_id == effective_ambulance_id)
-    stmt_incidents = stmt_incidents.group_by(Incident.incident_status_type)
-    res_incidents = await db.execute(stmt_incidents)
+        # 2. Incidents Overview counts
+        stmt_incidents = select(Incident.incident_status_type, func.count(Incident.id))
+        if effective_ambulance_id is not None:
+            stmt_incidents = stmt_incidents.where(Incident.ambulance_id == effective_ambulance_id)
+        stmt_incidents = stmt_incidents.group_by(Incident.incident_status_type)
+        res_incidents = await db.execute(stmt_incidents)
     
-    incidents_counts = {}
-    for row in res_incidents.all():
-        status_val = row[0]
-        count_val = row[1]
-        if status_val:
-            normalized = status_val.value.strip().lower() if hasattr(status_val, "value") else str(status_val).strip().lower()
-            incidents_counts[normalized] = incidents_counts.get(normalized, 0) + count_val
+        incidents_counts = {}
+        for row in res_incidents.all():
+            status_val = row[0]
+            count_val = row[1]
+            if status_val:
+                normalized = status_val.value.strip().lower() if hasattr(status_val, "value") else str(status_val).strip().lower()
+                incidents_counts[normalized] = incidents_counts.get(normalized, 0) + count_val
 
-    incidents_overview = {
-        "created": incidents_counts.get("created", 0),
-        "reported": incidents_counts.get("reported", 0),
-        "dispatched": incidents_counts.get("dispatched", 0),
-        "accepted": incidents_counts.get("accepted", 0),
-        "enRoute": incidents_counts.get("en route", 0),
-        "atScene": incidents_counts.get("at scene", 0),
-        "patientLoaded": incidents_counts.get("patient loaded", 0),
-        "enRouteToEtc": incidents_counts.get("en route to etc", 0),
-        "arrivedAtEtc": incidents_counts.get("arrived at etc", 0),
-        "completed": incidents_counts.get("completed", 0),
-        "closed": incidents_counts.get("closed", 0),
-        "total": sum(incidents_counts.values()),
-        "averageResponseTime": 6
-    }
+        incidents_overview = {
+            "created": incidents_counts.get("created", 0),
+            "reported": incidents_counts.get("reported", 0),
+            "dispatched": incidents_counts.get("dispatched", 0),
+            "accepted": incidents_counts.get("accepted", 0),
+            "enRoute": incidents_counts.get("en route", 0),
+            "atScene": incidents_counts.get("at scene", 0),
+            "patientLoaded": incidents_counts.get("patient loaded", 0),
+            "enRouteToEtc": incidents_counts.get("en route to etc", 0),
+            "arrivedAtEtc": incidents_counts.get("arrived at etc", 0),
+            "completed": incidents_counts.get("completed", 0),
+            "closed": incidents_counts.get("closed", 0),
+            "total": sum(incidents_counts.values()),
+            "averageResponseTime": 6
+        }
 
     # Helper for relative time in recent activities
     def get_relative_time(dt: datetime) -> str:
@@ -441,80 +461,88 @@ async def _build_mobile_dashboard_data(
 
     total_activities = total_inc + total_cl
 
+    response_data = {
+        "recentActivity": paginated_activities,
+        "pagination": {
+            "total": total_activities,
+            "skip": skip,
+            "limit": limit
+        }
+    }
+
+    if not activities_only:
+        response_data["claimsOverview"] = claims_overview
+        response_data["incidentsOverview"] = incidents_overview
+
     return {
         "success": True,
         "message": "Mobile dashboard data retrieved successfully",
-        "data": {
-            "claimsOverview": claims_overview,
-            "incidentsOverview": incidents_overview,
-            "recentActivity": paginated_activities,
-            "pagination": {
-                "total": total_activities,
-                "skip": skip,
-                "limit": limit
-            }
-        }
+        "data": response_data
     }
 
 
 @router.get("/mobile", response_model=MobileDashboardResponse)
 async def get_mobile_dashboard(
     db: AsyncSession = Depends(deps.get_db),
-    ambulance_id: Optional[int] = Query(None, alias="ambulanceId"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1),
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
     Get mobile dashboard statistics (claims overview & incidents overview)
     and a paginated list of recent activity (merging claims and incidents).
-    Filters by ambulanceId for mobile users.
     """
     return await _build_mobile_dashboard_data(
         db=db,
         current_user=current_user,
-        ambulance_id=ambulance_id,
-        skip=skip,
-        limit=limit
+        skip=0,
+        limit=8,
+        activities_only=False
     )
 
+@router.get("/mobile/activities", response_model=MobileDashboardActivitiesResponse)
+async def get_mobile_dashboard_activities(
+    db: AsyncSession = Depends(deps.get_db),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, ge=1),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Get paginated recent activity for the mobile dashboard.
+    """
+    return await _build_mobile_dashboard_data(
+        db=db,
+        current_user=current_user,
+        skip=skip,
+        limit=limit,
+        activities_only=True
+    )
 
 @router.get("/dashboardMobile", response_model=MobileDashboardResponse)
 async def get_dashboard_mobile_alias(
     db: AsyncSession = Depends(deps.get_db),
-    ambulance_id: Optional[int] = Query(None, alias="ambulanceId"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1),
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """Alias GET for dashboardMobile."""
     return await _build_mobile_dashboard_data(
         db=db,
         current_user=current_user,
-        ambulance_id=ambulance_id,
-        skip=skip,
-        limit=limit
+        skip=0,
+        limit=8,
+        activities_only=False
     )
-
 
 @router.post("/dashboardMobile", response_model=MobileDashboardResponse)
 async def post_dashboard_mobile(
     body: Optional[CustomRequiredIdModel] = None,
     db: AsyncSession = Depends(deps.get_db),
-    ambulance_id: Optional[int] = Query(None, alias="ambulanceId"),
-    skip: int = Query(0, ge=0),
-    limit: int = Query(10, ge=1),
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
     Legacy POST dashboardMobile handler matching C# specification.
     """
-    # Prefer ambulance_id query param, fallback to body.id if provided
-    effective_id = ambulance_id if ambulance_id is not None else (body.id if body else None)
     return await _build_mobile_dashboard_data(
         db=db,
         current_user=current_user,
-        ambulance_id=effective_id,
-        skip=skip,
-        limit=limit
+        skip=0,
+        limit=8,
+        activities_only=False
     )

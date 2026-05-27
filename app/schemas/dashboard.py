@@ -63,3 +63,17 @@ class MobileDashboardResponse(BaseModel):
     success: bool = True
     message: str = "Mobile dashboard data retrieved successfully"
     data: MobileDashboardData
+
+class MobileDashboardActivitiesData(BaseModel):
+    recentActivity: List[RecentActivityItem]
+    pagination: PaginationMeta
+
+    model_config = ConfigDict(
+        populate_by_name=True,
+        from_attributes=True
+    )
+
+class MobileDashboardActivitiesResponse(BaseModel):
+    success: bool = True
+    message: str = "Mobile dashboard activities retrieved successfully"
+    data: MobileDashboardActivitiesData
