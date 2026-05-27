@@ -138,7 +138,7 @@ class RunSheet(RunSheetBase):
 
         # Populate patients and patientViewModels
         # REMOVED: Frontend complained about massive payload duplication (patients, patientViewModels, patientViewModel all had same data)
-        # incident = get_loaded_relation(data, "incident")
+        incident = get_loaded_relation(data, "incident")
         # if incident:
         #     incident_patients = get_loaded_relation(incident, "patients")
         #     if incident_patients:
