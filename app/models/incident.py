@@ -81,17 +81,36 @@ class Incident(Base):
     dispatches = relationship("Dispatch", back_populates="incident")
     claims = relationship("Claim", back_populates="incident")
     patients = relationship("Patient", back_populates="incident")
+    etc_interventions = relationship("EtcIntervention", back_populates="incident")
 
     @property
     def incident_type_name(self) -> str | None:
-        if self.incident_type:
-            return self.incident_type.name
+        try:
+            from sqlalchemy import inspect
+            inspected = inspect(self)
+            if inspected is not None:
+                attr = inspected.attrs.get("incident_type")
+                if attr is not None and not attr.loaded:
+                    return None
+            if self.incident_type:
+                return self.incident_type.name
+        except Exception:
+            pass
         return None
 
     @property
     def state_name_computed(self) -> str | None:
-        if self.state:
-            return self.state.name
+        try:
+            from sqlalchemy import inspect
+            inspected = inspect(self)
+            if inspected is not None:
+                attr = inspected.attrs.get("state")
+                if attr is not None and not attr.loaded:
+                    return None
+            if self.state:
+                return self.state.name
+        except Exception:
+            pass
         return None
 
 class IncidentStatusHistory(Base):

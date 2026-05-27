@@ -1,46 +1,128 @@
-import calendar
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app.crud.monitoring import monitoring as crud_monitoring
-
-from app.schemas.monitoring import MonthlyAggregateResponse
+from app.schemas.common import ResponseBase
+from app.schemas.monitoring import Monitoring as MonitoringSchema, MonitoringCreate, MonitoringUpdate
+from app.models.user import User
 
 router = APIRouter()
 
-@router.get("/", response_model=MonthlyAggregateResponse)
+@router.get("/", response_model=ResponseBase[List[MonitoringSchema]])
 async def read_monitoring(
     db: AsyncSession = Depends(deps.get_db),
-    year: Optional[int] = None
+    year: Optional[int] = None,
+    month: Optional[int] = None,
+    stateId: Optional[int] = None,
+    remark: Optional[str] = None,
+    current_user: User = Depends(deps.get_current_user)
 ) -> Any:
     """
-    Returns monthly analytics grids.
+    Returns monthly monitoring records matching the production payload.
+    - Allows optional filtering by year, month, stateId, and remark.
     """
-    items = await crud_monitoring.get_monthly_aggregates(db, year=year)
-    
-    data = []
-    for row in items:
-        # Map integer month to full month name (e.g. 1 -> "January")
-        month_name = calendar.month_name[row.month] if row.month and 1 <= row.month <= 12 else "Unknown"
-        
-        data.append({
-            "month": month_name,
-            "noOfTransport": int(row.noOfTransport or 0),
-            "noOfMamiiLGAs": int(row.noOfMamiiLGAs or 0),
-            "byTricycleAmbulance": int(row.byTricycleAmbulance or 0),
-            "byNurtwDriver": int(row.byNurtwDriver or 0),
-            "bls": int(row.bls or 0),
-            "laborTransportation": int(row.laborTransportation or 0),
-            "obstetricTransportation": int(row.obstetricTransportation or 0),
-            "neonatalTransportation": int(row.neonatalTransportation or 0),
-            "bemonc": int(row.bemonc or 0),
-            "cemonc": int(row.cemonc or 0),
-            "maternalMortalities": int(row.maternalMortalities or 0),
-            "neonatalMortalities": int(row.neonatalMortalities or 0)
-        })
-        
+    items = await crud_monitoring.get_all(db, year=year, month=month, state_id=stateId, remark=remark)
     return {
+        "success": True,
         "message": "Monthly data fetched successfully",
-        "data": data
+        "data": items
+    }
+
+@router.post("/", response_model=ResponseBase[MonitoringSchema])
+async def create_monitoring(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    monitoring_in: MonitoringCreate,
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Create a single monitoring record.
+    """
+    added_by = f"{current_user.first_name} {current_user.last_name}".strip() or current_user.email
+    db_obj = await crud_monitoring.create(db, obj_in=monitoring_in, added_by=added_by)
+    return {
+        "success": True,
+        "message": "Monitoring record created successfully",
+        "data": db_obj
+    }
+
+@router.post("/batch", response_model=ResponseBase[List[MonitoringSchema]])
+async def create_monitoring_batch(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    monitoring_list: List[MonitoringCreate],
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Create multiple monitoring records in batch.
+    """
+    added_by = f"{current_user.first_name} {current_user.last_name}".strip() or current_user.email
+    db_objs = await crud_monitoring.create_batch(db, obj_list=monitoring_list, added_by=added_by)
+    return {
+        "success": True,
+        "message": f"Successfully created {len(db_objs)} monitoring records",
+        "data": db_objs
+    }
+
+
+@router.get("/{id}", response_model=ResponseBase[MonitoringSchema])
+async def read_monitoring_record(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Get a single monitoring record by ID.
+    """
+    item = await crud_monitoring.get(db, id=id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Monitoring record not found")
+    return {
+        "success": True,
+        "message": "Monitoring record fetched successfully",
+        "data": item
+    }
+
+
+@router.patch("/{id}", response_model=ResponseBase[MonitoringSchema])
+async def update_monitoring(
+    id: int,
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    monitoring_in: MonitoringUpdate,
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Partially update a monitoring record.
+    Only send the fields you want to change.
+    """
+    db_obj = await crud_monitoring.get(db, id=id)
+    if not db_obj:
+        raise HTTPException(status_code=404, detail="Monitoring record not found")
+
+    updated = await crud_monitoring.update(db, db_obj=db_obj, obj_in=monitoring_in)
+    return {
+        "success": True,
+        "message": "Monitoring record updated successfully",
+        "data": updated
+    }
+
+
+@router.delete("/{id}", response_model=ResponseBase[MonitoringSchema])
+async def delete_monitoring(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Delete a monitoring record by ID.
+    """
+    db_obj = await crud_monitoring.remove(db, id=id)
+    if not db_obj:
+        raise HTTPException(status_code=404, detail="Monitoring record not found")
+    return {
+        "success": True,
+        "message": "Monitoring record deleted successfully",
+        "data": db_obj
     }

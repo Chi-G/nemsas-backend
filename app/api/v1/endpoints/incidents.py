@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
+from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, Any, cast
 from app.api import deps
@@ -6,7 +7,29 @@ from app.schemas.incident import IncidentResponse, SingleIncidentResponse, Incid
 from app.crud.incident import incident_crud
 from app.models.user import User
 
+class RejectDispatchPayload(BaseModel):
+    rejectionReason: str
+
+
 router = APIRouter()
+
+@router.get("/last-event-status", response_model=Any)
+async def get_last_event_status(
+    incident_category_id: int = Query(..., alias="incidentCategoryId"),
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Get the last event type status for a specific incident category.
+    """
+    last_status = await incident_crud.get_last_event_status(db, incident_category_id=incident_category_id)
+    return {
+        "success": True,
+        "message": "Last event status successfully fetched",
+        "data": {
+            "lastEventStatus": last_status
+        }
+    }
 
 @router.get("/", response_model=IncidentResponse)
 async def read_incidents(
@@ -20,6 +43,7 @@ async def read_incidents(
     mass_casualty: Optional[bool] = None,
     incident_category_id: Optional[int] = None,
     sort_by_state: bool = False,
+    event_status_type: Optional[str] = Query(default=None, alias="eventStatusType"),
     current_user: User = Depends(deps.get_current_user)
 ):
     """
@@ -33,6 +57,7 @@ async def read_incidents(
     - `mass_casualty`: Filter by mass casualty status (true/false).
     - `incident_category_id`: Filter by incident category ID.
     - `sort_by_state`: Sort results by state name (ascending).
+    - `eventStatusType`: Filter by event status type (alias: event_status_type).
     
     **Role-based Access:**
     - **Restricted Roles** (STATEVIEWER, ADMINSEMSASUSER, SEMSASDISPATCH, SEMSASPIUUSER, SEMSASUSER): 
@@ -68,7 +93,8 @@ async def read_incidents(
         state_id_filter=state_id_filter,
         mass_casualty=mass_casualty,
         incident_category_id=incident_category_id,
-        sort_by_state=sort_by_state
+        sort_by_state=sort_by_state,
+        event_status_type=event_status_type
     )
 
     return {
@@ -98,7 +124,7 @@ async def read_ambulance_incidents(
 
     incidents, total = await incident_crud.get_multi_by_ambulance(
         db,
-        ambulance_id=int(current_user.ambulance_id),
+        ambulance_id=cast(int, current_user.ambulance_id),
         skip=skip,
         limit=limit
     )
@@ -191,6 +217,22 @@ async def create_incident(
         if category:
             incident_in.incident_category_id = cast(int, category.id)
 
+    # Check if assigned ambulance is busy
+    if incident_in.ambulance_id:
+        from app.models.incident import Incident
+        from sqlalchemy import select
+        busy_check = await db.execute(
+            select(Incident.id)
+            .filter(Incident.ambulance_id == incident_in.ambulance_id)
+            .filter(Incident.event_status_type == "Patient Picked Up")
+            .limit(1)
+        )
+        if busy_check.scalars().first():
+            raise HTTPException(
+                status_code=400,
+                detail="Assigned ambulance is currently busy with another patient"
+            )
+
     new_incident = await incident_crud.create(db, obj_in=incident_in)
     
     # Broadcast incident via Websockets
@@ -225,10 +267,189 @@ async def update_incident(
     if current_user.user_type in restricted_roles and current_user.state_id != incident.state_id:
         raise HTTPException(status_code=403, detail="Not authorized to update this incident")
 
+    # Validation: Ambulance busy check
+    target_ambulance_id = incident_in.ambulance_id if incident_in.ambulance_id is not None else incident.ambulance_id
+
+    # 1. If assigning a new/different ambulance
+    if incident_in.ambulance_id is not None and incident_in.ambulance_id != incident.ambulance_id:
+        from app.models.incident import Incident
+        from sqlalchemy import select
+        busy_check = await db.execute(
+            select(Incident.id)
+            .filter(Incident.ambulance_id == incident_in.ambulance_id)
+            .filter(Incident.event_status_type == "Patient Picked Up")
+            .limit(1)
+        )
+        if busy_check.scalars().first():
+            raise HTTPException(
+                status_code=400,
+                detail="Assigned ambulance is currently busy with another patient"
+            )
+
+    # 2. Prevent arbitrary status updates from generic endpoint if they should use dedicated ones
+    if incident_in.event_status_type in ["Dispatch Accepted", "Dispatch Rejected", "Patient Picked Up", "Patient Dropped Off"]:
+        # We will ignore event_status_type updates for the generic endpoint to force use of dedicated endpoints
+        # OR we could throw an error. For backward compatibility, we'll just ignore it if it's one of these strict states
+        incident_in.event_status_type = None
+
     updated_incident = await incident_crud.update(db, db_obj=incident, obj_in=incident_in)
     
     return {
         "success": True,
         "message": "Incident successfully updated",
+        "data": IncidentSchema.model_validate(updated_incident)
+    }
+
+@router.patch("/{id}/accept-dispatch", response_model=Any)
+async def accept_dispatch(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Accept an incident dispatch.
+    """
+    incident = await incident_crud.get(db, id=id)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+        
+    if incident.event_status_type in ["Dispatch Accepted", "Patient Picked Up", "Patient Dropped Off"]:
+        raise HTTPException(status_code=400, detail=f"Incident is already in state: {incident.event_status_type}")
+        
+    incident_in = IncidentUpdate(event_status_type="Dispatch Accepted")
+    updated_incident = await incident_crud.update(db, db_obj=incident, obj_in=incident_in)
+    
+    return {
+        "success": True,
+        "message": "Dispatch accepted successfully",
+        "data": IncidentSchema.model_validate(updated_incident)
+    }
+
+@router.patch("/{id}/reject-dispatch", response_model=Any)
+async def reject_dispatch(
+    id: int,
+    payload: RejectDispatchPayload,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Reject an incident dispatch with a reason.
+    """
+    incident = await incident_crud.get(db, id=id)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+        
+    if incident.event_status_type in ["Dispatch Accepted", "Patient Picked Up", "Patient Dropped Off"]:
+        raise HTTPException(status_code=400, detail="Cannot reject an incident after it has been accepted or picked up")
+        
+    incident_in = IncidentUpdate(event_status_type="Dispatch Rejected", rejection_reason=payload.rejectionReason)
+    updated_incident = await incident_crud.update(db, db_obj=incident, obj_in=incident_in)
+    
+    return {
+        "success": True,
+        "message": "Dispatch rejected successfully",
+        "data": IncidentSchema.model_validate(updated_incident)
+    }
+
+@router.patch("/{id}/pick-up-patient", response_model=Any)
+async def pick_up_patient(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Mark the patient as picked up.
+    """
+    incident = await incident_crud.get(db, id=id)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+        
+    if incident.event_status_type != "Dispatch Accepted":
+        raise HTTPException(status_code=400, detail="Patient can only be picked up after dispatch is accepted")
+        
+    # Busy check
+    if incident.ambulance_id:
+        from app.models.incident import Incident
+        from sqlalchemy import select
+        busy_check = await db.execute(
+            select(Incident.id)
+            .filter(Incident.id != incident.id)
+            .filter(Incident.ambulance_id == incident.ambulance_id)
+            .filter(Incident.event_status_type == "Patient Picked Up")
+            .limit(1)
+        )
+        if busy_check.scalars().first():
+            raise HTTPException(
+                status_code=400,
+                detail="Ambulance is already busy with another picked up patient"
+            )
+
+    incident_in = IncidentUpdate(event_status_type="Patient Picked Up")
+    updated_incident = await incident_crud.update(db, db_obj=incident, obj_in=incident_in)
+    
+    return {
+        "success": True,
+        "message": "Patient picked up successfully",
+        "data": IncidentSchema.model_validate(updated_incident)
+    }
+
+@router.patch("/{id}/drop-off-patient", response_model=Any)
+async def drop_off_patient(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Mark the patient as dropped off and create Transfer Forms.
+    """
+    incident = await incident_crud.get(db, id=id)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+        
+    if incident.event_status_type != "Patient Picked Up":
+        raise HTTPException(status_code=400, detail="Patient can only be dropped off after being picked up")
+        
+    from app.models.transfer_form import TransferForm
+    from app.models.run_sheet import RunSheet
+    from sqlalchemy import select
+    
+    run_sheet_result = await db.execute(
+        select(RunSheet).filter(RunSheet.incident_id == incident.id).limit(1)
+    )
+    run_sheet = run_sheet_result.scalars().first()
+    if not run_sheet:
+        raise HTTPException(status_code=400, detail="Cannot drop patient without an active Run Sheet")
+        
+    if not incident.etc_id:
+        raise HTTPException(status_code=400, detail="Incident does not have an ETC assigned")
+        
+    # Create a SINGLE transfer form containing all patient IDs
+    existing_tf = await db.execute(
+        select(TransferForm).filter(
+            TransferForm.incident_id == incident.id
+        ).limit(1)
+    )
+    if not existing_tf.scalars().first():
+        from app.schemas.transfer_form import TransferFormBindingModel
+        from app.crud.transfer_form import transfer_form as transfer_form_crud
+        
+        patient_ids = [p.id for p in incident.patients] if incident.patients else []
+        
+        tf_in = TransferFormBindingModel(
+            incidentId=incident.id,
+            patientIds=patient_ids,
+            etC_Id=incident.etc_id,
+            runSheetId=run_sheet.id,
+            approve=False
+        )
+        # Use CRUD to ensure Socket.IO broadcasts the NEW_TRANSFER_FORM event to the ETC
+        await transfer_form_crud.create(db, obj_in=tf_in)
+
+    incident_in = IncidentUpdate(event_status_type="Patient Dropped Off")
+    updated_incident = await incident_crud.update(db, db_obj=incident, obj_in=incident_in)
+    
+    return {
+        "success": True,
+        "message": "Patient dropped off successfully",
         "data": IncidentSchema.model_validate(updated_incident)
     }

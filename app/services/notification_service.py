@@ -57,12 +57,15 @@ class NotificationService:
 
     async def publish_incident(self, incident_data: Dict[str, Any]):
         """Publish an incident to the Redis channel."""
-        if not self.redis:
-            await self.connect_redis()
-        
-        message = json.dumps(incident_data)
-        if self.redis:
-            await self.redis.publish(self.channel_name, message)
+        try:
+            if not self.redis:
+                await self.connect_redis()
+            
+            message = json.dumps(incident_data)
+            if self.redis:
+                await self.redis.publish(self.channel_name, message)
+        except Exception as e:
+            logger.warning(f"Could not publish incident update to Redis: {e}. Pub-sub notification skipped.")
 
     async def _listen_for_messages(self):
         """Listen for messages from Redis and route them to appropriate websockets."""

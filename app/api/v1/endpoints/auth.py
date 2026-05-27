@@ -5,8 +5,9 @@ from sqlalchemy import select
 
 from app.api.deps import get_db, get_current_user
 from app.core import security
+from app.core.config import settings
 from app.models.user import User
-from app.schemas.token import Token, LoginRequest
+from app.schemas.token import Token, LoginRequest, TokenRefreshRequest
 from app.schemas.user import ChangePasswordRequest
 
 router = APIRouter()
@@ -35,12 +36,85 @@ async def login(
     access_token = security.create_access_token(user.id, role=user.user_type, state_id=user.state_id)
     refresh_token = security.create_refresh_token(user.id, role=user.user_type, state_id=user.state_id)
     
+    expires_in = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    refresh_expires_in = settings.REFRESH_TOKEN_EXPIRE_MINUTES * 60
+    
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
         "status": "success",
-        "message": "Login successful"
+        "message": "Login successful",
+        "expires_in": expires_in,
+        "refresh_expires_in": refresh_expires_in
+    }
+
+@router.post("/refresh", response_model=Token)
+async def refresh(
+    *,
+    db: AsyncSession = Depends(get_db),
+    refresh_data: TokenRefreshRequest
+) -> Any:
+    """
+    Refresh access and refresh tokens using a valid refresh token.
+    """
+    payload = security.verify_token(refresh_data.refresh_token)
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
+        )
+    
+    if payload.get("type") != "refresh":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token type",
+        )
+        
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload",
+        )
+        
+    import uuid
+    try:
+        user_uuid = uuid.UUID(user_id)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user ID format in token",
+        )
+        
+    result = await db.execute(select(User).where(User.id == user_uuid))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found",
+        )
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user",
+        )
+        
+    access_token = security.create_access_token(user.id, role=user.user_type, state_id=user.state_id)
+    new_refresh_token = security.create_refresh_token(user.id, role=user.user_type, state_id=user.state_id)
+    
+    expires_in = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    refresh_expires_in = settings.REFRESH_TOKEN_EXPIRE_MINUTES * 60
+    
+    return {
+        "access_token": access_token,
+        "refresh_token": new_refresh_token,
+        "token_type": "bearer",
+        "status": "success",
+        "message": "Token successfully refreshed",
+        "expires_in": expires_in,
+        "refresh_expires_in": refresh_expires_in
     }
 
 @router.post("/change-password")

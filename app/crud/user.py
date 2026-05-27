@@ -100,5 +100,23 @@ class CRUDUser:
         await db.commit()
         return await self.get(db, id=db_obj.id)
 
+    async def update(
+        self, db: AsyncSession, *, db_obj: User, obj_in: UserUpdate
+    ) -> User:
+        update_data = obj_in.model_dump(exclude_unset=True)
+        if "password" in update_data and update_data["password"]:
+            update_data["hashed_password"] = get_password_hash(update_data["password"])
+            del update_data["password"]
+        elif "password" in update_data:
+            del update_data["password"]
+            
+        for field, value in update_data.items():
+            setattr(db_obj, field, value)
+            
+        db.add(db_obj)
+        await db.commit()
+        return await self.get(db, id=db_obj.id)
+
+
 
 user_crud = CRUDUser()

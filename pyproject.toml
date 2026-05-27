@@ -33,3 +33,8 @@ dependencies = [
 
 [tool.pyright]
 extraPaths = ["."]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.2.0",
+]

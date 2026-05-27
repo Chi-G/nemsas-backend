@@ -9,6 +9,7 @@ class ClaimStatus(str, enum.Enum):
     APPROVED = "Approved"
     REJECTED = "Rejected"
     PAID = "Paid"
+    ENDORSED = "Endorsed"
 
 class ClaimType(str, enum.Enum):
     AMBULANCE = "Ambulance"
@@ -17,6 +18,7 @@ class ClaimType(str, enum.Enum):
 class ClaimAction(str, enum.Enum):
     APPROVE = "Approve"
     REJECT = "Reject"
+    ENDORSE = "Endorse"
 
 class ETCIntake(Base):
     __tablename__ = "etc_intakes"

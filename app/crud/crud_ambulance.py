@@ -20,7 +20,27 @@ class CRUDAmbulance:
                 selectinload(Ambulance.ambulance_type)
             )
         )
-        return result.scalars().first()
+        obj = result.scalars().first()
+        if obj:
+            await self._augment_busy_status(db, [obj])
+        return obj
+
+    async def _augment_busy_status(self, db: AsyncSession, ambulances: List[Ambulance]) -> None:
+        if not ambulances:
+            return
+        amb_ids = [amb.id for amb in ambulances]
+        from app.models.incident import Incident
+        result = await db.execute(
+            select(Incident.ambulance_id)
+            .filter(Incident.ambulance_id.in_(amb_ids))
+            .filter(Incident.event_status_type == "Patient Picked Up")
+        )
+        busy_amb_ids = set(result.scalars().all())
+        for amb in ambulances:
+            if amb.id in busy_amb_ids:
+                amb.event_status_type = "busy"
+            else:
+                amb.event_status_type = None
 
     async def get_multi(self, db: AsyncSession, *, skip: int = 0, limit: int = 100) -> List[Ambulance]:
         result = await db.execute(
@@ -33,7 +53,9 @@ class CRUDAmbulance:
                 selectinload(Ambulance.ambulance_type)
             )
         )
-        return list(result.scalars().all())
+        objs = list(result.scalars().all())
+        await self._augment_busy_status(db, objs)
+        return objs
 
     async def get_multi_with_count(
         self, 
@@ -71,7 +93,9 @@ class CRUDAmbulance:
                 selectinload(Ambulance.ambulance_type)
             )
         )
-        return list(result.scalars().all()), total_count
+        objs = list(result.scalars().all())
+        await self._augment_busy_status(db, objs)
+        return objs, total_count
 
     async def get_by_state(self, db: AsyncSession, state_id: int) -> List[Ambulance]:
         result = await db.execute(
@@ -84,14 +108,15 @@ class CRUDAmbulance:
                 selectinload(Ambulance.ambulance_type)
             )
         )
-        return list(result.scalars().all())
+        objs = list(result.scalars().all())
+        await self._augment_busy_status(db, objs)
+        return objs
 
     async def create(self, db: AsyncSession, *, obj_in: Any) -> Ambulance:
         obj_in_data = obj_in.model_dump(exclude_unset=True, by_alias=False)
         db_obj = Ambulance(**obj_in_data)
         db.add(db_obj)
         await db.commit()
-        await db.refresh(db_obj)
         # Re-fetch with eager-loaded relationships to avoid lazy load in async context
         result = await db.execute(
             select(Ambulance)
@@ -102,7 +127,34 @@ class CRUDAmbulance:
                 selectinload(Ambulance.ambulance_type)
             )
         )
-        return result.scalars().first()
+        obj = result.scalars().first()
+        if obj:
+            await self._augment_busy_status(db, [obj])
+        return obj
+
+    async def update(
+        self, db: AsyncSession, *, db_obj: Ambulance, obj_in: Any
+    ) -> Ambulance:
+        update_data = obj_in.model_dump(exclude_unset=True, by_alias=False)
+        for field, value in update_data.items():
+            setattr(db_obj, field, value)
+        db.add(db_obj)
+        await db.commit()
+        
+        result = await db.execute(
+            select(Ambulance)
+            .filter(Ambulance.id == db_obj.id)
+            .options(
+                selectinload(Ambulance.state),
+                selectinload(Ambulance.lga),
+                selectinload(Ambulance.ambulance_type)
+            )
+        )
+        obj = result.scalars().first()
+        if obj:
+            await self._augment_busy_status(db, [obj])
+        return obj
+
 
 
 

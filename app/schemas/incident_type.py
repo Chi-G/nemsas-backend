@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, List
 from datetime import datetime
 
@@ -16,6 +16,7 @@ class IncidentTypeUpdate(BaseModel):
 class IncidentType(IncidentTypeBase):
     id: int
     date_added: Optional[datetime] = None
+    last_event_status: Optional[str] = Field(None, alias="lastEventStatus")
 
     model_config = ConfigDict(
         from_attributes=True,
