@@ -90,7 +90,9 @@ class Incident(IncidentBase):
     hospital: Optional[HospitalSchema] = Field(None, alias="emergencyTreatmentCenter")
     
     incident_type_name: Optional[str] = Field(None, alias="incidentTypeName")
-    state_name_computed: Optional[str] = Field(None, alias="stateName")
+    # state_name_computed is read from the ORM property (via relationship) but excluded from output;
+    # the model_validator below merges it into state_name so stateName is always populated.
+    state_name_computed: Optional[str] = Field(None, exclude=True)
     claims: List[IncidentClaim] = Field(default_factory=list, alias="claims")
 
     # Read etc_interventions from ORM but exclude from JSON serialization
@@ -99,13 +101,17 @@ class Incident(IncidentBase):
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
 
     @model_validator(mode="after")
-    def inject_etc_interventions_into_patients(self) -> "Incident":
+    def resolve_state_name_and_inject_interventions(self) -> "Incident":
         """
-        After the Incident model is built from ORM attributes, iterate over
-        each patient and inject the incident-level etc_interventions so that
-        each patient has its medical_interventions (Procedures) and drugs (Drugs)
-        populated correctly.
+        1. Resolve stateName: prefer the value from the state relationship
+           (state_name_computed) over the raw DB column (state_name).
+        2. Inject etc_interventions into each patient's drugs/procedures lists.
         """
+        # Resolve stateName
+        if self.state_name_computed:
+            self.state_name = self.state_name_computed
+
+        # Inject ETC interventions into patients
         etc = self.etc_interventions or []
         for patient in self.patients:
             patient.populate_interventions_from_etc(etc)
@@ -120,6 +126,7 @@ class IncidentSummary(BaseModel):
     incident_status_type: Optional[str] = None
     event_status_type: Optional[str] = None
     state_id: Optional[int] = None
+    state_name: Optional[str] = None
     total_patients: Optional[int] = None
     mass_casualty: Optional[bool] = False
     incident_location: Optional[str] = None
@@ -130,8 +137,9 @@ class IncidentSummary(BaseModel):
     patients: List[Patient] = []
     hospital: Optional[HospitalSchema] = Field(None, alias="emergencyTreatmentCenter")
     
-    incident_type_name: Optional[str] = Field(None, alias="incidentTypeName")
-    state_name_computed: Optional[str] = Field(None, alias="stateName")
+    incident_type_name: Optional[str] = None
+    # Excluded: merged into state_name by the validator below
+    state_name_computed: Optional[str] = Field(None, exclude=True)
     claims: List[IncidentClaim] = Field(default_factory=list, alias="claims")
 
     # Read etc_interventions from ORM but exclude from JSON serialization
@@ -144,8 +152,13 @@ class IncidentSummary(BaseModel):
     )
 
     @model_validator(mode="after")
-    def inject_etc_interventions_into_patients(self) -> "IncidentSummary":
-        """Inject incident-level etc_interventions into each patient's drugs/procedures lists."""
+    def resolve_state_name_and_inject_interventions(self) -> "IncidentSummary":
+        """Resolve stateName and inject etc_interventions into each patient."""
+        # Prefer relationship-derived name over raw DB column
+        if self.state_name_computed:
+            self.state_name = self.state_name_computed
+
+        # Inject ETC interventions
         etc = self.etc_interventions or []
         for patient in self.patients:
             patient.populate_interventions_from_etc(etc)

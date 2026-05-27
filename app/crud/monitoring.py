@@ -116,4 +116,32 @@ class CRUDMonitoring:
         result = await db.execute(stmt)
         return result.all()
 
+    async def get(self, db: AsyncSession, *, id: int):
+        """Get a single monitoring record by ID."""
+        stmt = select(Monitoring).options(selectinload(Monitoring.state)).where(Monitoring.id == id)
+        result = await db.execute(stmt)
+        return result.scalars().first()
+
+    async def update(self, db: AsyncSession, *, db_obj: Monitoring, obj_in) -> Monitoring:
+        """Partially update a monitoring record."""
+        update_data = obj_in.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
+            setattr(db_obj, field, value)
+        db.add(db_obj)
+        await db.commit()
+        # Reload with state
+        stmt = select(Monitoring).options(selectinload(Monitoring.state)).where(Monitoring.id == db_obj.id)
+        result = await db.execute(stmt)
+        return result.scalar_one()
+
+    async def remove(self, db: AsyncSession, *, id: int):
+        """Delete a monitoring record by ID."""
+        stmt = select(Monitoring).where(Monitoring.id == id)
+        result = await db.execute(stmt)
+        db_obj = result.scalars().first()
+        if db_obj:
+            await db.delete(db_obj)
+            await db.commit()
+        return db_obj
+
 monitoring = CRUDMonitoring()

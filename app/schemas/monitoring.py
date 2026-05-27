@@ -26,8 +26,26 @@ class MonitoringBase(BaseModel):
 class MonitoringCreate(MonitoringBase):
     pass
 
-class MonitoringUpdate(MonitoringBase):
-    pass
+class MonitoringUpdate(BaseModel):
+    """All fields optional — send only the fields you want to update."""
+    year: Optional[int] = None
+    month: Optional[int] = None
+    no_of_transport: Optional[int] = Field(None, alias="noOfTransport")
+    no_of_mamii_lgas: Optional[int] = Field(None, alias="noOfMamiiLGAs")
+    by_tricycle_ambulance: Optional[int] = Field(None, alias="byTricycleAmbulance")
+    by_nurtw_driver: Optional[int] = Field(None, alias="byNurtwDriver")
+    bls: Optional[int] = Field(None, alias="bls")
+    labor_transportation: Optional[int] = Field(None, alias="laborTransportation")
+    obstetric_transportation: Optional[int] = Field(None, alias="obstetricTransportation")
+    neonatal_transportation: Optional[int] = Field(None, alias="neonatalTransportation")
+    bemonc: Optional[int] = Field(None, alias="bemonc")
+    cemonc: Optional[int] = Field(None, alias="cemonc")
+    maternal_mortalities: Optional[int] = Field(None, alias="maternalMortalities")
+    neonatal_mortalities: Optional[int] = Field(None, alias="neonatalMortalities")
+    remark: Optional[str] = None
+    state_id: Optional[int] = Field(None, alias="stateId")
+
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
 class MonitoringState(BaseModel):
     id: int

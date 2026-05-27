@@ -1,10 +1,10 @@
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app.crud.monitoring import monitoring as crud_monitoring
 from app.schemas.common import ResponseBase
-from app.schemas.monitoring import Monitoring as MonitoringSchema, MonitoringCreate
+from app.schemas.monitoring import Monitoring as MonitoringSchema, MonitoringCreate, MonitoringUpdate
 from app.models.user import User
 
 router = APIRouter()
@@ -65,3 +65,64 @@ async def create_monitoring_batch(
         "data": db_objs
     }
 
+
+@router.get("/{id}", response_model=ResponseBase[MonitoringSchema])
+async def read_monitoring_record(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Get a single monitoring record by ID.
+    """
+    item = await crud_monitoring.get(db, id=id)
+    if not item:
+        raise HTTPException(status_code=404, detail="Monitoring record not found")
+    return {
+        "success": True,
+        "message": "Monitoring record fetched successfully",
+        "data": item
+    }
+
+
+@router.patch("/{id}", response_model=ResponseBase[MonitoringSchema])
+async def update_monitoring(
+    id: int,
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    monitoring_in: MonitoringUpdate,
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Partially update a monitoring record.
+    Only send the fields you want to change.
+    """
+    db_obj = await crud_monitoring.get(db, id=id)
+    if not db_obj:
+        raise HTTPException(status_code=404, detail="Monitoring record not found")
+
+    updated = await crud_monitoring.update(db, db_obj=db_obj, obj_in=monitoring_in)
+    return {
+        "success": True,
+        "message": "Monitoring record updated successfully",
+        "data": updated
+    }
+
+
+@router.delete("/{id}", response_model=ResponseBase[MonitoringSchema])
+async def delete_monitoring(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+) -> Any:
+    """
+    Delete a monitoring record by ID.
+    """
+    db_obj = await crud_monitoring.remove(db, id=id)
+    if not db_obj:
+        raise HTTPException(status_code=404, detail="Monitoring record not found")
+    return {
+        "success": True,
+        "message": "Monitoring record deleted successfully",
+        "data": db_obj
+    }

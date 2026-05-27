@@ -22,7 +22,9 @@ class CRUDClaim:
             selectinload(Claim.incident).selectinload(Incident.hospital).selectinload(HospitalModel.lga),
             selectinload(Claim.incident).selectinload(Incident.incident_type),
             selectinload(Claim.incident).selectinload(Incident.state),
-            selectinload(Claim.incident).selectinload(Incident.claims).selectinload(ClaimModel.images)
+            selectinload(Claim.incident).selectinload(Incident.claims).selectinload(ClaimModel.images),
+            # Required: Incident schema model_validator reads etc_interventions to split into drugs/procedures per patient
+            selectinload(Claim.incident).selectinload(Incident.etc_interventions),
         ]
 
     async def create(self, db: AsyncSession, *, obj_in: ClaimCreate, current_user: Optional[Any] = None) -> Claim:
