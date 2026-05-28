@@ -25,7 +25,8 @@ def upgrade() -> None:
     op.alter_column('run_sheets', 'patient_id',
                existing_type=sa.INTEGER(),
                type_=sa.JSON(),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using='to_json(patient_id)')
     op.drop_index('ix_run_sheets_patient_id', table_name='run_sheets')
     op.create_index(op.f('ix_run_sheets_emergency_treatment_center_id'), 'run_sheets', ['emergency_treatment_center_id'], unique=False)
     op.drop_constraint('run_sheets_patient_id_fkey', 'run_sheets', type_='foreignkey')
@@ -50,7 +51,8 @@ def downgrade() -> None:
     op.alter_column('run_sheets', 'patient_id',
                existing_type=sa.JSON(),
                type_=sa.INTEGER(),
-               existing_nullable=True)
+               existing_nullable=True,
+               postgresql_using='NULL')
     op.drop_column('run_sheets', 'price')
     op.drop_column('run_sheets', 'emergency_treatment_center_id')
     # ### end Alembic commands ###
