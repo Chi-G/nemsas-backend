@@ -23,13 +23,13 @@ def upgrade() -> None:
     op.add_column('run_sheets', sa.Column('emergency_treatment_center_id', sa.Integer(), nullable=True))
     op.add_column('run_sheets', sa.Column('price', sa.Float(), nullable=True))
     op.drop_index('ix_run_sheets_patient_id', table_name='run_sheets')
+    op.drop_constraint('run_sheets_patient_id_fkey', 'run_sheets', type_='foreignkey')
     op.alter_column('run_sheets', 'patient_id',
                existing_type=sa.INTEGER(),
                type_=sa.JSON(),
                existing_nullable=True,
                postgresql_using='to_json(patient_id)')
     op.create_index(op.f('ix_run_sheets_emergency_treatment_center_id'), 'run_sheets', ['emergency_treatment_center_id'], unique=False)
-    op.drop_constraint('run_sheets_patient_id_fkey', 'run_sheets', type_='foreignkey')
     op.create_foreign_key(None, 'run_sheets', 'hospitals', ['emergency_treatment_center_id'], ['id'])
     op.add_column('transfer_forms', sa.Column('patient_ids', sa.JSON(), nullable=True))
     op.alter_column('transfer_forms', 'patient_id',
@@ -45,7 +45,6 @@ def downgrade() -> None:
                nullable=False)
     op.drop_column('transfer_forms', 'patient_ids')
     op.drop_constraint(None, 'run_sheets', type_='foreignkey')
-    op.create_foreign_key('run_sheets_patient_id_fkey', 'run_sheets', 'patients', ['patient_id'], ['id'])
     op.drop_index(op.f('ix_run_sheets_emergency_treatment_center_id'), table_name='run_sheets')
     op.alter_column('run_sheets', 'patient_id',
                existing_type=sa.JSON(),
@@ -53,6 +52,7 @@ def downgrade() -> None:
                existing_nullable=True,
                postgresql_using='NULL')
     op.create_index('ix_run_sheets_patient_id', 'run_sheets', ['patient_id'], unique=False)
+    op.create_foreign_key('run_sheets_patient_id_fkey', 'run_sheets', 'patients', ['patient_id'], ['id'])
     op.drop_column('run_sheets', 'price')
     op.drop_column('run_sheets', 'emergency_treatment_center_id')
     # ### end Alembic commands ###
