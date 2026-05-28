@@ -172,12 +172,18 @@ async def seed_operational_data():
             claim_path = os.path.join(scripts_dir, cf)
             if not os.path.exists(claim_path): continue
             
+            is_etc = (cf == "etc_claims.json")
+            
             with open(claim_path) as f:
                 c_dat = json.load(f)
                 c_items = c_dat.get("data", {}).get("items", []) if isinstance(c_dat, dict) else []
                 for c in c_items:
                     cid = c.get("id")
                     if not cid: continue
+                    
+                    # Offset the ETC claim IDs to prevent collision with Ambulance claims
+                    if is_etc:
+                        cid += 100000
                     
                     # If nested patient is present but not inserted yet
                     p_info = c.get("patient")
@@ -220,6 +226,7 @@ async def seed_operational_data():
                         "status": c.get("status") or "New",
                         "review": c.get("review"),
                         "etc_review": c.get("etcReview"),
+                        "claim_type": "ETC" if is_etc else "Ambulance"
                     })
         
         claims_inserted = await upsert_data(session, Claim, claim_recs)
