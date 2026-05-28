@@ -131,10 +131,20 @@ class CRUDClaim:
         result = await db.execute(stmt.offset(skip).limit(limit))
         return list(result.scalars().all()), total_count or 0
 
-    async def get_summary(self, db: AsyncSession, state_id: Optional[int] = None) -> dict:
+    async def get_summary(self, db: AsyncSession, state_id: Optional[int] = None, ambulance_id: Optional[int] = None, etc_id: Optional[int] = None) -> dict:
         stmt = select(Claim.status, func.count(Claim.id))
-        if state_id is not None:
-            stmt = stmt.join(Claim.incident).where(Incident.state_id == state_id)
+        
+        need_incident_join = (state_id is not None) or (ambulance_id is not None) or (etc_id is not None)
+        
+        if need_incident_join:
+            stmt = stmt.join(Claim.incident)
+            if state_id is not None:
+                stmt = stmt.where(Incident.state_id == state_id)
+            if ambulance_id is not None:
+                stmt = stmt.where(Incident.ambulance_id == ambulance_id)
+            if etc_id is not None:
+                stmt = stmt.where(Incident.etc_id == etc_id)
+                
         stmt = stmt.group_by(Claim.status)
         result = await db.execute(stmt)
         counts = {row[0]: row[1] for row in result.all()}

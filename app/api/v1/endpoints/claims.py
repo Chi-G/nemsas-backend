@@ -127,19 +127,31 @@ async def read_claims(
 @router.get("/summary", response_model=ClaimSummaryResponse)
 async def read_claim_summary(
     db: AsyncSession = Depends(deps.get_db),
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "EMERGENCYTREATMENTUSER", "AMBULANCEUSER"]))
 ) -> Any:
     """
     Get aggregated summary counts of all claims.
     """
     state_id = None
+    ambulance_id = None
+    etc_id = None
     user_type = getattr(current_user, "user_type", None)
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
         state_id = getattr(current_user, "state_id", None)
         if state_id is None:
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
+    elif user_type == "AMBULANCEUSER":
+        ambulance_id = getattr(current_user, "ambulance_id", None)
+        if ambulance_id is None:
+            raise HTTPException(status_code=403, detail="Ambulance ID is required for ambulance users")
+    elif user_type == "EMERGENCYTREATMENTUSER":
+        etc_id = getattr(current_user, "etc_id", None)
+        if etc_id is None:
+            etc_id = getattr(current_user, "emergency_treatment_center_id", None)
+            if etc_id is None:
+                raise HTTPException(status_code=403, detail="ETC ID is required for ETC users")
 
-    summary_data = await crud_claim.get_summary(db, state_id=state_id)
+    summary_data = await crud_claim.get_summary(db, state_id=state_id, ambulance_id=ambulance_id, etc_id=etc_id)
     return {
         "success": True,
         "message": "Claim summary retrieved successfully",
