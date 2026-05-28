@@ -502,7 +502,6 @@ async def seed_runsheets():
         valid_inc_ids = set((await session.execute(select(Incident.id))).scalars().all())
         valid_pat_ids = set((await session.execute(select(Patient.id))).scalars().all())
         valid_amb_ids = set((await session.execute(select(Ambulance.id))).scalars().all())
-        from app.models.hospital import Hospital
         valid_hosp_ids = set((await session.execute(select(Hospital.id))).scalars().all())
         valid_usr_ids = set(str(uid) for uid in (await session.execute(select(User.id))).scalars().all())
 
