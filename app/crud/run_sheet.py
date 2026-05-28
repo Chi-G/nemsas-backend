@@ -58,9 +58,10 @@ class CRUDRunSheet:
             
         if patient_name:
             search_pattern = f"%{patient_name}%"
+            from sqlalchemy import cast, String
             patient_exists = exists().where(
                 or_(
-                    (Patient.id == RunSheet.patient_id) & (
+                    (cast(RunSheet.patient_id, String).ilike(func.concat('%', cast(Patient.id, String), '%'))) & (
                         func.concat(func.coalesce(Patient.first_name, ''), ' ', func.coalesce(Patient.last_name, '')).ilike(search_pattern) |
                         Patient.first_name.ilike(search_pattern) |
                         Patient.last_name.ilike(search_pattern)
@@ -99,7 +100,6 @@ class CRUDRunSheet:
             selectinload(RunSheet.incident).selectinload(Incident.hospital).selectinload(Hospital.hospital_type),
             selectinload(RunSheet.incident).selectinload(Incident.state),
             selectinload(RunSheet.incident).selectinload(Incident.incident_type),
-            selectinload(RunSheet.patient).selectinload(Patient.interventions),
             selectinload(RunSheet.ambulance).selectinload(Ambulance.state),
             selectinload(RunSheet.ambulance).selectinload(Ambulance.lga),
             selectinload(RunSheet.ambulance).selectinload(Ambulance.ward),
