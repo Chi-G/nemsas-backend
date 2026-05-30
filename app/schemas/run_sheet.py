@@ -66,7 +66,7 @@ class RunSheetBase(BaseModel):
     total_minutes_to_hospital: Optional[float] = Field(None, alias="totalMinutesToHospital")
     
     incident_id: Optional[int] = Field(None, alias="incidentId")
-    patient_id: Optional[int] = Field(None, alias="patientId")
+    patient_id: Optional[Any] = Field(None, alias="patientId")
     ambulance_id: Optional[int] = Field(None, alias="ambulanceId")
     medic_user_id: Optional[UUID] = Field(None, alias="medicUserId")
     user_id: Optional[UUID] = Field(None, alias="userId")

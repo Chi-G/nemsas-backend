@@ -91,12 +91,18 @@ class CRUDClaim:
         month: Optional[int] = None,
         is_etc: Optional[bool] = None,
         ambulance_id: Optional[int] = None,
-        state_id: Optional[int] = None
+        state_id: Optional[int] = None,
+        etc_id: Optional[int] = None
     ) -> Tuple[List[Claim], int]:
         base_filters = []
         
         if status:
-            base_filters.append(Claim.status.ilike(status))
+            if is_etc is True:
+                base_filters.append(Claim.etc_claim_status.ilike(status))
+            elif is_etc is False:
+                base_filters.append(Claim.ambulance_claim_status.ilike(status))
+            else:
+                base_filters.append((Claim.ambulance_claim_status.ilike(status)) | (Claim.etc_claim_status.ilike(status)))
             
         if query_review:
             base_filters.append(Claim.review.ilike(f"%{query_review}%"))
@@ -112,7 +118,7 @@ class CRUDClaim:
         stmt = select(Claim).options(*self._get_claim_options()).order_by(desc(Claim.id))
         count_stmt = select(func.count()).select_from(Claim)
         
-        need_incident_join = (ambulance_id is not None) or (state_id is not None)
+        need_incident_join = (ambulance_id is not None) or (state_id is not None) or (etc_id is not None)
         if need_incident_join:
             stmt = stmt.join(Claim.incident)
             count_stmt = count_stmt.join(Claim.incident)
@@ -122,6 +128,9 @@ class CRUDClaim:
             
         if state_id is not None:
             base_filters.append(Incident.state_id == state_id)
+            
+        if etc_id is not None:
+            base_filters.append(Incident.etc_id == etc_id)
         
         if base_filters:
             stmt = stmt.where(and_(*base_filters))
@@ -131,36 +140,79 @@ class CRUDClaim:
         result = await db.execute(stmt.offset(skip).limit(limit))
         return list(result.scalars().all()), total_count or 0
 
-    async def get_summary(self, db: AsyncSession, state_id: Optional[int] = None, ambulance_id: Optional[int] = None, etc_id: Optional[int] = None) -> dict:
-        stmt = select(Claim.status, func.count(Claim.id))
-        
+    async def get_summary(self, db: AsyncSession, state_id: Optional[int] = None, ambulance_id: Optional[int] = None, etc_id: Optional[int] = None, user_type: Optional[str] = None) -> dict:
         need_incident_join = (state_id is not None) or (ambulance_id is not None) or (etc_id is not None)
         
-        if need_incident_join:
-            stmt = stmt.join(Claim.incident)
-            if state_id is not None:
-                stmt = stmt.where(Incident.state_id == state_id)
-            if ambulance_id is not None:
-                stmt = stmt.where(Incident.ambulance_id == ambulance_id)
-            if etc_id is not None:
-                stmt = stmt.where(Incident.etc_id == etc_id)
-                
-        stmt = stmt.group_by(Claim.status)
-        result = await db.execute(stmt)
-        counts = {row[0]: row[1] for row in result.all()}
-        
-        # Standardize the keys based on the expected JSON response
-        approved = counts.get("Approved", 0) + counts.get("approved", 0)
-        rejected = counts.get("Rejected", 0) + counts.get("rejected", 0)
-        pending = counts.get("Pending", 0) + counts.get("pending", 0) + counts.get("New", 0) + counts.get("new", 0)
-        total = sum(counts.values())
-        
-        return {
-            "total": total,
-            "approved": approved,
-            "rejected": rejected,
-            "pending": pending
+        def calculate_counts(rows):
+            counts = {row[0]: row[1] for row in rows}
+            approved = counts.get("Approved", 0) + counts.get("approved", 0) + counts.get("Endorsed", 0) + counts.get("endorsed", 0)
+            rejected = counts.get("Rejected", 0) + counts.get("rejected", 0)
+            pending = counts.get("Pending", 0) + counts.get("pending", 0) + counts.get("New", 0) + counts.get("new", 0)
+            total = sum(counts.values())
+            return {
+                "total": total,
+                "approved": approved,
+                "rejected": rejected,
+                "pending": pending
+            }
+
+        zero_stats = {
+            "total": 0,
+            "approved": 0,
+            "rejected": 0,
+            "pending": 0
         }
+
+        if user_type == "AMBULANCEUSER":
+            stmt = select(Claim.ambulance_claim_status, func.count(Claim.id)).where((Claim.claim_type != "ETC") | (Claim.claim_type == None))
+            if need_incident_join:
+                stmt = stmt.join(Claim.incident)
+                if ambulance_id is not None:
+                    stmt = stmt.where(Incident.ambulance_id == ambulance_id)
+            stmt = stmt.group_by(Claim.ambulance_claim_status)
+            result = await db.execute(stmt)
+            return {
+                "ambulanceStatus": calculate_counts(result.all()),
+                "etcStatus": zero_stats
+            }
+            
+        elif user_type == "EMERGENCYTREATMENTUSER":
+            stmt = select(Claim.etc_claim_status, func.count(Claim.id))
+            if need_incident_join:
+                stmt = stmt.join(Claim.incident)
+                if etc_id is not None:
+                    stmt = stmt.where(Incident.etc_id == etc_id)
+            stmt = stmt.group_by(Claim.etc_claim_status)
+            result = await db.execute(stmt)
+            return {
+                "ambulanceStatus": zero_stats,
+                "etcStatus": calculate_counts(result.all())
+            }
+            
+        else:
+            # Admin: return both
+            stmt_amb = select(Claim.ambulance_claim_status, func.count(Claim.id)).where((Claim.claim_type != "ETC") | (Claim.claim_type == None))
+            if need_incident_join:
+                stmt_amb = stmt_amb.join(Claim.incident)
+                if state_id is not None:
+                    stmt_amb = stmt_amb.where(Incident.state_id == state_id)
+            stmt_amb = stmt_amb.group_by(Claim.ambulance_claim_status)
+            res_amb = await db.execute(stmt_amb)
+            amb_stats = calculate_counts(res_amb.all())
+            
+            stmt_etc = select(Claim.etc_claim_status, func.count(Claim.id)).where(Claim.claim_type == "ETC")
+            if need_incident_join:
+                stmt_etc = stmt_etc.join(Claim.incident)
+                if state_id is not None:
+                    stmt_etc = stmt_etc.where(Incident.state_id == state_id)
+            stmt_etc = stmt_etc.group_by(Claim.etc_claim_status)
+            res_etc = await db.execute(stmt_etc)
+            etc_stats = calculate_counts(res_etc.all())
+            
+            return {
+                "ambulanceStatus": amb_stats,
+                "etcStatus": etc_stats
+            }
 
     async def remove(self, db: AsyncSession, *, id: int) -> Optional[Claim]:
         stmt = select(Claim).where(Claim.id == id)

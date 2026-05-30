@@ -14,6 +14,7 @@ from app.models.ambulance import Ambulance
 from app.models.hospital import Hospital
 from app.models.incident import Incident
 from app.models.claim import Claim
+from app.models.patient import Patient
 from app.models.lga import LGA
 from app.models.state import State
 from app.models.user import User
@@ -35,6 +36,13 @@ class DashboardStats(BaseModel):
     noOfIncidents: int
     noOfAmbulances: int
     noOfEmergendyCenters: int
+    
+    # ETC-specific stats
+    noOfPatients: Optional[int] = None
+    lastMonthIncidents: Optional[int] = None
+    thisMonthIncidents: Optional[int] = None
+    lastMonthPatients: Optional[int] = None
+    thisMonthPatients: Optional[int] = None
 
 
 class DashboardStatsResponse(BaseModel):
@@ -130,16 +138,57 @@ async def get_dashboard_stats(
         stmt_hospitals = stmt_hospitals.where(Hospital.state_id == effective_state_id)
     no_of_hospitals = (await db.execute(stmt_hospitals)).scalar() or 0
 
+    response_data = {
+        "noOfStates": no_of_states,
+        "noOfMamiiLgas": no_of_lgas,
+        "noOfIncidents": no_of_incidents,
+        "noOfAmbulances": no_of_ambulances,
+        "noOfEmergendyCenters": no_of_hospitals,
+    }
+
+    # 6. Additional Stats for EMERGENCYTREATMENTUSER
+    if role == "EMERGENCYTREATMENTUSER":
+        etc_id = getattr(current_user, "etc_id", None) or getattr(current_user, "emergency_treatment_center_id", None)
+        if etc_id is not None:
+            # Overwrite total incidents specifically for this ETC
+            stmt_etc_incidents = select(func.count(Incident.id)).where(Incident.etc_id == etc_id)
+            stmt_etc_incidents = _incident_period_filter(stmt_etc_incidents, period)
+            response_data["noOfIncidents"] = (await db.execute(stmt_etc_incidents)).scalar() or 0
+
+            # Total Patients
+            stmt_patients = select(func.count(Patient.id)).where(Patient.etc_id == etc_id)
+            # If period filtering should apply to total patients as well, we would do it here, 
+            # but user specifically asked for "all the patients assigned to the etc"
+            response_data["noOfPatients"] = (await db.execute(stmt_patients)).scalar() or 0
+
+            today = date.today()
+            this_month_start = datetime(today.year, today.month, 1, tzinfo=timezone.utc)
+            
+            # Determine last month's start and end
+            if today.month == 1:
+                last_month_start = datetime(today.year - 1, 12, 1, tzinfo=timezone.utc)
+            else:
+                last_month_start = datetime(today.year, today.month - 1, 1, tzinfo=timezone.utc)
+            last_month_end = this_month_start
+            
+            # Incidents: This month & Last month
+            stmt_inc_this = select(func.count(Incident.id)).where(Incident.etc_id == etc_id, Incident.date_added >= this_month_start)
+            stmt_inc_last = select(func.count(Incident.id)).where(Incident.etc_id == etc_id, Incident.date_added >= last_month_start, Incident.date_added < last_month_end)
+            
+            response_data["thisMonthIncidents"] = (await db.execute(stmt_inc_this)).scalar() or 0
+            response_data["lastMonthIncidents"] = (await db.execute(stmt_inc_last)).scalar() or 0
+            
+            # Patients: This month & Last month
+            stmt_pat_this = select(func.count(Patient.id)).join(Incident, Patient.incident_id == Incident.id).where(Patient.etc_id == etc_id, Incident.date_added >= this_month_start)
+            stmt_pat_last = select(func.count(Patient.id)).join(Incident, Patient.incident_id == Incident.id).where(Patient.etc_id == etc_id, Incident.date_added >= last_month_start, Incident.date_added < last_month_end)
+            
+            response_data["thisMonthPatients"] = (await db.execute(stmt_pat_this)).scalar() or 0
+            response_data["lastMonthPatients"] = (await db.execute(stmt_pat_last)).scalar() or 0
+
     return {
         "success": True,
         "message": "Dashboard data for Web fetched",
-        "data": {
-            "noOfStates": no_of_states,
-            "noOfMamiiLgas": no_of_lgas,
-            "noOfIncidents": no_of_incidents,
-            "noOfAmbulances": no_of_ambulances,
-            "noOfEmergendyCenters": no_of_hospitals,
-        },
+        "data": response_data,
         "totalCount": 1,
         "refreshToken": None,
         "refreshTokenExpiryTime": "0001-01-01T00:00:00",

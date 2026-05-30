@@ -151,7 +151,7 @@ async def read_claim_summary(
             if etc_id is None:
                 raise HTTPException(status_code=403, detail="ETC ID is required for ETC users")
 
-    summary_data = await crud_claim.get_summary(db, state_id=state_id, ambulance_id=ambulance_id, etc_id=etc_id)
+    summary_data = await crud_claim.get_summary(db, state_id=state_id, ambulance_id=ambulance_id, etc_id=etc_id, user_type=user_type)
     return {
         "success": True,
         "message": "Claim summary retrieved successfully",
@@ -317,11 +317,21 @@ async def get_all_etc_claims(
 
     user_type = getattr(current_user, "user_type", None)
     filter_state_id = stateId
+    filter_etc_id = None
+    filter_is_etc = True
+    
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
         user_state_id = getattr(current_user, "state_id", None)
         if user_state_id is None:
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
         filter_state_id = user_state_id
+    elif user_type == "EMERGENCYTREATMENTUSER":
+        filter_is_etc = None  # Fetch all claims for this ETC, ignoring claim_type
+        filter_etc_id = getattr(current_user, "etc_id", None)
+        if filter_etc_id is None:
+            filter_etc_id = getattr(current_user, "emergency_treatment_center_id", None)
+            if filter_etc_id is None:
+                raise HTTPException(status_code=403, detail="ETC ID is required for ETC users")
 
     items, total = await crud_claim.get_multi_with_count(
         db,
@@ -331,8 +341,9 @@ async def get_all_etc_claims(
         query_review=claimQuery,
         year=year,
         month=month,
-        is_etc=True,
-        state_id=filter_state_id
+        is_etc=filter_is_etc,
+        state_id=filter_state_id,
+        etc_id=filter_etc_id
     )
 
     return {
@@ -389,7 +400,11 @@ async def approve_claim(
             detail="SEMSAS users cannot directly approve claims. They must endorse them instead."
         )
             
-    claim_obj.status = "Approved"  # type: ignore
+    claim_type_str = claim_obj.claim_type.value if hasattr(claim_obj.claim_type, "value") else str(claim_obj.claim_type)
+    if claim_type_str == "ETC":
+        claim_obj.etc_claim_status = "Approved"  # type: ignore
+    else:
+        claim_obj.ambulance_claim_status = "Approved"  # type: ignore
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
     db.add(claim_obj)
@@ -432,7 +447,11 @@ async def reject_claim(
     if not reason or not reason.strip():
         raise HTTPException(status_code=422, detail="rejectionReason is mandatory and cannot be empty")
         
-    claim_obj.status = "Rejected"  # type: ignore
+    claim_type_str = claim_obj.claim_type.value if hasattr(claim_obj.claim_type, "value") else str(claim_obj.claim_type)
+    if claim_type_str == "ETC":
+        claim_obj.etc_claim_status = "Rejected"  # type: ignore
+    else:
+        claim_obj.ambulance_claim_status = "Rejected"  # type: ignore
     claim_obj.rejection_reason = reason  # type: ignore
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
@@ -472,7 +491,11 @@ async def endorse_claim(
         if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
             raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to endorse claims in this state")
             
-    claim_obj.status = "Endorsed"  # type: ignore
+    claim_type_str = claim_obj.claim_type.value if hasattr(claim_obj.claim_type, "value") else str(claim_obj.claim_type)
+    if claim_type_str == "ETC":
+        claim_obj.etc_claim_status = "Endorsed"  # type: ignore
+    else:
+        claim_obj.ambulance_claim_status = "Endorsed"  # type: ignore
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
     db.add(claim_obj)

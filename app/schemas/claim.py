@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from datetime import datetime
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict
 from app.schemas.patient import Patient
 from app.schemas.incident import Incident
 
@@ -18,7 +18,8 @@ class ClaimBase(BaseModel):
     distance_covered: Optional[float] = Field(None, alias="distanceCovered")
     
     incident_date: Optional[str] = Field(None, alias="incidentDate")
-    status: Optional[str] = Field("New", alias="status")
+    ambulance_claim_status: Optional[str] = Field("New", alias="ambulanceClaimStatus")
+    etc_claim_status: Optional[str] = Field("New", alias="etcClaimStatus")
     review: Optional[str] = Field(None, alias="review")
     etc_review: Optional[str] = Field(None, alias="etcReview")
     
@@ -39,6 +40,7 @@ from app.schemas.claim_image import ClaimImage
 class Claim(ClaimBase):
     id: int
     created_at: Optional[datetime] = Field(None, alias="createdAt")
+    status: Optional[str] = None
     
     patient: Optional[Patient] = None
     incident_view_model: Optional[Incident] = Field(None, alias="incidentViewModel")
@@ -48,6 +50,7 @@ class Claim(ClaimBase):
     details: List[Any] = Field(default_factory=list, alias="details")
     medical_interventions: List[Any] = Field(default_factory=list, alias="medicalInterventions")
     drugs_list: Optional[List[Any]] = Field(default_factory=list, alias="drugsList")
+    patient_details: Optional[Dict[str, Any]] = Field(None, alias="patientDetails")
 
     @model_validator(mode='before')
     @classmethod
@@ -90,17 +93,121 @@ class Claim(ClaimBase):
                 else:
                     drugs_list = []
                 
-                claim_type_str = str(claim_type).upper() if claim_type else ""
-                if claim_type_str == "ETC":
-                    details = interventions
+                claim_type_val = claim_type.value if hasattr(claim_type, "value") else str(claim_type)
+                claim_type_str = str(claim_type_val).upper() if claim_type_val else ""
+                if claim_type_str.endswith("ETC"):
+                    # We will map details to ETC Interventions later.
                     med_interventions = interventions
                 else:
                     details = drugs_list
                     med_interventions = []
             
+            # We construct patient_details representation here
+            patient_details = None
+            if patient:
+                patient_details = {}
+                if isinstance(patient, dict):
+                    patient_details.update(patient)
+                elif hasattr(patient, "__dict__"):
+                    for k, v in patient.__dict__.items():
+                        if not k.startswith("_"):
+                            patient_details[k] = v
+                patient_details["interventions"] = details # Will be overridden if ETC
+                patient_details["medicalInterventions"] = med_interventions
+                patient_details["drugs"] = drugs_list
+            
+            claim_type_val = claim_type.value if hasattr(claim_type, "value") else str(claim_type)
+            claim_type_str = str(claim_type_val).upper() if claim_type_val else ""
+            if claim_type_str.endswith("ETC"):
+                data['status'] = data.get('etc_claim_status') or data.get('etcClaimStatus')
+                
+                incident_data = data.get('incident')
+                
+                if incident_data and isinstance(incident_data, dict):
+                    etc_interventions = incident_data.get('etc_interventions') or []
+                    total_price = 0.0
+                    drugs_from_etc = []
+                    meds_from_etc = []
+                    
+                    for item in etc_interventions:
+                        name = item.get("medical_intervention", "") or ""
+                        
+                        row = {
+                            "id": item.get("id"),
+                            "drugId": item.get("drug_id"),
+                            "medicalIntervention": name,
+                            "price": item.get("price"),
+                            "dose": item.get("dose"),
+                            "diagnosis": item.get("diagnosis"),
+                            "quantity": item.get("quantity"),
+                            "dateAdded": item.get("date_added"),
+                        }
+                        
+                        if name.lower().endswith("- drug"):
+                            drugs_from_etc.append(row)
+                        else:
+                            meds_from_etc.append(row)
+                            price = item.get("price") or 0.0
+                            quantity = item.get("quantity") or 0.0
+                            total_price += float(price) * float(quantity)
+                            
+                    if etc_interventions:
+                        data['total_price'] = total_price
+                        data['totalPrice'] = total_price
+                        
+                    details = meds_from_etc
+                    
+                    if not drugs_list:
+                        drugs_list = drugs_from_etc
+                        
+                    if patient_details:
+                        patient_details["interventions"] = meds_from_etc
+                        patient_details["drugs"] = drugs_list
+                        
+                elif incident_data and hasattr(incident_data, "etc_interventions"):
+                    etc_interventions = incident_data.etc_interventions or []
+                    total_price = 0.0
+                    drugs_from_etc = []
+                    meds_from_etc = []
+                    
+                    for item in etc_interventions:
+                        name = getattr(item, "medical_intervention", "") or ""
+                        
+                        row = {
+                            "id": getattr(item, "id", None),
+                            "drugId": getattr(item, "drug_id", None),
+                            "medicalIntervention": name,
+                            "price": getattr(item, "price", None),
+                            "dose": getattr(item, "dose", None),
+                            "diagnosis": getattr(item, "diagnosis", None),
+                            "quantity": getattr(item, "quantity", None),
+                            "dateAdded": getattr(item, "date_added", None),
+                        }
+                        
+                        if name.lower().endswith("- drug"):
+                            drugs_from_etc.append(row)
+                        else:
+                            meds_from_etc.append(row)
+                            price = getattr(item, "price", 0.0) or 0.0
+                            quantity = getattr(item, "quantity", 0.0) or 0.0
+                            total_price += float(price) * float(quantity)
+                            
+                    if etc_interventions:
+                        data['total_price'] = total_price
+                        data['totalPrice'] = total_price
+                        
+                    if not med_interventions:
+                        med_interventions = meds_from_etc
+                        details = meds_from_etc
+                    if not drugs_list:
+                        drugs_list = drugs_from_etc
+            else:
+                data['status'] = data.get('ambulance_claim_status') or data.get('ambulanceClaimStatus')
+                
             data['details'] = details
             data['medical_interventions'] = med_interventions
             data['drugs_list'] = drugs_list
+            data['patient_details'] = patient_details
             
         elif hasattr(data, "__dict__"):
             if "incident" in data.__dict__ and data.incident:
@@ -140,17 +247,75 @@ class Claim(ClaimBase):
                 else:
                     drugs_list = []
                 
-                claim_type_str = str(claim_type).upper() if claim_type else ""
-                if claim_type_str == "ETC":
-                    details = interventions
+                claim_type_val = claim_type.value if hasattr(claim_type, "value") else str(claim_type)
+                claim_type_str = str(claim_type_val).upper() if claim_type_val else ""
+                if claim_type_str.endswith("ETC"):
                     med_interventions = interventions
                 else:
                     details = drugs_list
                     med_interventions = []
             
+            patient_details = None
+            if patient:
+                patient_details = {}
+                if hasattr(patient, "__dict__"):
+                    for k, v in patient.__dict__.items():
+                        if not k.startswith("_"):
+                            patient_details[k] = v
+                patient_details["interventions"] = details
+                patient_details["medicalInterventions"] = med_interventions
+                patient_details["drugs"] = drugs_list
+            
+            claim_type_val = claim_type.value if hasattr(claim_type, "value") else str(claim_type)
+            claim_type_str = str(claim_type_val).upper() if claim_type_val else ""
+            if claim_type_str.endswith("ETC"):
+                data.status = getattr(data, 'etc_claim_status', None)
+                
+                if getattr(data, 'incident', None) and getattr(data.incident, 'etc_interventions', None):
+                    total_price = 0.0
+                    drugs_from_etc = []
+                    meds_from_etc = []
+                    
+                    for item in data.incident.etc_interventions:
+                        name = getattr(item, "medical_intervention", "") or ""
+                        
+                        row = {
+                            "id": getattr(item, "id", None),
+                            "drugId": getattr(item, "drug_id", None),
+                            "medicalIntervention": name,
+                            "price": getattr(item, "price", None),
+                            "dose": getattr(item, "dose", None),
+                            "diagnosis": getattr(item, "diagnosis", None),
+                            "quantity": getattr(item, "quantity", None),
+                            "dateAdded": getattr(item, "date_added", None),
+                        }
+                        
+                        if name.lower().endswith("- drug"):
+                            drugs_from_etc.append(row)
+                        else:
+                            meds_from_etc.append(row)
+                            price = getattr(item, "price", 0.0) or 0.0
+                            quantity = getattr(item, "quantity", 0.0) or 0.0
+                            total_price += float(price) * float(quantity)
+                    
+                    if data.incident.etc_interventions:
+                        data.total_price = total_price
+                        
+                    details = meds_from_etc
+                    
+                    if not drugs_list:
+                        drugs_list = drugs_from_etc
+                        
+                    if patient_details:
+                        patient_details["interventions"] = meds_from_etc
+                        patient_details["drugs"] = drugs_list
+            else:
+                data.status = getattr(data, 'ambulance_claim_status', None)
+                
             data.details = details
             data.medical_interventions = med_interventions
             data.drugs_list = drugs_list
+            data.patient_details = patient_details
             
         return data
 
@@ -179,7 +344,7 @@ class ClaimSummaryData(BaseModel):
 class ClaimSummaryResponse(BaseModel):
     success: bool = True
     message: str = "Claim summary retrieved successfully"
-    data: ClaimSummaryData
+    data: Any
     totalCount: int = 1
     refreshToken: Optional[str] = None
     refreshTokenExpiryTime: Optional[str] = "0001-01-01T00:00:00"

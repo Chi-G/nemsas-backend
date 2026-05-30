@@ -4,7 +4,7 @@ from app.api.v1.endpoints import (
     hospital_types, ambulance_types, hospitals, ambulances, organisations,
     incidents, claims, run_sheets, monitoring, incident_types, websockets,
     medical_interventions, fee_categories, services, devices, dashboard,
-    patient_transfer_forms
+    patient_transfer_forms, patients
 )
 
 api_router = APIRouter()
@@ -32,5 +32,6 @@ api_router.include_router(run_sheets.router, prefix="/run-sheets", tags=["runshe
 api_router.include_router(run_sheets.router, prefix="/runsheets", tags=["runsheets"])
 api_router.include_router(monitoring.router, prefix="/monitoring", tags=["monitoring"])
 api_router.include_router(patient_transfer_forms.router, prefix="/TransferForms", tags=["TransferForms"])
+api_router.include_router(patients.router, prefix="/patients", tags=["patients"])
 api_router.include_router(websockets.router, prefix="/ws", tags=["websockets"])
 api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])

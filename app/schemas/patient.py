@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
 from datetime import datetime, date
 from typing import Optional, List, Any, Dict
 
@@ -17,6 +17,17 @@ class PatientBase(BaseModel):
     etc_id: Optional[int] = Field(None, alias="etC_id")
     
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+    
+    @field_validator('do_b', mode='before')
+    @classmethod
+    def parse_dob(cls, value):
+        if isinstance(value, str):
+            try:
+                from datetime import datetime
+                return datetime.strptime(value, "%d/%m/%Y").date()
+            except ValueError:
+                pass
+        return value
 
 class PatientCreate(PatientBase):
     pass

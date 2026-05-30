@@ -71,7 +71,8 @@ class Claim(Base):
     review = Column(String(500), nullable=True) # Holds codes like "Incorrect diagnosis", "Duplicate claim"
     etc_review = Column(String(500), nullable=True)
     
-    status = Column(String(50), default="New") # Standardizing on string status to exactly mirror "New", "Approved", etc.
+    ambulance_claim_status = Column(String(50), default="New")
+    etc_claim_status = Column(String(50), default="New")
     rejection_reason = Column(String(255), nullable=True)
     
     processed_at = Column(DateTime(timezone=True), nullable=True)
