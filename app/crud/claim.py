@@ -35,18 +35,13 @@ class CRUDClaim:
         
         db_obj = Claim(**obj_in_data)
         
-        is_etc = False
         if current_user:
             db_obj.user_id = current_user.id
             user_type = getattr(current_user, "user_type", None)
             if user_type in ["SEMSASDISPATCH", "NEMSASUSER", "EMERGENCYTREATMENTUSER"]:
                 is_etc = True
-                db_obj.claim_type = "ETC"
             else:
                 is_etc = False
-                db_obj.claim_type = "Ambulance"
-        else:
-            db_obj.claim_type = "Ambulance"
             
         db.add(db_obj)
         await db.commit()
@@ -78,7 +73,15 @@ class CRUDClaim:
         return result.scalars().first()
 
     async def get(self, db: AsyncSession, id: int) -> Optional[Claim]:
-        stmt = select(Claim).options(*self._get_claim_options()).where(Claim.id == id).execution_options(populate_existing=True)
+        # Expunge any stale identity-map entry so selectinload always runs fresh
+        from sqlalchemy import inspect as sa_inspect
+        cached = db.identity_map.get((Claim, (id,)))
+        if cached is not None:
+            try:
+                db.expunge(cached)
+            except Exception:
+                pass
+        stmt = select(Claim).options(*self._get_claim_options()).where(Claim.id == id)
         result = await db.execute(stmt)
         return result.scalars().first()
 
@@ -124,6 +127,11 @@ class CRUDClaim:
             base_filters.append(extract('month', Incident.date_added) == month)
 
         # Note: We do not filter by claim_type because the same claim record is used for both ETC and Ambulance.
+        # However, to avoid showing irrelevant "New" states, we could filter by whether the incident has an ambulance or etc
+        if is_etc is True:
+            base_filters.append(Incident.etc_id != None)
+        elif is_etc is False:
+            base_filters.append(Incident.ambulance_id != None)
 
         stmt = select(Claim).options(*self._get_claim_options()).order_by(desc(Claim.id))
         count_stmt = select(func.count()).select_from(Claim)
@@ -196,11 +204,9 @@ class CRUDClaim:
         }
 
         if user_type == "AMBULANCEUSER":
-            stmt = select(Claim.ambulance_claim_status, func.count(Claim.id)).where((Claim.claim_type != "ETC") | (Claim.claim_type == None))
-            if need_incident_join:
-                stmt = stmt.join(Claim.incident)
-                if ambulance_id is not None:
-                    stmt = stmt.where(Incident.ambulance_id == ambulance_id)
+            stmt = select(Claim.ambulance_claim_status, func.count(Claim.id)).join(Claim.incident).where(Incident.ambulance_id != None)
+            if ambulance_id is not None:
+                stmt = stmt.where(Incident.ambulance_id == ambulance_id)
             stmt = stmt.group_by(Claim.ambulance_claim_status)
             result = await db.execute(stmt)
             return {
@@ -209,11 +215,9 @@ class CRUDClaim:
             }
             
         elif user_type == "EMERGENCYTREATMENTUSER":
-            stmt = select(Claim.etc_claim_status, func.count(Claim.id))
-            if need_incident_join:
-                stmt = stmt.join(Claim.incident)
-                if etc_id is not None:
-                    stmt = stmt.where(Incident.etc_id == etc_id)
+            stmt = select(Claim.etc_claim_status, func.count(Claim.id)).join(Claim.incident).where(Incident.etc_id != None)
+            if etc_id is not None:
+                stmt = stmt.where(Incident.etc_id == etc_id)
             stmt = stmt.group_by(Claim.etc_claim_status)
             result = await db.execute(stmt)
             return {
@@ -223,20 +227,16 @@ class CRUDClaim:
             
         else:
             # Admin: return both
-            stmt_amb = select(Claim.ambulance_claim_status, func.count(Claim.id)).where((Claim.claim_type != "ETC") | (Claim.claim_type == None))
-            if need_incident_join:
-                stmt_amb = stmt_amb.join(Claim.incident)
-                if state_id is not None:
-                    stmt_amb = stmt_amb.where(Incident.state_id == state_id)
+            stmt_amb = select(Claim.ambulance_claim_status, func.count(Claim.id)).join(Claim.incident).where(Incident.ambulance_id != None)
+            if state_id is not None:
+                stmt_amb = stmt_amb.where(Incident.state_id == state_id)
             stmt_amb = stmt_amb.group_by(Claim.ambulance_claim_status)
             res_amb = await db.execute(stmt_amb)
             amb_stats = calculate_counts(res_amb.all())
             
-            stmt_etc = select(Claim.etc_claim_status, func.count(Claim.id)).where(Claim.claim_type == "ETC")
-            if need_incident_join:
-                stmt_etc = stmt_etc.join(Claim.incident)
-                if state_id is not None:
-                    stmt_etc = stmt_etc.where(Incident.state_id == state_id)
+            stmt_etc = select(Claim.etc_claim_status, func.count(Claim.id)).join(Claim.incident).where(Incident.etc_id != None)
+            if state_id is not None:
+                stmt_etc = stmt_etc.where(Incident.state_id == state_id)
             stmt_etc = stmt_etc.group_by(Claim.etc_claim_status)
             res_etc = await db.execute(stmt_etc)
             etc_stats = calculate_counts(res_etc.all())

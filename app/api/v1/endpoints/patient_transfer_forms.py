@@ -26,6 +26,8 @@ async def add_transfer_form(
     """
     Create a new Transfer Form.
     """
+    # Always set medic_user_id from the signed-in user
+    obj_in.medic_user_id = getattr(current_user, "id", None)
     db_obj = await crud_transfer_form.create(db, obj_in=obj_in)
     return {
         "success": True,
@@ -272,12 +274,14 @@ async def get_single_transfer_form(
     from app.models.incident import Incident
     from app.models.hospital import Hospital
     from app.models.user import User
+    from app.models.run_sheet import RunSheet
     
     stmt = select(TransferForm).where(TransferForm.id == id).options(
         selectinload(TransferForm.incident).selectinload(Incident.patients),
         selectinload(TransferForm.incident).selectinload(Incident.ambulance),
         selectinload(TransferForm.hospital),
-        selectinload(TransferForm.hospice_user)
+        selectinload(TransferForm.hospice_user),
+        selectinload(TransferForm.run_sheet)
     )
     result = await db.execute(stmt)
     db_obj = result.scalar_one_or_none()
@@ -314,8 +318,13 @@ async def get_single_transfer_form(
             "lastName": getattr(db_obj.hospice_user, "last_name", ""),
             "email": getattr(db_obj.hospice_user, "email", "")
         }
-        
-    arrival_time = incident.ambulance_stop if incident else db_obj.created_at
+    
+    # Use run_sheet.arrival_time as the authoritative arrival time
+    arrival_time = None
+    if db_obj.run_sheet and db_obj.run_sheet.arrival_time:
+        arrival_time = db_obj.run_sheet.arrival_time
+    elif incident and incident.date_stop:
+        arrival_time = incident.date_stop
         
     response_data = {
         **TransferFormModel.model_validate(db_obj).model_dump(by_alias=True),

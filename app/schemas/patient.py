@@ -46,6 +46,9 @@ class Patient(PatientBase):
     medical_interventions: Optional[List[Dict[str, Any]]] = Field(default=None, alias="medicalInterventions")
     drugs: Optional[List[Dict[str, Any]]] = Field(default=None, alias="drugs")
 
+    etc_medical_interventions: Optional[List[Dict[str, Any]]] = Field(default=None, alias="etcMedicalInterventions")
+    etc_drugs: Optional[List[Dict[str, Any]]] = Field(default=None, alias="etcDrugs")
+
     notes: Optional[List[Any]] = Field(default=None, alias="notes")
     runsheet: Optional[Any] = Field(None, alias="runsheet")
     extra_details: Optional[Any] = Field(None, alias="extraDetails")
@@ -111,8 +114,8 @@ class Patient(PatientBase):
                 # Fallback: non-categorised items go to procedures
                 procedures.append(row)
 
-        self.medical_interventions = procedures if procedures else []
-        self.drugs = drug_list if drug_list else []
+        self.etc_medical_interventions = procedures if procedures else []
+        self.etc_drugs = drug_list if drug_list else []
 
 class PatientResponse(BaseModel):
     success: bool

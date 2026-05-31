@@ -329,9 +329,6 @@ async def get_all_ambulance_claims(
         incident_category_id=incident_category_id
     )
 
-    from app.models.claim import ClaimType
-    for item in items:
-        item.claim_type = ClaimType.AMBULANCE
 
     return {
         "success": True,
@@ -394,9 +391,6 @@ async def get_all_etc_claims(
         incident_category_id=incident_category_id
     )
 
-    from app.models.claim import ClaimType
-    for item in items:
-        item.claim_type = ClaimType.ETC
 
     return {
         "success": True,
@@ -441,6 +435,7 @@ async def approve_claim(
     db: AsyncSession = Depends(deps.get_db),
     current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
+    """Approve an ambulance claim."""
     claim_obj = await crud_claim.get(db, id=id)
     if not claim_obj:
         raise HTTPException(status_code=404, detail="Claim not found")
@@ -452,11 +447,7 @@ async def approve_claim(
             detail="SEMSAS users cannot directly approve claims. They must endorse them instead."
         )
             
-    claim_type_str = claim_obj.claim_type.value if hasattr(claim_obj.claim_type, "value") else str(claim_obj.claim_type)
-    if claim_type_str == "ETC":
-        claim_obj.etc_claim_status = "Approved"  # type: ignore
-    else:
-        claim_obj.ambulance_claim_status = "Approved"  # type: ignore
+    claim_obj.ambulance_claim_status = "Approved"  # type: ignore
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
     db.add(claim_obj)
@@ -467,7 +458,6 @@ async def approve_claim(
         processed_by_id=current_user.id
     )
     db.add(audit_log)
-    
     await db.commit()
     
     updated_item = await crud_claim.get(db, id=id)
@@ -477,6 +467,7 @@ async def approve_claim(
         "data": updated_item
     }
 
+
 @router.post("/{id}/reject", response_model=ClaimResponse)
 async def reject_claim(
     id: int,
@@ -484,6 +475,7 @@ async def reject_claim(
     db: AsyncSession = Depends(deps.get_db),
     current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
+    """Reject an ambulance claim."""
     claim_obj = await crud_claim.get(db, id=id)
     if not claim_obj:
         raise HTTPException(status_code=404, detail="Claim not found")
@@ -492,18 +484,12 @@ async def reject_claim(
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
         if current_user.state_id is None:
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
-        if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
-            raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to reject claims in this state")
             
     reason = body.rejection_reason
     if not reason or not reason.strip():
         raise HTTPException(status_code=422, detail="rejectionReason is mandatory and cannot be empty")
         
-    claim_type_str = claim_obj.claim_type.value if hasattr(claim_obj.claim_type, "value") else str(claim_obj.claim_type)
-    if claim_type_str == "ETC":
-        claim_obj.etc_claim_status = "Rejected"  # type: ignore
-    else:
-        claim_obj.ambulance_claim_status = "Rejected"  # type: ignore
+    claim_obj.ambulance_claim_status = "Rejected"  # type: ignore
     claim_obj.rejection_reason = reason  # type: ignore
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
@@ -516,15 +502,15 @@ async def reject_claim(
         rejection_reason=reason
     )
     db.add(audit_log)
-    
     await db.commit()
     
     updated_item = await crud_claim.get(db, id=id)
     return {
         "success": True,
-        "message": "Claim rejected successfully",
+        "message": "Ambulance claim rejected successfully",
         "data": updated_item
     }
+
 
 @router.post("/{id}/endorse", response_model=ClaimResponse)
 async def endorse_claim(
@@ -532,6 +518,7 @@ async def endorse_claim(
     db: AsyncSession = Depends(deps.get_db),
     current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
+    """Endorse an ambulance claim (SEMSAS action before NEMSAS approval)."""
     claim_obj = await crud_claim.get(db, id=id)
     if not claim_obj:
         raise HTTPException(status_code=404, detail="Claim not found")
@@ -540,14 +527,8 @@ async def endorse_claim(
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
         if current_user.state_id is None:
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
-        if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
-            raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to endorse claims in this state")
             
-    claim_type_str = claim_obj.claim_type.value if hasattr(claim_obj.claim_type, "value") else str(claim_obj.claim_type)
-    if claim_type_str == "ETC":
-        claim_obj.etc_claim_status = "Endorsed"  # type: ignore
-    else:
-        claim_obj.ambulance_claim_status = "Endorsed"  # type: ignore
+    claim_obj.ambulance_claim_status = "Endorsed"  # type: ignore
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
     db.add(claim_obj)
@@ -558,13 +539,129 @@ async def endorse_claim(
         processed_by_id=current_user.id
     )
     db.add(audit_log)
-    
     await db.commit()
     
     updated_item = await crud_claim.get(db, id=id)
     return {
         "success": True,
         "message": "Claim endorsed successfully",
+        "data": updated_item
+    }
+
+
+# --- ETC-specific claim action endpoints ---
+
+@router.post("/{id}/approve-etc", response_model=ClaimResponse)
+async def approve_etc_claim(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
+) -> Any:
+    """Approve an ETC claim."""
+    claim_obj = await crud_claim.get(db, id=id)
+    if not claim_obj:
+        raise HTTPException(status_code=404, detail="Claim not found")
+
+    user_type = getattr(current_user, "user_type", None)
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        raise HTTPException(
+            status_code=403,
+            detail="SEMSAS users cannot directly approve ETC claims. They must endorse them instead."
+        )
+
+    claim_obj.etc_claim_status = "Approved"  # type: ignore
+    claim_obj.processed_at = datetime.now()  # type: ignore
+    claim_obj.processed_by_id = current_user.id  # type: ignore
+    db.add(claim_obj)
+
+    audit_log = ClaimAuditLog(
+        claim_id=claim_obj.id,
+        action=ClaimAction.APPROVE,
+        processed_by_id=current_user.id
+    )
+    db.add(audit_log)
+    await db.commit()
+
+    updated_item = await crud_claim.get(db, id=id)
+    return {
+        "success": True,
+        "message": "ETC claim approved successfully",
+        "data": updated_item
+    }
+
+
+@router.post("/{id}/reject-etc", response_model=ClaimResponse)
+async def reject_etc_claim(
+    id: int,
+    body: ClaimRejectionRequest,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
+) -> Any:
+    """Reject an ETC claim with a reason stored in etc_rejection_reason."""
+    claim_obj = await crud_claim.get(db, id=id)
+    if not claim_obj:
+        raise HTTPException(status_code=404, detail="Claim not found")
+
+    reason = body.rejection_reason
+    if not reason or not reason.strip():
+        raise HTTPException(status_code=422, detail="rejectionReason is mandatory and cannot be empty")
+
+    claim_obj.etc_claim_status = "Rejected"  # type: ignore
+    claim_obj.etc_rejection_reason = reason  # type: ignore
+    claim_obj.processed_at = datetime.now()  # type: ignore
+    claim_obj.processed_by_id = current_user.id  # type: ignore
+    db.add(claim_obj)
+
+    audit_log = ClaimAuditLog(
+        claim_id=claim_obj.id,
+        action=ClaimAction.REJECT,
+        processed_by_id=current_user.id,
+        rejection_reason=reason
+    )
+    db.add(audit_log)
+    await db.commit()
+
+    updated_item = await crud_claim.get(db, id=id)
+    return {
+        "success": True,
+        "message": "ETC claim rejected successfully",
+        "data": updated_item
+    }
+
+
+@router.post("/{id}/endorse-etc", response_model=ClaimResponse)
+async def endorse_etc_claim(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
+) -> Any:
+    """Endorse an ETC claim (SEMSAS action before NEMSAS approval)."""
+    claim_obj = await crud_claim.get(db, id=id)
+    if not claim_obj:
+        raise HTTPException(status_code=404, detail="Claim not found")
+
+    user_type = getattr(current_user, "user_type", None)
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        if current_user.state_id is None:
+            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
+
+    claim_obj.etc_claim_status = "Endorsed"  # type: ignore
+    claim_obj.processed_at = datetime.now()  # type: ignore
+    claim_obj.processed_by_id = current_user.id  # type: ignore
+    db.add(claim_obj)
+
+    audit_log = ClaimAuditLog(
+        claim_id=claim_obj.id,
+        action=ClaimAction.ENDORSE,
+        processed_by_id=current_user.id
+    )
+    db.add(audit_log)
+    await db.commit()
+
+    updated_item = await crud_claim.get(db, id=id)
+    return {
+        "success": True,
+        "message": "ETC claim endorsed successfully",
         "data": updated_item
     }
 
@@ -1171,22 +1268,40 @@ async def accept_or_reject_claim(
 
     status_str = body.claimStatusType
     action = None
+    
+    is_etc = False
+    
     if status_str.lower() in ["approved", "approve"]:
         if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
             raise HTTPException(
                 status_code=403,
                 detail="SEMSAS users cannot directly approve claims. They must endorse them instead."
             )
-        setattr(claim_obj, "status", "Approved")
+        if is_etc:
+            claim_obj.etc_claim_status = "Approved"  # type: ignore
+        else:
+            claim_obj.ambulance_claim_status = "Approved"  # type: ignore
         action = ClaimAction.APPROVE
     elif status_str.lower() in ["rejected", "reject"]:
-        setattr(claim_obj, "status", "Rejected")
-        setattr(claim_obj, "rejection_reason", body.rejectionReason)
+        if is_etc:
+            claim_obj.etc_claim_status = "Rejected"  # type: ignore
+            claim_obj.etc_rejection_reason = body.rejectionReason  # type: ignore
+        else:
+            claim_obj.ambulance_claim_status = "Rejected"  # type: ignore
+            claim_obj.rejection_reason = body.rejectionReason  # type: ignore
         action = ClaimAction.REJECT
+    elif status_str.lower() in ["endorsed", "endorse"]:
+        if is_etc:
+            claim_obj.etc_claim_status = "Endorsed"  # type: ignore
+        else:
+            claim_obj.ambulance_claim_status = "Endorsed"  # type: ignore
+        action = ClaimAction.ENDORSE
     else:
-        setattr(claim_obj, "status", status_str)
-        if "endorse" in status_str.lower():
-            action = ClaimAction.ENDORSE
+        # Fallback: set the appropriate field
+        if is_etc:
+            claim_obj.etc_claim_status = status_str  # type: ignore
+        else:
+            claim_obj.ambulance_claim_status = status_str  # type: ignore
 
     setattr(claim_obj, "processed_at", datetime.now())
     setattr(claim_obj, "processed_by_id", current_user.id)
@@ -1197,7 +1312,7 @@ async def accept_or_reject_claim(
             claim_id=claim_obj.id,
             action=action,
             processed_by_id=current_user.id,
-            rejection_reason=getattr(claim_obj, "rejection_reason", None)
+            rejection_reason=body.rejectionReason
         )
         db.add(audit_log)
 
@@ -1206,7 +1321,7 @@ async def accept_or_reject_claim(
     updated_item = await crud_claim.get(db, id=body.id)
     return {
         "success": True,
-        "message": f"Claim status updated to {getattr(claim_obj, 'status')}",
+        "message": f"Claim status updated to {status_str}",
         "data": updated_item
     }
 

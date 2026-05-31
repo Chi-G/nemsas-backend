@@ -322,11 +322,11 @@ async def _build_mobile_dashboard_data(
         # Calculate claim amounts
         stmt_claims_amount = select(
             func.sum(Claim.total_price).label('totalAmount'),
-            func.sum(func.coalesce(Claim.total_price, 0)).filter(Claim.claim_type == 'ETC').label('etcTotalAmount'),
-            func.sum(func.coalesce(Claim.total_price, 0)).filter(Claim.claim_type == 'Ambulance').label('ambulanceTotalAmount')
-        )
+            func.sum(func.coalesce(Claim.total_price, 0)).filter(Incident.etc_id != None).label('etcTotalAmount'),
+            func.sum(func.coalesce(Claim.total_price, 0)).filter(Incident.ambulance_id != None).label('ambulanceTotalAmount')
+        ).join(Claim.incident)
         if effective_ambulance_id is not None:
-            stmt_claims_amount = stmt_claims_amount.join(Claim.incident).where(Incident.ambulance_id == effective_ambulance_id)
+            stmt_claims_amount = stmt_claims_amount.where(Incident.ambulance_id == effective_ambulance_id)
         res_claims_amount = await db.execute(stmt_claims_amount)
         row_claims_amount = res_claims_amount.first()
     
@@ -415,7 +415,7 @@ async def _build_mobile_dashboard_data(
     # Map activities
     activities = []
     for inc in inc_list:
-        status_val = inc.incident_status_type or "Reported"
+        status_val = inc.event_status_type or inc.incident_status_type or "Reported"
         status_str = status_val.value if hasattr(status_val, "value") else str(status_val)
         
         if status_str.lower() == "reported":

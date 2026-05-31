@@ -15,17 +15,24 @@ def get_loaded_relation(obj: Any, attr_name: str) -> Any:
         return obj.get(attr_name)
     try:
         from sqlalchemy import inspect
+        from sqlalchemy.exc import MissingGreenlet
         cls = type(obj)
         if hasattr(cls, "__mapper__"):
             if attr_name in cls.__mapper__.relationships:
                 inspected = inspect(obj)
                 if inspected is not None:
                     if attr_name not in inspected.unloaded:
-                        return getattr(obj, attr_name, None)
+                        try:
+                            return getattr(obj, attr_name, None)
+                        except MissingGreenlet:
+                            return None
                 return None
     except Exception:
         return None
-    return getattr(obj, attr_name, None)
+    try:
+        return getattr(obj, attr_name, None)
+    except Exception:
+        return None
 
 def orm_to_dict(obj: Any) -> Any:
     if obj is None:
@@ -39,15 +46,22 @@ def orm_to_dict(obj: Any) -> Any:
     if hasattr(cls, "__mapper__"):
         try:
             from sqlalchemy import inspect
+            from sqlalchemy.exc import MissingGreenlet
             inspected = inspect(obj)
             if inspected is not None:
                 res = {}
                 for col in inspected.mapper.column_attrs:
-                    res[col.key] = getattr(obj, col.key, None)
+                    try:
+                        res[col.key] = getattr(obj, col.key, None)
+                    except MissingGreenlet:
+                        res[col.key] = None
                 for rel in inspected.mapper.relationships:
                     if rel.key not in inspected.unloaded:
-                        val = getattr(obj, rel.key, None)
-                        res[rel.key] = orm_to_dict(val)
+                        try:
+                            val = getattr(obj, rel.key, None)
+                            res[rel.key] = orm_to_dict(val)
+                        except MissingGreenlet:
+                            res[rel.key] = None
                 for k, v in obj.__dict__.items():
                     if k not in res and not k.startswith('_'):
                         res[k] = orm_to_dict(v)
@@ -64,6 +78,7 @@ class RunSheetBase(BaseModel):
     take_off_time: Optional[datetime] = Field(None, alias="takeOffTime")
     arrival_time: Optional[datetime] = Field(None, alias="arrivalTime")
     total_minutes_to_hospital: Optional[float] = Field(None, alias="totalMinutesToHospital")
+    distance_covered: Optional[float] = Field(None, alias="distanceCovered")
     
     incident_id: Optional[int] = Field(None, alias="incidentId")
     patient_id: Optional[Any] = Field(None, alias="patientId")
@@ -192,20 +207,17 @@ class RunSheet(RunSheetBase):
             else:
                 setattr(data, "ambulance_view_model", amb_obj)
 
-        # Map price (dynamically from incident claims of type Ambulance)
+        # Map price (dynamically from incident claims)
         price_val = 0.0
         if incident:
             claims_list = get_loaded_relation(incident, "claims")
-            if claims_list:
-                for claim in claims_list:
-                    claim_type_val = get_loaded_relation(claim, "claim_type")
-                    claim_type_str = claim_type_val.value if hasattr(claim_type_val, "value") else str(claim_type_val)
-                    if claim_type_str and claim_type_str.lower().endswith("ambulance"):
-                        claim_price = get_loaded_relation(claim, "total_price")
-                        if not claim_price:
-                            claim_price = get_loaded_relation(claim, "amount") or 0.0
-                        price_val = float(claim_price)
-                        break
+            if claims_list and len(claims_list) > 0:
+                claim = claims_list[0]
+                claim_price = get_loaded_relation(claim, "total_price")
+                if not claim_price:
+                    claim_price = get_loaded_relation(claim, "amount") or 0.0
+                price_val = float(claim_price)
+
         # Fallback default price for valid ambulance claims
         if price_val == 0.0:
             price_val = 35000.0
