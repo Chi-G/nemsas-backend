@@ -1,5 +1,5 @@
 from typing import Any, Optional, List, cast
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app.models.user import User
@@ -12,9 +12,14 @@ import cloudinary
 import cloudinary.uploader
 from app.core.config import settings
 from sqlalchemy.future import select
+from sqlalchemy import func
+from sqlalchemy.orm import selectinload
 from app.models.run_sheet import RunSheet
 from app.models.patient import Patient
 from app.models.incident import Incident
+from app.models.etc_intervention import EtcIntervention
+from app.models.hospital import Hospital
+from app.models.claim import Claim
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 router = APIRouter()
@@ -94,6 +99,7 @@ async def read_claims(
     query: Optional[str] = None,
     year: Optional[int] = None,
     month: Optional[int] = None,
+    incident_category_id: Optional[int] = Query(None, alias="incidentCategoryId"),
     current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
     """
@@ -115,7 +121,8 @@ async def read_claims(
         query_review=query,
         year=year,
         month=month,
-        state_id=state_id
+        state_id=state_id,
+        incident_category_id=incident_category_id
     )
     return {
         "success": True,
@@ -151,7 +158,7 @@ async def read_claim_summary(
             if etc_id is None:
                 raise HTTPException(status_code=403, detail="ETC ID is required for ETC users")
 
-    summary_data = await crud_claim.get_summary(db, state_id=state_id, ambulance_id=ambulance_id, etc_id=etc_id)
+    summary_data = await crud_claim.get_summary(db, state_id=state_id, ambulance_id=ambulance_id, etc_id=etc_id, user_type=user_type)
     return {
         "success": True,
         "message": "Claim summary retrieved successfully",
@@ -172,6 +179,7 @@ async def read_ambulance_claims(
     year: Optional[int] = None,
     month: Optional[int] = None,
     ambulance_id: Optional[int] = None,
+    incident_category_id: Optional[int] = Query(None, alias="incidentCategoryId"),
     current_user: User = Depends(deps.get_current_user)
 ) -> Any:
     """
@@ -200,7 +208,8 @@ async def read_ambulance_claims(
         query_review=query,
         year=year,
         month=month,
-        ambulance_id=filter_ambulance_id
+        ambulance_id=filter_ambulance_id,
+        incident_category_id=incident_category_id
     )
     return {
         "success": True,
@@ -209,16 +218,43 @@ async def read_ambulance_claims(
         "totalCount": total
     }
 
-@router.get("/settings")
-async def read_claim_settings(
+@router.get("/settings/{key}")
+async def read_claim_setting_by_key(
+    key: str,
     db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR"]))
 ) -> Any:
     """
-    Global retrieval of expiration controls and thresholds.
+    Get a specific claim setting by its key.
     """
-    configs = await crud_setting.get_all(db)
-    # Reformat to plain dictionary or list as needed, maintaining client compatibility.
-    return configs
+    setting = await crud_setting.get_by_key(db, key=key)
+    if not setting:
+        raise HTTPException(status_code=404, detail="Setting not found")
+    return {
+        "success": True,
+        "message": "Setting fetched successfully",
+        "data": setting
+    }
+
+class ClaimSettingCreate(BaseModel):
+    key: str
+    value: str
+
+@router.post("/settings")
+async def create_claim_setting(
+    setting_in: ClaimSettingCreate,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR"]))
+) -> Any:
+    """
+    Create or update a claim setting.
+    """
+    setting = await crud_setting.create_or_update(db, obj_in=setting_in, user_id=current_user.id)
+    return {
+        "success": True,
+        "message": "Setting saved successfully",
+        "data": setting
+    }
 
 @router.post("/", response_model=ClaimResponse)
 async def create_claim(
@@ -244,9 +280,11 @@ async def get_all_ambulance_claims(
     pageSize: int = 10,
     year: Optional[int] = None,
     month: Optional[int] = None,
+    search: Optional[str] = None,
     stateId: Optional[int] = None,
     status: Optional[str] = None,
     claimQuery: Optional[str] = None,
+    incident_category_id: Optional[int] = Query(None, alias="incidentCategoryId"),
     current_user: User = Depends(deps.get_current_user)
 ) -> Any:
     """
@@ -280,14 +318,17 @@ async def get_all_ambulance_claims(
         db,
         skip=skip,
         limit=limit,
+        search=search,
         status=status,
         query_review=claimQuery,
         year=year,
         month=month,
         is_etc=False,
         ambulance_id=filter_ambulance_id,
-        state_id=filter_state_id
+        state_id=filter_state_id,
+        incident_category_id=incident_category_id
     )
+
 
     return {
         "success": True,
@@ -304,9 +345,11 @@ async def get_all_etc_claims(
     pageSize: int = 10,
     year: Optional[int] = None,
     month: Optional[int] = None,
+    search: Optional[str] = None,
     stateId: Optional[int] = None,
     status: Optional[str] = None,
     claimQuery: Optional[str] = None,
+    incident_category_id: Optional[int] = Query(None, alias="incidentCategoryId"),
     current_user: User = Depends(deps.get_current_user)
 ) -> Any:
     """
@@ -317,23 +360,37 @@ async def get_all_etc_claims(
 
     user_type = getattr(current_user, "user_type", None)
     filter_state_id = stateId
+    filter_etc_id = None
+    filter_is_etc = True
+    
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
         user_state_id = getattr(current_user, "state_id", None)
         if user_state_id is None:
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
         filter_state_id = user_state_id
+    elif user_type == "EMERGENCYTREATMENTUSER":
+        filter_is_etc = None  # Fetch all claims for this ETC, ignoring claim_type
+        filter_etc_id = getattr(current_user, "etc_id", None)
+        if filter_etc_id is None:
+            filter_etc_id = getattr(current_user, "emergency_treatment_center_id", None)
+            if filter_etc_id is None:
+                raise HTTPException(status_code=403, detail="ETC ID is required for ETC users")
 
     items, total = await crud_claim.get_multi_with_count(
         db,
         skip=skip,
         limit=limit,
+        search=search,
         status=status,
         query_review=claimQuery,
         year=year,
         month=month,
-        is_etc=True,
-        state_id=filter_state_id
+        is_etc=filter_is_etc,
+        state_id=filter_state_id,
+        etc_id=filter_etc_id,
+        incident_category_id=incident_category_id
     )
+
 
     return {
         "success": True,
@@ -378,6 +435,7 @@ async def approve_claim(
     db: AsyncSession = Depends(deps.get_db),
     current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
+    """Approve an ambulance claim."""
     claim_obj = await crud_claim.get(db, id=id)
     if not claim_obj:
         raise HTTPException(status_code=404, detail="Claim not found")
@@ -389,7 +447,7 @@ async def approve_claim(
             detail="SEMSAS users cannot directly approve claims. They must endorse them instead."
         )
             
-    claim_obj.status = "Approved"  # type: ignore
+    claim_obj.ambulance_claim_status = "Approved"  # type: ignore
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
     db.add(claim_obj)
@@ -400,7 +458,6 @@ async def approve_claim(
         processed_by_id=current_user.id
     )
     db.add(audit_log)
-    
     await db.commit()
     
     updated_item = await crud_claim.get(db, id=id)
@@ -410,6 +467,7 @@ async def approve_claim(
         "data": updated_item
     }
 
+
 @router.post("/{id}/reject", response_model=ClaimResponse)
 async def reject_claim(
     id: int,
@@ -417,6 +475,7 @@ async def reject_claim(
     db: AsyncSession = Depends(deps.get_db),
     current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
+    """Reject an ambulance claim."""
     claim_obj = await crud_claim.get(db, id=id)
     if not claim_obj:
         raise HTTPException(status_code=404, detail="Claim not found")
@@ -425,14 +484,12 @@ async def reject_claim(
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
         if current_user.state_id is None:
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
-        if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
-            raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to reject claims in this state")
             
     reason = body.rejection_reason
     if not reason or not reason.strip():
         raise HTTPException(status_code=422, detail="rejectionReason is mandatory and cannot be empty")
         
-    claim_obj.status = "Rejected"  # type: ignore
+    claim_obj.ambulance_claim_status = "Rejected"  # type: ignore
     claim_obj.rejection_reason = reason  # type: ignore
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
@@ -445,15 +502,15 @@ async def reject_claim(
         rejection_reason=reason
     )
     db.add(audit_log)
-    
     await db.commit()
     
     updated_item = await crud_claim.get(db, id=id)
     return {
         "success": True,
-        "message": "Claim rejected successfully",
+        "message": "Ambulance claim rejected successfully",
         "data": updated_item
     }
+
 
 @router.post("/{id}/endorse", response_model=ClaimResponse)
 async def endorse_claim(
@@ -461,6 +518,7 @@ async def endorse_claim(
     db: AsyncSession = Depends(deps.get_db),
     current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
+    """Endorse an ambulance claim (SEMSAS action before NEMSAS approval)."""
     claim_obj = await crud_claim.get(db, id=id)
     if not claim_obj:
         raise HTTPException(status_code=404, detail="Claim not found")
@@ -469,10 +527,8 @@ async def endorse_claim(
     if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
         if current_user.state_id is None:
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
-        if not claim_obj.incident or claim_obj.incident.state_id != current_user.state_id:
-            raise HTTPException(status_code=403, detail="The user doesn't have enough privileges to endorse claims in this state")
             
-    claim_obj.status = "Endorsed"  # type: ignore
+    claim_obj.ambulance_claim_status = "Endorsed"  # type: ignore
     claim_obj.processed_at = datetime.now()  # type: ignore
     claim_obj.processed_by_id = current_user.id  # type: ignore
     db.add(claim_obj)
@@ -483,13 +539,129 @@ async def endorse_claim(
         processed_by_id=current_user.id
     )
     db.add(audit_log)
-    
     await db.commit()
     
     updated_item = await crud_claim.get(db, id=id)
     return {
         "success": True,
         "message": "Claim endorsed successfully",
+        "data": updated_item
+    }
+
+
+# --- ETC-specific claim action endpoints ---
+
+@router.post("/{id}/approve-etc", response_model=ClaimResponse)
+async def approve_etc_claim(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
+) -> Any:
+    """Approve an ETC claim."""
+    claim_obj = await crud_claim.get(db, id=id)
+    if not claim_obj:
+        raise HTTPException(status_code=404, detail="Claim not found")
+
+    user_type = getattr(current_user, "user_type", None)
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        raise HTTPException(
+            status_code=403,
+            detail="SEMSAS users cannot directly approve ETC claims. They must endorse them instead."
+        )
+
+    claim_obj.etc_claim_status = "Approved"  # type: ignore
+    claim_obj.processed_at = datetime.now()  # type: ignore
+    claim_obj.processed_by_id = current_user.id  # type: ignore
+    db.add(claim_obj)
+
+    audit_log = ClaimAuditLog(
+        claim_id=claim_obj.id,
+        action=ClaimAction.APPROVE,
+        processed_by_id=current_user.id
+    )
+    db.add(audit_log)
+    await db.commit()
+
+    updated_item = await crud_claim.get(db, id=id)
+    return {
+        "success": True,
+        "message": "ETC claim approved successfully",
+        "data": updated_item
+    }
+
+
+@router.post("/{id}/reject-etc", response_model=ClaimResponse)
+async def reject_etc_claim(
+    id: int,
+    body: ClaimRejectionRequest,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
+) -> Any:
+    """Reject an ETC claim with a reason stored in etc_rejection_reason."""
+    claim_obj = await crud_claim.get(db, id=id)
+    if not claim_obj:
+        raise HTTPException(status_code=404, detail="Claim not found")
+
+    reason = body.rejection_reason
+    if not reason or not reason.strip():
+        raise HTTPException(status_code=422, detail="rejectionReason is mandatory and cannot be empty")
+
+    claim_obj.etc_claim_status = "Rejected"  # type: ignore
+    claim_obj.etc_rejection_reason = reason  # type: ignore
+    claim_obj.processed_at = datetime.now()  # type: ignore
+    claim_obj.processed_by_id = current_user.id  # type: ignore
+    db.add(claim_obj)
+
+    audit_log = ClaimAuditLog(
+        claim_id=claim_obj.id,
+        action=ClaimAction.REJECT,
+        processed_by_id=current_user.id,
+        rejection_reason=reason
+    )
+    db.add(audit_log)
+    await db.commit()
+
+    updated_item = await crud_claim.get(db, id=id)
+    return {
+        "success": True,
+        "message": "ETC claim rejected successfully",
+        "data": updated_item
+    }
+
+
+@router.post("/{id}/endorse-etc", response_model=ClaimResponse)
+async def endorse_etc_claim(
+    id: int,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
+) -> Any:
+    """Endorse an ETC claim (SEMSAS action before NEMSAS approval)."""
+    claim_obj = await crud_claim.get(db, id=id)
+    if not claim_obj:
+        raise HTTPException(status_code=404, detail="Claim not found")
+
+    user_type = getattr(current_user, "user_type", None)
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+        if current_user.state_id is None:
+            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
+
+    claim_obj.etc_claim_status = "Endorsed"  # type: ignore
+    claim_obj.processed_at = datetime.now()  # type: ignore
+    claim_obj.processed_by_id = current_user.id  # type: ignore
+    db.add(claim_obj)
+
+    audit_log = ClaimAuditLog(
+        claim_id=claim_obj.id,
+        action=ClaimAction.ENDORSE,
+        processed_by_id=current_user.id
+    )
+    db.add(audit_log)
+    await db.commit()
+
+    updated_item = await crud_claim.get(db, id=id)
+    return {
+        "success": True,
+        "message": "ETC claim endorsed successfully",
         "data": updated_item
     }
 
@@ -739,6 +911,232 @@ async def add_claim_legacy(
     }
 
 
+@router.post("/submitEtcClaim", response_model=ClaimResponse)
+async def submit_etc_claim(
+    request: Request,
+    images: List[UploadFile] = File([]),
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Endpoint for ETC users to submit a claim, including uploading an image 
+    and providing an array of medical interventions.
+    """
+    user_type = getattr(current_user, "user_type", None)
+    if user_type != "EMERGENCYTREATMENTUSER":
+        raise HTTPException(status_code=403, detail="Only EMERGENCYTREATMENTUSER can submit ETC claims")
+        
+    etc_id = getattr(current_user, "etc_id", None) or getattr(current_user, "emergency_treatment_center_id", None)
+    if etc_id is None:
+        raise HTTPException(status_code=403, detail="ETC ID is required for ETC users")
+
+    form_data = await request.form()
+    
+    incident_id_str = form_data.get("incidentId") or form_data.get("incident_id")
+    if not incident_id_str:
+        raise HTTPException(status_code=400, detail="incidentId is required")
+    
+    try:
+        incident_id = int(str(incident_id_str))
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid incidentId")
+
+    # Parse the interventions array from JSON string
+    import json
+    interventions_str = form_data.get("interventions") or "[]"
+    try:
+        interventions_data = json.loads(str(interventions_str))
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid interventions JSON format")
+
+    if not isinstance(interventions_data, list):
+        raise HTTPException(status_code=400, detail="interventions must be an array")
+
+    # Fetch incident and patients
+    incident_stmt = select(Incident).options(selectinload(Incident.incident_type)).where(Incident.id == incident_id)
+    incident_res = await db.execute(incident_stmt)
+    incident_obj = incident_res.scalars().first()
+    
+    if not incident_obj:
+        raise HTTPException(status_code=404, detail="Incident not found")
+
+    patient_stmt = select(Patient).where(Patient.incident_id == incident_id, Patient.etc_id == etc_id)
+    patient_res = await db.execute(patient_stmt)
+    patients = patient_res.scalars().all()
+    
+    valid_patient_ids = {p.id for p in patients}
+    
+    if not valid_patient_ids:
+        raise HTTPException(status_code=403, detail="No patients found for this incident assigned to your ETC")
+
+    # Get max ID for EtcIntervention
+    max_id_stmt = select(func.max(EtcIntervention.id))
+    max_id = (await db.execute(max_id_stmt)).scalar() or 0
+    next_id = max_id + 1
+
+    from datetime import timezone
+    now_utc = datetime.now(timezone.utc)
+    
+    # Calculate total price of existing interventions for this incident/ETC
+    existing_price_stmt = select(func.sum(EtcIntervention.price * EtcIntervention.quantity)).where(
+        EtcIntervention.incident_id == incident_id,
+        EtcIntervention.emergency_treatment_center_id == etc_id
+    )
+    existing_total = (await db.execute(existing_price_stmt)).scalar() or 0.0
+    
+    # Process interventions
+    total_price = float(existing_total)
+    for idx, item in enumerate(interventions_data):
+        patient_id = item.get("patientId") or item.get("patient_id")
+        if not patient_id:
+            raise HTTPException(status_code=400, detail=f"patientId is required for intervention at index {idx}")
+            
+        try:
+            patient_id = int(patient_id)
+        except ValueError:
+            raise HTTPException(status_code=400, detail=f"Invalid patientId at index {idx}")
+            
+        if patient_id not in valid_patient_ids:
+            raise HTTPException(status_code=403, detail=f"Patient {patient_id} is not assigned to your ETC for this incident")
+
+        price = float(item.get("price") or 0.0)
+        quantity = float(item.get("quantity") or 1.0)
+        total_price += price * quantity
+        
+        is_existing = item.get("isExisting", False)
+        
+        if not is_existing:
+            db_intervention = EtcIntervention(
+                id=next_id,
+                drug_id=item.get("drugId") or item.get("drug_id"),
+                medical_intervention=item.get("medicalIntervention") or item.get("medical_intervention"),
+                price=price,
+                dose=float(item.get("dose") or 0.0),
+                diagnosis=item.get("diagnosis"),
+                quantity=item.get("quantity") or 1,
+                ambulance_id=item.get("ambulanceId") or item.get("ambulance_id"),
+                emergency_treatment_center_id=etc_id,
+                incident_id=incident_id,
+                patient_id=patient_id,
+                date_added=now_utc,
+                is_old=False
+            )
+            db.add(db_intervention)
+            next_id += 1
+
+    # Image Upload Logic
+    uploaded_image_urls = []
+    
+    if images:
+        valid_images = [img for img in images if img.filename]
+        if len(valid_images) > 3:
+            raise HTTPException(status_code=400, detail="Maximum of 3 images allowed")
+            
+        use_cloudinary = settings.UPLOAD_PROVIDER.lower() == "cloudinary"
+        if use_cloudinary and not all([settings.CLOUDINARY_CLOUD_NAME, settings.CLOUDINARY_API_KEY, settings.CLOUDINARY_API_SECRET]):
+            use_cloudinary = False
+
+        if use_cloudinary:
+            import cloudinary.uploader
+            try:
+                cloudinary.config(
+                    cloud_name=settings.CLOUDINARY_CLOUD_NAME,
+                    api_key=settings.CLOUDINARY_API_KEY,
+                    api_secret=settings.CLOUDINARY_API_SECRET,
+                    secure=True
+                )
+            except Exception:
+                use_cloudinary = False
+                
+        for img in valid_images:
+            contents = await img.read()
+            img_url = None
+            
+            if use_cloudinary:
+                try:
+                    upload_result = cloudinary.uploader.upload(contents)
+                    img_url = upload_result.get("secure_url")
+                except Exception as e:
+                    print(f"[submitEtcClaim] Cloudinary upload failed: {e}. Falling back to local upload.")
+                    use_cloudinary = False
+                    
+            if not use_cloudinary:
+                import uuid
+                import os
+                upload_dir = "static/uploads"
+                os.makedirs(upload_dir, exist_ok=True)
+                safe_filename = f"{uuid.uuid4().hex}_{os.path.basename(img.filename)}"
+                file_path = os.path.join(upload_dir, safe_filename)
+                with open(file_path, "wb") as f:
+                    f.write(contents)
+                base_url = str(request.base_url)
+                if not base_url.endswith("/"):
+                    base_url += "/"
+                img_url = f"{base_url}static/uploads/{safe_filename}"
+                
+            if img_url:
+                uploaded_image_urls.append(img_url)
+
+        # Prepare Claim details
+    patient_names = [f"{p.first_name or ''} {p.last_name or ''}".strip() for p in patients]
+    patient_names = [n for n in patient_names if n]
+    
+    if len(patient_names) == 1:
+        patient_name_display = patient_names[0]
+    elif len(patient_names) > 1:
+        patient_name_display = f"{patient_names[0]} (+{len(patient_names)-1} more)"
+    else:
+        patient_name_display = "Unknown Patient"
+        
+    incident_category = str(incident_obj.incident_type.name) if incident_obj.incident_type else "Unknown"
+    title = f"claims for {patient_name_display}, {incident_category}, incident {incident_id}"
+    
+    
+    # Fetch the existing claim created by the ambulance
+    existing_claim_stmt = select(Claim).where(Claim.incident_id == incident_id)
+    existing_claim_res = await db.execute(existing_claim_stmt)
+    item = existing_claim_res.scalars().first()
+    
+    if not item:
+        raise HTTPException(status_code=404, detail="Claim for this incident does not exist. The ambulance must create the claim first.")
+    
+    # For ETC claims, create ClaimImage records for all uploaded images
+    if uploaded_image_urls:
+        from app.models.claim import ClaimImage
+        
+        # Get max ID for ClaimImage
+        img_max_id_stmt = select(func.max(ClaimImage.id))
+        img_max_id = (await db.execute(img_max_id_stmt)).scalar() or 0
+        img_next_id = img_max_id + 1
+        
+        for url in uploaded_image_urls:
+            claim_image = ClaimImage(
+                id=img_next_id,
+                claim_id=item.id,
+                incident_id=incident_id,
+                image_url=url,
+                claim_title=title,
+                is_etc=True
+            )
+            db.add(claim_image)
+            img_next_id += 1
+            
+        await db.commit()
+    else:
+        await db.commit()
+
+    # Eagerly load the claim with all relations to prevent any downstream lazy-loading / greenlet errors
+    stmt = select(Claim).options(*crud_claim._get_claim_options()).where(Claim.id == item.id).execution_options(populate_existing=True)
+    result = await db.execute(stmt)
+    item = result.scalars().first()
+
+    return {
+        "success": True,
+        "message": "ETC Claim successfully submitted",
+        "data": item
+    }
+
+
 @router.post("/addClaimList")
 async def add_claim_list(
     claims_in: List[ClaimBindingModel],
@@ -870,22 +1268,40 @@ async def accept_or_reject_claim(
 
     status_str = body.claimStatusType
     action = None
+    
+    is_etc = False
+    
     if status_str.lower() in ["approved", "approve"]:
         if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
             raise HTTPException(
                 status_code=403,
                 detail="SEMSAS users cannot directly approve claims. They must endorse them instead."
             )
-        setattr(claim_obj, "status", "Approved")
+        if is_etc:
+            claim_obj.etc_claim_status = "Approved"  # type: ignore
+        else:
+            claim_obj.ambulance_claim_status = "Approved"  # type: ignore
         action = ClaimAction.APPROVE
     elif status_str.lower() in ["rejected", "reject"]:
-        setattr(claim_obj, "status", "Rejected")
-        setattr(claim_obj, "rejection_reason", body.rejectionReason)
+        if is_etc:
+            claim_obj.etc_claim_status = "Rejected"  # type: ignore
+            claim_obj.etc_rejection_reason = body.rejectionReason  # type: ignore
+        else:
+            claim_obj.ambulance_claim_status = "Rejected"  # type: ignore
+            claim_obj.rejection_reason = body.rejectionReason  # type: ignore
         action = ClaimAction.REJECT
+    elif status_str.lower() in ["endorsed", "endorse"]:
+        if is_etc:
+            claim_obj.etc_claim_status = "Endorsed"  # type: ignore
+        else:
+            claim_obj.ambulance_claim_status = "Endorsed"  # type: ignore
+        action = ClaimAction.ENDORSE
     else:
-        setattr(claim_obj, "status", status_str)
-        if "endorse" in status_str.lower():
-            action = ClaimAction.ENDORSE
+        # Fallback: set the appropriate field
+        if is_etc:
+            claim_obj.etc_claim_status = status_str  # type: ignore
+        else:
+            claim_obj.ambulance_claim_status = status_str  # type: ignore
 
     setattr(claim_obj, "processed_at", datetime.now())
     setattr(claim_obj, "processed_by_id", current_user.id)
@@ -896,7 +1312,7 @@ async def accept_or_reject_claim(
             claim_id=claim_obj.id,
             action=action,
             processed_by_id=current_user.id,
-            rejection_reason=getattr(claim_obj, "rejection_reason", None)
+            rejection_reason=body.rejectionReason
         )
         db.add(audit_log)
 
@@ -905,12 +1321,12 @@ async def accept_or_reject_claim(
     updated_item = await crud_claim.get(db, id=body.id)
     return {
         "success": True,
-        "message": f"Claim status updated to {getattr(claim_obj, 'status')}",
+        "message": f"Claim status updated to {status_str}",
         "data": updated_item
     }
 
 
-@router.put("/addReview")
+@router.put("/addReview", response_model=ClaimResponse)
 async def add_review_claim(
     body: ClaimReviewBindingModel,
     db: AsyncSession = Depends(deps.get_db),
@@ -931,7 +1347,7 @@ async def add_review_claim(
     }
 
 
-@router.put("/addEtcReview")
+@router.put("/addEtcReview", response_model=ClaimResponse)
 async def add_etc_review_claim(
     body: ClaimEtcReviewBindingModel,
     db: AsyncSession = Depends(deps.get_db),

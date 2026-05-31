@@ -41,7 +41,8 @@ class CRUDIncident:
         mass_casualty: Optional[bool] = None,
         incident_category_id: Optional[int] = None,
         sort_by_state: bool = False,
-        event_status_type: Optional[str] = None
+        event_status_type: Optional[str] = None,
+        year: Optional[int] = None
     ) -> Tuple[List[Incident], int]:
         from app.models.patient import Patient as PatientModel
         from app.models.hospital import Hospital as HospitalModel
@@ -88,6 +89,10 @@ class CRUDIncident:
         elif state_id is not None:
             query = query.filter(Incident.state_id == state_id)
 
+        if year is not None:
+            from sqlalchemy import extract
+            query = query.filter(extract('year', Incident.date_added) == year)
+
         # Count - optimized to run without subquery compilation
         count_q = select(func.count(Incident.id))
         if search:
@@ -111,6 +116,10 @@ class CRUDIncident:
             count_q = count_q.filter(Incident.state_id == state_id_filter)
         elif state_id is not None:
             count_q = count_q.filter(Incident.state_id == state_id)
+            
+        if year is not None:
+            from sqlalchemy import extract
+            count_q = count_q.filter(extract('year', Incident.date_added) == year)
         
         count_result = await db.execute(count_q)
         total = count_result.scalar() or 0

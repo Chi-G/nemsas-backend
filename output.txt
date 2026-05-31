@@ -1,0 +1,194 @@
+python-dotenv could not parse statement starting at line 25
+2026-05-31 21:13:22,473 INFO sqlalchemy.engine.Engine select pg_catalog.version()
+2026-05-31 21:13:22,473 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-31 21:13:23,146 INFO sqlalchemy.engine.Engine select current_schema()
+2026-05-31 21:13:23,146 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-31 21:13:24,105 INFO sqlalchemy.engine.Engine show standard_conforming_strings
+2026-05-31 21:13:24,105 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-31 21:13:24,777 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-31 21:13:24,778 INFO sqlalchemy.engine.Engine INSERT INTO claims (incident_id, patient_id, user_id, claim_type, title, patient_name, ambulance_type, incident_category, nhia, location, service_provider, incident_date, distance_covered, distance_km, total_price, amount, review, etc_review, ambulance_claim_status, etc_claim_status, rejection_reason, processed_at, processed_by_id, created_at, updated_at) VALUES ($1::INTEGER, $2::INTEGER, $3::UUID, $4, $5::VARCHAR, $6::VARCHAR, $7::VARCHAR, $8::VARCHAR, $9::VARCHAR, $10::VARCHAR, $11::VARCHAR, $12::VARCHAR, $13::FLOAT, $14::FLOAT, $15::FLOAT, $16::FLOAT, $17::VARCHAR, $18::VARCHAR, $19::VARCHAR, $20::VARCHAR, $21::VARCHAR, $22::TIMESTAMP WITH TIME ZONE, $23::UUID, $24::TIMESTAMP WITH TIME ZONE, $25::TIMESTAMP WITH TIME ZONE) RETURNING claims.id
+2026-05-31 21:13:24,778 INFO sqlalchemy.engine.Engine [generated in 0.00016s] (5154, 4791, None, 'AMBULANCE', 'Test Claim', None, None, None, None, None, None, None, None, None, 0.0, 0.0, None, None, 'New', 'New', None, None, None, datetime.datetime(2026, 5, 31, 20, 13, 24, 778437, tzinfo=datetime.timezone.utc), datetime.datetime(2026, 5, 31, 20, 13, 24, 778440, tzinfo=datetime.timezone.utc))
+2026-05-31 21:13:25,452 INFO sqlalchemy.engine.Engine COMMIT
+2026-05-31 21:13:26,583 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-31 21:13:26,596 INFO sqlalchemy.engine.Engine SELECT claims.id, claims.incident_id, claims.patient_id, claims.user_id, claims.claim_type, claims.title, claims.patient_name, claims.ambulance_type, claims.incident_category, claims.nhia, claims.location, claims.service_provider, claims.incident_date, claims.distance_covered, claims.distance_km, claims.total_price, claims.amount, claims.review, claims.etc_review, claims.ambulance_claim_status, claims.etc_claim_status, claims.rejection_reason, claims.processed_at, claims.processed_by_id, claims.created_at, claims.updated_at 
+FROM claims 
+WHERE claims.id = $1::INTEGER
+2026-05-31 21:13:26,597 INFO sqlalchemy.engine.Engine [generated in 0.00033s] (5613,)
+2026-05-31 21:13:27,302 INFO sqlalchemy.engine.Engine SELECT claim_images.claim_id AS claim_images_claim_id, claim_images.id AS claim_images_id, claim_images.claim_title AS claim_images_claim_title, claim_images.incident_id AS claim_images_incident_id, claim_images.image_url AS claim_images_image_url, claim_images.is_etc AS claim_images_is_etc 
+FROM claim_images 
+WHERE claim_images.claim_id IN ($1::INTEGER)
+2026-05-31 21:13:27,303 INFO sqlalchemy.engine.Engine [generated in 0.00023s] (5613,)
+2026-05-31 21:13:27,753 INFO sqlalchemy.engine.Engine SELECT incidents.id AS incidents_id, incidents.caller_name AS incidents_caller_name, incidents.caller_number AS incidents_caller_number, incidents.incident_date AS incidents_incident_date, incidents.incident_time AS incidents_incident_time, incidents.description AS incidents_description, incidents.recommendation AS incidents_recommendation, incidents.triage_category AS incidents_triage_category, incidents.incident_location AS incidents_incident_location, incidents.district_ward AS incidents_district_ward, incidents.street AS incidents_street, incidents.area_council AS incidents_area_council, incidents.zip_code AS incidents_zip_code, incidents.incident_category_id AS incidents_incident_category_id, incidents.can_resolve_without_ambulance AS incidents_can_resolve_without_ambulance, incidents.treatment_center AS incidents_treatment_center, incidents.dispatch_full_name AS incidents_dispatch_full_name, incidents.dispatcher_id AS incidents_dispatcher_id, incidents.dispatch_date AS incidents_dispatch_date, incidents.supervisor_first_name AS incidents_supervisor_first_name, incidents.supervisor_middle_name AS incidents_supervisor_middle_name, incidents.supervisor_last_name AS incidents_supervisor_last_name, incidents.supervisor_date AS incidents_supervisor_date, incidents.serial_no AS incidents_serial_no, incidents.caller_is_patient AS incidents_caller_is_patient, incidents.longitude AS incidents_longitude, incidents.latitude AS incidents_latitude, incidents.mass_casualty AS incidents_mass_casualty, incidents.total_patients AS incidents_total_patients, incidents.ambulance_start AS incidents_ambulance_start, incidents.ambulance_stop AS incidents_ambulance_stop, incidents.date_stop AS incidents_date_stop, incidents.incident_status_type AS incidents_incident_status_type, incidents.event_status_type AS incidents_event_status_type, incidents.rejection_reason AS incidents_rejection_reason, incidents.claims_approved AS incidents_claims_approved, incidents.state_name AS incidents_state_name, incidents.state_id AS incidents_state_id, incidents.date_added AS incidents_date_added, incidents.etc_id AS incidents_etc_id, incidents.ambulance_id AS incidents_ambulance_id 
+FROM incidents 
+WHERE incidents.id IN ($1::INTEGER)
+2026-05-31 21:13:27,753 INFO sqlalchemy.engine.Engine [generated in 0.00012s] (5154,)
+2026-05-31 21:13:28,205 INFO sqlalchemy.engine.Engine SELECT patients.id AS patients_id, patients.first_name AS patients_first_name, patients.middle_name AS patients_middle_name, patients.last_name AS patients_last_name, patients.do_b AS patients_do_b, patients.sex AS patients_sex, patients.phone_number AS patients_phone_number, patients.nhia AS patients_nhia, patients.address AS patients_address, patients.incident_id AS patients_incident_id, patients.ambulance_id AS patients_ambulance_id, patients.etc_id AS patients_etc_id, patients.medical_interventions AS patients_medical_interventions, patients.notes AS patients_notes, patients.drugs AS patients_drugs, patients.runsheet AS patients_runsheet, patients.extra_details AS patients_extra_details, patients.created_at AS patients_created_at 
+FROM patients 
+WHERE patients.id IN ($1::INTEGER)
+2026-05-31 21:13:28,205 INFO sqlalchemy.engine.Engine [generated in 0.00014s] (4791,)
+2026-05-31 21:13:28,655 INFO sqlalchemy.engine.Engine SELECT claims.incident_id AS claims_incident_id, claims.id AS claims_id, claims.patient_id AS claims_patient_id, claims.user_id AS claims_user_id, claims.claim_type AS claims_claim_type, claims.title AS claims_title, claims.patient_name AS claims_patient_name, claims.ambulance_type AS claims_ambulance_type, claims.incident_category AS claims_incident_category, claims.nhia AS claims_nhia, claims.location AS claims_location, claims.service_provider AS claims_service_provider, claims.incident_date AS claims_incident_date, claims.distance_covered AS claims_distance_covered, claims.distance_km AS claims_distance_km, claims.total_price AS claims_total_price, claims.amount AS claims_amount, claims.review AS claims_review, claims.etc_review AS claims_etc_review, claims.ambulance_claim_status AS claims_ambulance_claim_status, claims.etc_claim_status AS claims_etc_claim_status, claims.rejection_reason AS claims_rejection_reason, claims.processed_at AS claims_processed_at, claims.processed_by_id AS claims_processed_by_id, claims.created_at AS claims_created_at, claims.updated_at AS claims_updated_at 
+FROM claims 
+WHERE claims.incident_id IN ($1::INTEGER)
+2026-05-31 21:13:28,655 INFO sqlalchemy.engine.Engine [generated in 0.00016s] (5154,)
+2026-05-31 21:13:29,106 INFO sqlalchemy.engine.Engine SELECT patients.incident_id AS patients_incident_id, patients.id AS patients_id, patients.first_name AS patients_first_name, patients.middle_name AS patients_middle_name, patients.last_name AS patients_last_name, patients.do_b AS patients_do_b, patients.sex AS patients_sex, patients.phone_number AS patients_phone_number, patients.nhia AS patients_nhia, patients.address AS patients_address, patients.ambulance_id AS patients_ambulance_id, patients.etc_id AS patients_etc_id, patients.medical_interventions AS patients_medical_interventions, patients.notes AS patients_notes, patients.drugs AS patients_drugs, patients.runsheet AS patients_runsheet, patients.extra_details AS patients_extra_details, patients.created_at AS patients_created_at 
+FROM patients 
+WHERE patients.incident_id IN ($1::INTEGER)
+2026-05-31 21:13:29,106 INFO sqlalchemy.engine.Engine [generated in 0.00044s] (5154,)
+2026-05-31 21:13:29,556 INFO sqlalchemy.engine.Engine SELECT etc_interventions.incident_id AS etc_interventions_incident_id, etc_interventions.id AS etc_interventions_id, etc_interventions.drug_id AS etc_interventions_drug_id, etc_interventions.medical_intervention AS etc_interventions_medical_intervention, etc_interventions.price AS etc_interventions_price, etc_interventions.dose AS etc_interventions_dose, etc_interventions.diagnosis AS etc_interventions_diagnosis, etc_interventions.quantity AS etc_interventions_quantity, etc_interventions.ambulance_id AS etc_interventions_ambulance_id, etc_interventions.emergency_treatment_center_id AS etc_interventions_emergency_treatment_center_id, etc_interventions.patient_id AS etc_interventions_patient_id, etc_interventions.date_added AS etc_interventions_date_added, etc_interventions.is_old AS etc_interventions_is_old 
+FROM etc_interventions 
+WHERE etc_interventions.incident_id IN ($1::INTEGER)
+2026-05-31 21:13:29,556 INFO sqlalchemy.engine.Engine [generated in 0.00012s] (5154,)
+2026-05-31 21:13:30,005 INFO sqlalchemy.engine.Engine SELECT medical_interventions.patient_id AS medical_interventions_patient_id, medical_interventions.id AS medical_interventions_id, medical_interventions.is_alert AS medical_interventions_is_alert, medical_interventions.can_speak AS medical_interventions_can_speak, medical_interventions.is_in_pain AS medical_interventions_is_in_pain, medical_interventions.un_responsive AS medical_interventions_un_responsive, medical_interventions.main_complaint AS medical_interventions_main_complaint, medical_interventions.primary_survey AS medical_interventions_primary_survey, medical_interventions.physical_examination_findings AS medical_interventions_physical_examination_findings, medical_interventions.iv_fluid_type AS medical_interventions_iv_fluid_type, medical_interventions.size_of_fluid AS medical_interventions_size_of_fluid, medical_interventions.location_of_iv_infusion AS medical_interventions_location_of_iv_infusion, medical_interventions.total_iv_fluid_volume_given AS medical_interventions_total_iv_fluid_volume_given, medical_interventions.oxygen AS medical_interventions_oxygen, medical_interventions.remarks AS medical_interventions_remarks, medical_interventions.pulse AS medical_interventions_pulse, medical_interventions.blood_pressure AS medical_interventions_blood_pressure, medical_interventions.resp AS medical_interventions_resp, medical_interventions.glucose AS medical_interventions_glucose, medical_interventions.sp02 AS medical_interventions_sp02, medical_interventions.notes AS medical_interventions_notes, medical_interventions.medical_intervention_details AS medical_interventions_medical_intervention_details, medical_interventions.incident_drugs AS medical_interventions_incident_drugs, medical_interventions.date_added AS medical_interventions_date_added, medical_interventions.time_taken AS medical_interventions_time_taken 
+FROM medical_interventions 
+WHERE medical_interventions.patient_id IN ($1::INTEGER)
+2026-05-31 21:13:30,005 INFO sqlalchemy.engine.Engine [generated in 0.00013s] (4791,)
+2026-05-31 21:13:30,455 INFO sqlalchemy.engine.Engine SELECT claim_images.claim_id AS claim_images_claim_id, claim_images.id AS claim_images_id, claim_images.claim_title AS claim_images_claim_title, claim_images.incident_id AS claim_images_incident_id, claim_images.image_url AS claim_images_image_url, claim_images.is_etc AS claim_images_is_etc 
+FROM claim_images 
+WHERE claim_images.claim_id IN ($1::INTEGER, $2::INTEGER, $3::INTEGER)
+2026-05-31 21:13:30,455 INFO sqlalchemy.engine.Engine [generated in 0.00012s] (5610, 5612, 5613)
+2026-05-31 21:13:30,904 INFO sqlalchemy.engine.Engine SELECT medical_interventions.patient_id AS medical_interventions_patient_id, medical_interventions.id AS medical_interventions_id, medical_interventions.is_alert AS medical_interventions_is_alert, medical_interventions.can_speak AS medical_interventions_can_speak, medical_interventions.is_in_pain AS medical_interventions_is_in_pain, medical_interventions.un_responsive AS medical_interventions_un_responsive, medical_interventions.main_complaint AS medical_interventions_main_complaint, medical_interventions.primary_survey AS medical_interventions_primary_survey, medical_interventions.physical_examination_findings AS medical_interventions_physical_examination_findings, medical_interventions.iv_fluid_type AS medical_interventions_iv_fluid_type, medical_interventions.size_of_fluid AS medical_interventions_size_of_fluid, medical_interventions.location_of_iv_infusion AS medical_interventions_location_of_iv_infusion, medical_interventions.total_iv_fluid_volume_given AS medical_interventions_total_iv_fluid_volume_given, medical_interventions.oxygen AS medical_interventions_oxygen, medical_interventions.remarks AS medical_interventions_remarks, medical_interventions.pulse AS medical_interventions_pulse, medical_interventions.blood_pressure AS medical_interventions_blood_pressure, medical_interventions.resp AS medical_interventions_resp, medical_interventions.glucose AS medical_interventions_glucose, medical_interventions.sp02 AS medical_interventions_sp02, medical_interventions.notes AS medical_interventions_notes, medical_interventions.medical_intervention_details AS medical_interventions_medical_intervention_details, medical_interventions.incident_drugs AS medical_interventions_incident_drugs, medical_interventions.date_added AS medical_interventions_date_added, medical_interventions.time_taken AS medical_interventions_time_taken 
+FROM medical_interventions 
+WHERE medical_interventions.patient_id IN ($1::INTEGER)
+2026-05-31 21:13:30,904 INFO sqlalchemy.engine.Engine [generated in 0.00010s] (5381,)
+Created claim: 5613
+2026-05-31 21:13:31,174 INFO sqlalchemy.engine.Engine SELECT patients.id AS patients_id, patients.first_name AS patients_first_name, patients.middle_name AS patients_middle_name, patients.last_name AS patients_last_name, patients.do_b AS patients_do_b, patients.sex AS patients_sex, patients.phone_number AS patients_phone_number, patients.nhia AS patients_nhia, patients.address AS patients_address, patients.incident_id AS patients_incident_id, patients.ambulance_id AS patients_ambulance_id, patients.etc_id AS patients_etc_id, patients.medical_interventions AS patients_medical_interventions, patients.notes AS patients_notes, patients.drugs AS patients_drugs, patients.runsheet AS patients_runsheet, patients.extra_details AS patients_extra_details, patients.created_at AS patients_created_at 
+FROM patients 
+WHERE patients.id = $1::INTEGER
+2026-05-31 21:13:31,174 INFO sqlalchemy.engine.Engine [generated in 0.00022s] (4791,)
+Traceback (most recent call last):
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/test_claim2.py", line 18, in main
+    resp = ClaimResponse.model_validate(
+        {"success": True, "message": "Test", "data": item}
+    )
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/pydantic/main.py", line 732, in model_validate
+    return cls.__pydantic_validator__.validate_python(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        obj,
+        ^^^^
+    ...<5 lines>...
+        by_name=by_name,
+        ^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/app/schemas/claim.py", line 243, in map_nested
+    patient = getattr(data, 'patient', None)
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/orm/attributes.py", line 569, in __get__
+    return self.impl.get(state, dict_)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/orm/attributes.py", line 1096, in get
+    value = self._fire_loader_callables(state, key, passive)
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/orm/attributes.py", line 1131, in _fire_loader_callables
+    return self.callable_(state, passive)
+           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/orm/strategies.py", line 978, in _load_for_state
+    return self._emit_lazyload(
+           ~~~~~~~~~~~~~~~~~~~^
+        session,
+        ^^^^^^^^
+    ...<7 lines>...
+        execution_options,
+        ^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/orm/strategies.py", line 1079, in _emit_lazyload
+    return loading.load_on_pk_identity(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        session,
+        ^^^^^^^^
+    ...<3 lines>...
+        execution_options=execution_options,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/orm/loading.py", line 695, in load_on_pk_identity
+    session.execute(
+    ~~~~~~~~~~~~~~~^
+        q,
+        ^^
+    ...<2 lines>...
+        bind_arguments=bind_arguments,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2351, in execute
+    return self._execute_internal(
+           ~~~~~~~~~~~~~~~~~~~~~~^
+        statement,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        _add_event=_add_event,
+        ^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/orm/session.py", line 2249, in _execute_internal
+    result: Result[Any] = compile_state_cls.orm_execute_statement(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self,
+        ^^^^^
+    ...<4 lines>...
+        conn,
+        ^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/orm/context.py", line 306, in orm_execute_statement
+    result = conn.execute(
+        statement, params or {}, execution_options=execution_options
+    )
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/sql/elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 2366, in _handle_dbapi_exception
+    raise exc_info[1].with_traceback(exc_info[2])
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/engine/base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/engine/default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/dialects/postgresql/asyncpg.py", line 585, in execute
+    self._adapt_connection.await_(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self._prepare_and_execute(operation, parameters)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/Goodness/Documents/GitHub/nemsas/nemsas-backend/venv/lib/python3.14/site-packages/sqlalchemy/util/_concurrency_py3k.py", line 123, in await_only
+    raise exc.MissingGreenlet(
+    ...<2 lines>...
+    )
+sqlalchemy.exc.MissingGreenlet: greenlet_spawn has not been called; can't call await_only() here. Was IO attempted in an unexpected place? (Background on this error at: https://sqlalche.me/e/20/xd2s)
+2026-05-31 21:13:31,189 INFO sqlalchemy.engine.Engine ROLLBACK

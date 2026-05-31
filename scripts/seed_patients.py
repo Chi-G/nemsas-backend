@@ -45,7 +45,7 @@ async def seed_patients():
                     do_b = None
 
             # Sanitize Incident ID
-            inc_id = item.get("incident_id")
+            inc_id = item.get("incident_Id") or item.get("incident_id")
             if inc_id not in valid_inc_ids: inc_id = None
 
             # Map fields to model
@@ -60,8 +60,8 @@ async def seed_patients():
                 "nhia": item.get("nhia"),
                 "address": item.get("address"),
                 "incident_id": inc_id,
-                "ambulance_id": item.get("ambulance_Id"),
-                "etc_id": item.get("etC_id"),
+                "ambulance_id": item.get("ambulance_Id") or item.get("ambulance_id"),
+                "etc_id": item.get("etC_Id") or item.get("etc_id"),
                 "notes": item.get("notes", [])
             }
             to_insert.append(patient_data)

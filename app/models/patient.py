@@ -34,3 +34,4 @@ class Patient(Base):
     incident = relationship("Incident", back_populates="patients")
     claims = relationship("Claim", back_populates="patient")
     interventions = relationship("MedicalIntervention", back_populates="patient")
+    etc_interventions = relationship("EtcIntervention", back_populates="patient")

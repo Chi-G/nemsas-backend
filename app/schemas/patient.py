@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator, field_validator
 from datetime import datetime, date
 from typing import Optional, List, Any, Dict
 
@@ -17,6 +17,17 @@ class PatientBase(BaseModel):
     etc_id: Optional[int] = Field(None, alias="etC_id")
     
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
+    
+    @field_validator('do_b', mode='before')
+    @classmethod
+    def parse_dob(cls, value):
+        if isinstance(value, str):
+            try:
+                from datetime import datetime
+                return datetime.strptime(value, "%d/%m/%Y").date()
+            except ValueError:
+                pass
+        return value
 
 class PatientCreate(PatientBase):
     pass
@@ -34,6 +45,9 @@ class Patient(PatientBase):
     # Populated dynamically from incident's etc_interventions
     medical_interventions: Optional[List[Dict[str, Any]]] = Field(default=None, alias="medicalInterventions")
     drugs: Optional[List[Dict[str, Any]]] = Field(default=None, alias="drugs")
+
+    etc_medical_interventions: Optional[List[Dict[str, Any]]] = Field(default=None, alias="etcMedicalInterventions")
+    etc_drugs: Optional[List[Dict[str, Any]]] = Field(default=None, alias="etcDrugs")
 
     notes: Optional[List[Any]] = Field(default=None, alias="notes")
     runsheet: Optional[Any] = Field(None, alias="runsheet")
@@ -56,6 +70,15 @@ class Patient(PatientBase):
         drug_list = []
 
         for item in etc_interventions:
+            # Check patient ID
+            if isinstance(item, dict):
+                item_patient_id = item.get("patient_id")
+            else:
+                item_patient_id = getattr(item, "patient_id", None)
+                
+            if item_patient_id is not None and item_patient_id != self.id:
+                continue
+                
             # Support both ORM objects and dicts
             if isinstance(item, dict):
                 name = item.get("medical_intervention") or ""
@@ -91,8 +114,8 @@ class Patient(PatientBase):
                 # Fallback: non-categorised items go to procedures
                 procedures.append(row)
 
-        self.medical_interventions = procedures if procedures else []
-        self.drugs = drug_list if drug_list else []
+        self.etc_medical_interventions = procedures if procedures else []
+        self.etc_drugs = drug_list if drug_list else []
 
 class PatientResponse(BaseModel):
     success: bool

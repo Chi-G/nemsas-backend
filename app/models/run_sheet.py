@@ -29,6 +29,7 @@ class RunSheet(Base):
     take_off_time = Column(DateTime(timezone=True), nullable=True)
     arrival_time = Column(DateTime(timezone=True), nullable=True)
     total_minutes_to_hospital = Column(Float, nullable=True)
+    distance_covered = Column(Float, nullable=True)
     
     # User Assignments matching dynamic medic/hospice types
     medic_user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)

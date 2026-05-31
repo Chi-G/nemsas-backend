@@ -44,6 +44,7 @@ async def read_incidents(
     incident_category_id: Optional[int] = None,
     sort_by_state: bool = False,
     event_status_type: Optional[str] = Query(default=None, alias="eventStatusType"),
+    year: Optional[int] = None,
     current_user: User = Depends(deps.get_current_user)
 ):
     """
@@ -94,7 +95,8 @@ async def read_incidents(
         mass_casualty=mass_casualty,
         incident_category_id=incident_category_id,
         sort_by_state=sort_by_state,
-        event_status_type=event_status_type
+        event_status_type=event_status_type,
+        year=year
     )
 
     return {
@@ -240,6 +242,18 @@ async def create_incident(
     # Construct a payload, excluding complex objects
     incident_data = IncidentSchema.model_validate(new_incident).model_dump(mode="json")
     await notification_service.publish_incident(incident_data)
+    
+    # Send push notification to assigned ambulance
+    if new_incident.ambulance_id:
+        from app.core.notifications import notification_service as push_service
+        await push_service.send_to_ambulance(
+            db,
+            ambulance_id=new_incident.ambulance_id,
+            title="New Emergency Incident",
+            body="You have been assigned to a new emergency incident. Please respond immediately.",
+            data={"incidentId": str(new_incident.id), "type": "NEW_INCIDENT"},
+            sound="incident_sound"
+        )
     
     return {
         "success": True,

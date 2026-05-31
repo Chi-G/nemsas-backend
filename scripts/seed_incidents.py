@@ -83,8 +83,7 @@ async def seed_incidents():
             incident_id = item.get("id")
             serial_no = item.get("serialNo")
             
-            # Skip if already in DB or seen in this run
-            if incident_id in existing_ids: continue
+            # Skip if seen in this run (but do not skip existing DB records, so they can be updated)
             if incident_id in seen_ids: continue
             if serial_no and serial_no in seen_serial_nos: continue
             
@@ -143,6 +142,7 @@ async def seed_incidents():
                 "event_status_type": item.get("eventStatusType"),
                 "claims_approved": item.get("claimsApproved"),
                 "state_name": item.get("stateName"),
+                "state_id": item.get("stateId"),
                 "date_added": parse_datetime(item.get("dateAdded")),
                 "etc_id": etc_id,
                 "ambulance_id": amb_id

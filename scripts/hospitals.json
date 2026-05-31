@@ -1,5 +1,44 @@
  [
         {
+            "id": 432,
+            "name": "AI Specialist Hospital",
+            "hospitalTypeId": 3,
+            "stateId": 16,
+            "lgaId": 328,
+            "location": "Gombe",
+            "address1": "Bajoga, Gombe",
+            "address2": "Bajoga, Gombe",
+            "landmark": "Bajoga",
+            "dateAdded": "2026-05-18T14:42:23.420943+00:00",
+            "stateName": "Gombe"
+        },
+        {
+            "id": 431,
+            "name": "SYDANI UNIVERSITY TEACHING HOSPITAL",
+            "hospitalTypeId": 2,
+            "stateId": 15,
+            "lgaId": 319,
+            "location": "ABUJA",
+            "address1": "Zaria Bypass, Jos 930105, FCT\n",
+            "address2": "Zaria Bypass, Jos 930105, FCT\n",
+            "landmark": "Along Zaria Bypass, FCT",
+            "dateAdded": "2026-05-12T10:24:49.387623+00:00",
+            "stateName": "Fct"
+        },
+        {
+            "id": 430,
+            "name": "Faith clinic",
+            "hospitalTypeId": 1,
+            "stateId": 15,
+            "lgaId": 322,
+            "location": "Faculty Block B",
+            "address1": "Dunu Street FT",
+            "address2": "3 off dunu street Dawaki, Abuja",
+            "landmark": "Phase 3 abuja",
+            "dateAdded": "2026-05-10T18:38:55.593989+00:00",
+            "stateName": "Fct"
+        },
+        {
             "id": 429,
             "name": "Annunciation  Specialist Hospital",
             "hospitalTypeId": 1,

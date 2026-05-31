@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from datetime import datetime
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict
 from app.schemas.patient import Patient
 from app.schemas.incident import Incident
 
@@ -12,13 +12,13 @@ class ClaimBase(BaseModel):
     nhia: Optional[str] = Field(None, alias="nhia")
     location: Optional[str] = Field(None, alias="location")
     service_provider: Optional[str] = Field(None, alias="serviceProvider")
-    claim_type: Optional[str] = Field(None, alias="claimType")
     
     total_price: Optional[float] = Field(None, alias="totalPrice")
     distance_covered: Optional[float] = Field(None, alias="distanceCovered")
     
     incident_date: Optional[str] = Field(None, alias="incidentDate")
-    status: Optional[str] = Field("New", alias="status")
+    ambulance_claim_status: Optional[str] = Field("New", alias="ambulanceClaimStatus")
+    etc_claim_status: Optional[str] = Field("New", alias="etcClaimStatus")
     review: Optional[str] = Field(None, alias="review")
     etc_review: Optional[str] = Field(None, alias="etcReview")
     
@@ -39,6 +39,7 @@ from app.schemas.claim_image import ClaimImage
 class Claim(ClaimBase):
     id: int
     created_at: Optional[datetime] = Field(None, alias="createdAt")
+    status: Optional[str] = None
     
     patient: Optional[Patient] = None
     incident_view_model: Optional[Incident] = Field(None, alias="incidentViewModel")
@@ -48,6 +49,7 @@ class Claim(ClaimBase):
     details: List[Any] = Field(default_factory=list, alias="details")
     medical_interventions: List[Any] = Field(default_factory=list, alias="medicalInterventions")
     drugs_list: Optional[List[Any]] = Field(default_factory=list, alias="drugsList")
+    patient_details: Optional[Dict[str, Any]] = Field(None, alias="patientDetails")
 
     @model_validator(mode='before')
     @classmethod
@@ -55,103 +57,11 @@ class Claim(ClaimBase):
         if isinstance(data, dict):
             if 'incident' in data:
                 data['incident_view_model'] = data['incident']
-            
-            claim_type = data.get('claim_type') or data.get('claimType')
-            patient = data.get('patient')
-            
-            details = []
-            med_interventions = []
-            drugs_list = []
-            
-            if patient:
-                interventions = patient.get('interventions') if isinstance(patient, dict) else getattr(patient, 'interventions', None)
-                if not interventions:
-                    interventions = patient.get('medical_interventions') if isinstance(patient, dict) else getattr(patient, 'medical_interventions', None)
-                if not isinstance(interventions, list):
-                    interventions = []
-                
-                drugs = patient.get('drugs') if isinstance(patient, dict) else getattr(patient, 'drugs', None)
-                if isinstance(drugs, list):
-                    drugs_list = drugs
-                elif isinstance(drugs, dict):
-                    drugs_list = [drugs]
-                elif isinstance(drugs, str) and drugs:
-                    import json
-                    try:
-                        parsed = json.loads(drugs)
-                        if isinstance(parsed, list):
-                            drugs_list = parsed
-                        else:
-                            drugs_list = [parsed]
-                    except Exception:
-                        drugs_list = [drugs]
-                elif drugs:
-                    drugs_list = [drugs]
-                else:
-                    drugs_list = []
-                
-                claim_type_str = str(claim_type).upper() if claim_type else ""
-                if claim_type_str == "ETC":
-                    details = interventions
-                    med_interventions = interventions
-                else:
-                    details = drugs_list
-                    med_interventions = []
-            
-            data['details'] = details
-            data['medical_interventions'] = med_interventions
-            data['drugs_list'] = drugs_list
-            
+            data['status'] = data.get('ambulance_claim_status') or data.get('ambulanceClaimStatus')
         elif hasattr(data, "__dict__"):
             if "incident" in data.__dict__ and data.incident:
                 data.incident_view_model = data.incident
-            
-            claim_type = getattr(data, 'claim_type', None)
-            patient = getattr(data, 'patient', None)
-            
-            details = []
-            med_interventions = []
-            drugs_list = []
-            
-            if patient:
-                interventions = getattr(patient, 'interventions', None)
-                if not interventions:
-                    interventions = getattr(patient, 'medical_interventions', None)
-                if not isinstance(interventions, list):
-                    interventions = []
-                
-                drugs = getattr(patient, 'drugs', None)
-                if isinstance(drugs, list):
-                    drugs_list = drugs
-                elif isinstance(drugs, dict):
-                    drugs_list = [drugs]
-                elif isinstance(drugs, str) and drugs:
-                    import json
-                    try:
-                        parsed = json.loads(drugs)
-                        if isinstance(parsed, list):
-                            drugs_list = parsed
-                        else:
-                            drugs_list = [parsed]
-                    except Exception:
-                        drugs_list = [drugs]
-                elif drugs:
-                    drugs_list = [drugs]
-                else:
-                    drugs_list = []
-                
-                claim_type_str = str(claim_type).upper() if claim_type else ""
-                if claim_type_str == "ETC":
-                    details = interventions
-                    med_interventions = interventions
-                else:
-                    details = drugs_list
-                    med_interventions = []
-            
-            data.details = details
-            data.medical_interventions = med_interventions
-            data.drugs_list = drugs_list
-            
+            data.status = getattr(data, 'ambulance_claim_status', None)
         return data
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
@@ -179,7 +89,7 @@ class ClaimSummaryData(BaseModel):
 class ClaimSummaryResponse(BaseModel):
     success: bool = True
     message: str = "Claim summary retrieved successfully"
-    data: ClaimSummaryData
+    data: Any
     totalCount: int = 1
     refreshToken: Optional[str] = None
     refreshTokenExpiryTime: Optional[str] = "0001-01-01T00:00:00"
