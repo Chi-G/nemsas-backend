@@ -289,61 +289,20 @@ class Claim(ClaimBase):
             if claim_type_str.endswith("ETC"):
                 data.status = getattr(data, 'etc_claim_status', None)
                 
-                computed_total = 0.0
-                all_meds = []
-                all_drugs = []
-                has_any_intervention = False
-                
-                if getattr(data, 'incident', None) and getattr(data.incident, 'patients', None):
-                    for pat in data.incident.patients:
-                        pat_interventions = getattr(pat, 'interventions', [])
-                        if pat_interventions:
-                            has_any_intervention = True
-                            for item in pat_interventions:
-                                name = getattr(item, "medical_intervention", "") or ""
-                                row = {
-                                    "id": getattr(item, "id", None),
-                                    "drugId": getattr(item, "drug_id", None),
-                                    "medicalIntervention": name,
-                                    "price": getattr(item, "price", None),
-                                    "dose": getattr(item, "dose", None),
-                                    "diagnosis": getattr(item, "diagnosis", None),
-                                    "quantity": getattr(item, "quantity", None),
-                                    "dateAdded": getattr(item, "date_added", None),
-                                }
-                                
-                                if name.lower().endswith("- drug"):
-                                    all_drugs.append(row)
-                                else:
-                                    all_meds.append(row)
-                                    
-                                price = getattr(item, "price", 0.0) or 0.0
-                                quantity = getattr(item, "quantity", 0.0) or 0.0
-                                computed_total += float(price) * float(quantity)
-                                
-                # Always set total_price for ETC to override the ambulance price
-                data.total_price = computed_total
-                    
-                if not med_interventions and all_meds:
-                    med_interventions = all_meds
-                    details = all_meds
-                elif all_meds:
-                    med_interventions.extend(all_meds)
-                    details = med_interventions
-                    
-                if not drugs_list and all_drugs:
-                    drugs_list = all_drugs
-                elif all_drugs:
-                    drugs_list.extend(all_drugs)
-                    
-                if patient_details:
-                    patient_details["interventions"] = details
-                    patient_details["medicalInterventions"] = med_interventions
-                    patient_details["drugs"] = drugs_list
-                    
-                # Backward compatibility for etc_interventions if any
                 if getattr(data, 'incident', None) and getattr(data.incident, 'etc_interventions', None):
+                    total_price = 0.0
+                    drugs_from_etc = []
+                    meds_from_etc = []
+                    
+                    c_patient_id = getattr(data, "patient_id", None)
+                    if c_patient_id is None and patient and hasattr(patient, "id"):
+                        c_patient_id = patient.id
+                    
                     for item in data.incident.etc_interventions:
+                        item_patient_id = getattr(item, "patient_id", None)
+                        if item_patient_id is not None and c_patient_id is not None and item_patient_id != c_patient_id:
+                            continue
+                            
                         name = getattr(item, "medical_intervention", "") or ""
                         row = {
                             "id": getattr(item, "id", None),
@@ -355,17 +314,28 @@ class Claim(ClaimBase):
                             "quantity": getattr(item, "quantity", None),
                             "dateAdded": getattr(item, "date_added", None),
                         }
+                        
                         if name.lower().endswith("- drug"):
-                            drugs_list.append(row)
+                            drugs_from_etc.append(row)
                         else:
-                            med_interventions.append(row)
-                            details.append(row)
+                            meds_from_etc.append(row)
                             
                         price = getattr(item, "price", 0.0) or 0.0
                         quantity = getattr(item, "quantity", 0.0) or 0.0
-                        computed_total += float(price) * float(quantity)
+                        total_price += float(price) * float(quantity)
                     
-                    data.total_price = computed_total
+                    data.total_price = total_price
+                        
+                    details = meds_from_etc
+                    if not med_interventions:
+                        med_interventions = meds_from_etc
+                    
+                    if not drugs_list:
+                        drugs_list = drugs_from_etc
+                        
+                    if patient_details:
+                        patient_details["interventions"] = meds_from_etc
+                        patient_details["drugs"] = drugs_list
             else:
                 data.status = getattr(data, 'ambulance_claim_status', None)
                 

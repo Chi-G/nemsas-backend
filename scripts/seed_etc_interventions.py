@@ -65,7 +65,8 @@ async def seed_etc_interventions():
                 "emergency_treatment_center_id": item.get("emergencyTreatmentCenterId"),
                 "incident_id": incident_id,
                 "patient_id": patient_id,
-                "date_added": date_added_val
+                "date_added": date_added_val,
+                "is_old": True
             })
 
         print(f"🚀 Starting batch insertion of {len(interventions_to_insert)} interventions...")
