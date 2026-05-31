@@ -156,9 +156,8 @@ async def get_dashboard_stats(
             response_data["noOfIncidents"] = (await db.execute(stmt_etc_incidents)).scalar() or 0
 
             # Total Patients
-            stmt_patients = select(func.count(Patient.id)).where(Patient.etc_id == etc_id)
-            # If period filtering should apply to total patients as well, we would do it here, 
-            # but user specifically asked for "all the patients assigned to the etc"
+            stmt_patients = select(func.count(Patient.id)).join(Incident, Patient.incident_id == Incident.id).where(Patient.etc_id == etc_id)
+            stmt_patients = _incident_period_filter(stmt_patients, period)
             response_data["noOfPatients"] = (await db.execute(stmt_patients)).scalar() or 0
 
             today = date.today()

@@ -12,6 +12,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from app.db.session import SessionLocal
 from app.models.etc_intervention import EtcIntervention
 from app.models.incident import Incident
+from app.models.patient import Patient
 
 async def seed_etc_interventions():
     interventions_json_path = os.path.join(os.path.dirname(__file__), "etc_interventions.json")
@@ -29,6 +30,10 @@ async def seed_etc_interventions():
         incidents_res = await session.execute(select(Incident.id))
         existing_incidents = set(incidents_res.scalars().all())
 
+        print("🔍 Pre-fetching patient mappings for fast resolution...")
+        patients_res = await session.execute(select(Patient.id))
+        existing_patients = set(patients_res.scalars().all())
+
         print(f"💼 Preparing {len(extracted_interventions)} Interventions...")
         interventions_to_insert = []
         for item in extracted_interventions:
@@ -43,6 +48,10 @@ async def seed_etc_interventions():
             incident_id = item.get("incident_Id")
             if incident_id not in existing_incidents:
                 incident_id = None
+                
+            patient_id = item.get("patientId")
+            if patient_id not in existing_patients:
+                patient_id = None
 
             interventions_to_insert.append({
                 "id": item["id"],
@@ -55,6 +64,7 @@ async def seed_etc_interventions():
                 "ambulance_id": item.get("ambulanceId"),
                 "emergency_treatment_center_id": item.get("emergencyTreatmentCenterId"),
                 "incident_id": incident_id,
+                "patient_id": patient_id,
                 "date_added": date_added_val
             })
 

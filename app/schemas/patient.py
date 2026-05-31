@@ -67,6 +67,15 @@ class Patient(PatientBase):
         drug_list = []
 
         for item in etc_interventions:
+            # Check patient ID
+            if isinstance(item, dict):
+                item_patient_id = item.get("patient_id")
+            else:
+                item_patient_id = getattr(item, "patient_id", None)
+                
+            if item_patient_id is not None and item_patient_id != self.id:
+                continue
+                
             # Support both ORM objects and dicts
             if isinstance(item, dict):
                 name = item.get("medical_intervention") or ""

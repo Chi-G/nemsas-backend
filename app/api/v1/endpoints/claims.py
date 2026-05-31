@@ -1,5 +1,5 @@
 from typing import Any, Optional, List, cast
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app.models.user import User
@@ -94,6 +94,7 @@ async def read_claims(
     query: Optional[str] = None,
     year: Optional[int] = None,
     month: Optional[int] = None,
+    incident_category_id: Optional[int] = Query(None, alias="incidentCategoryId"),
     current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]))
 ) -> Any:
     """
@@ -115,7 +116,8 @@ async def read_claims(
         query_review=query,
         year=year,
         month=month,
-        state_id=state_id
+        state_id=state_id,
+        incident_category_id=incident_category_id
     )
     return {
         "success": True,
@@ -172,6 +174,7 @@ async def read_ambulance_claims(
     year: Optional[int] = None,
     month: Optional[int] = None,
     ambulance_id: Optional[int] = None,
+    incident_category_id: Optional[int] = Query(None, alias="incidentCategoryId"),
     current_user: User = Depends(deps.get_current_user)
 ) -> Any:
     """
@@ -200,7 +203,8 @@ async def read_ambulance_claims(
         query_review=query,
         year=year,
         month=month,
-        ambulance_id=filter_ambulance_id
+        ambulance_id=filter_ambulance_id,
+        incident_category_id=incident_category_id
     )
     return {
         "success": True,
@@ -209,16 +213,43 @@ async def read_ambulance_claims(
         "totalCount": total
     }
 
-@router.get("/settings")
-async def read_claim_settings(
+@router.get("/settings/{key}")
+async def read_claim_setting_by_key(
+    key: str,
     db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR"]))
 ) -> Any:
     """
-    Global retrieval of expiration controls and thresholds.
+    Get a specific claim setting by its key.
     """
-    configs = await crud_setting.get_all(db)
-    # Reformat to plain dictionary or list as needed, maintaining client compatibility.
-    return configs
+    setting = await crud_setting.get_by_key(db, key=key)
+    if not setting:
+        raise HTTPException(status_code=404, detail="Setting not found")
+    return {
+        "success": True,
+        "message": "Setting fetched successfully",
+        "data": setting
+    }
+
+class ClaimSettingCreate(BaseModel):
+    key: str
+    value: str
+
+@router.post("/settings")
+async def create_claim_setting(
+    setting_in: ClaimSettingCreate,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR"]))
+) -> Any:
+    """
+    Create or update a claim setting.
+    """
+    setting = await crud_setting.create_or_update(db, obj_in=setting_in, user_id=current_user.id)
+    return {
+        "success": True,
+        "message": "Setting saved successfully",
+        "data": setting
+    }
 
 @router.post("/", response_model=ClaimResponse)
 async def create_claim(
@@ -244,9 +275,11 @@ async def get_all_ambulance_claims(
     pageSize: int = 10,
     year: Optional[int] = None,
     month: Optional[int] = None,
+    search: Optional[str] = None,
     stateId: Optional[int] = None,
     status: Optional[str] = None,
     claimQuery: Optional[str] = None,
+    incident_category_id: Optional[int] = Query(None, alias="incidentCategoryId"),
     current_user: User = Depends(deps.get_current_user)
 ) -> Any:
     """
@@ -280,14 +313,20 @@ async def get_all_ambulance_claims(
         db,
         skip=skip,
         limit=limit,
+        search=search,
         status=status,
         query_review=claimQuery,
         year=year,
         month=month,
         is_etc=False,
         ambulance_id=filter_ambulance_id,
-        state_id=filter_state_id
+        state_id=filter_state_id,
+        incident_category_id=incident_category_id
     )
+
+    from app.models.claim import ClaimType
+    for item in items:
+        item.claim_type = ClaimType.AMBULANCE
 
     return {
         "success": True,
@@ -304,9 +343,11 @@ async def get_all_etc_claims(
     pageSize: int = 10,
     year: Optional[int] = None,
     month: Optional[int] = None,
+    search: Optional[str] = None,
     stateId: Optional[int] = None,
     status: Optional[str] = None,
     claimQuery: Optional[str] = None,
+    incident_category_id: Optional[int] = Query(None, alias="incidentCategoryId"),
     current_user: User = Depends(deps.get_current_user)
 ) -> Any:
     """
@@ -337,14 +378,20 @@ async def get_all_etc_claims(
         db,
         skip=skip,
         limit=limit,
+        search=search,
         status=status,
         query_review=claimQuery,
         year=year,
         month=month,
         is_etc=filter_is_etc,
         state_id=filter_state_id,
-        etc_id=filter_etc_id
+        etc_id=filter_etc_id,
+        incident_category_id=incident_category_id
     )
+
+    from app.models.claim import ClaimType
+    for item in items:
+        item.claim_type = ClaimType.ETC
 
     return {
         "success": True,
@@ -933,7 +980,7 @@ async def accept_or_reject_claim(
     }
 
 
-@router.put("/addReview")
+@router.put("/addReview", response_model=ClaimResponse)
 async def add_review_claim(
     body: ClaimReviewBindingModel,
     db: AsyncSession = Depends(deps.get_db),
@@ -954,7 +1001,7 @@ async def add_review_claim(
     }
 
 
-@router.put("/addEtcReview")
+@router.put("/addEtcReview", response_model=ClaimResponse)
 async def add_etc_review_claim(
     body: ClaimEtcReviewBindingModel,
     db: AsyncSession = Depends(deps.get_db),

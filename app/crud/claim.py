@@ -85,6 +85,7 @@ class CRUDClaim:
         *, 
         skip: int = 0, 
         limit: int = 100,
+        search: Optional[str] = None,
         status: Optional[str] = None,
         query_review: Optional[str] = None,
         year: Optional[int] = None,
@@ -92,7 +93,8 @@ class CRUDClaim:
         is_etc: Optional[bool] = None,
         ambulance_id: Optional[int] = None,
         state_id: Optional[int] = None,
-        etc_id: Optional[int] = None
+        etc_id: Optional[int] = None,
+        incident_category_id: Optional[int] = None
     ) -> Tuple[List[Claim], int]:
         base_filters = []
         
@@ -105,23 +107,47 @@ class CRUDClaim:
                 base_filters.append((Claim.ambulance_claim_status.ilike(status)) | (Claim.etc_claim_status.ilike(status)))
             
         if query_review:
-            base_filters.append(Claim.review.ilike(f"%{query_review}%"))
+            if is_etc is True:
+                base_filters.append(Claim.etc_review.ilike(f"%{query_review}%"))
+            elif is_etc is False:
+                base_filters.append(Claim.review.ilike(f"%{query_review}%"))
+            else:
+                base_filters.append((Claim.review.ilike(f"%{query_review}%")) | (Claim.etc_review.ilike(f"%{query_review}%")))
 
-        if year and month:
-            pass
+        if year is not None:
+            base_filters.append(extract('year', Incident.date_added) == year)
+            
+        if month is not None:
+            base_filters.append(extract('month', Incident.date_added) == month)
 
-        if is_etc is True:
-            base_filters.append(Claim.claim_type == "ETC")
-        elif is_etc is False:
-            base_filters.append((Claim.claim_type != "ETC") | (Claim.claim_type == None))
+        # Note: We do not filter by claim_type because the same claim record is used for both ETC and Ambulance.
 
         stmt = select(Claim).options(*self._get_claim_options()).order_by(desc(Claim.id))
         count_stmt = select(func.count()).select_from(Claim)
         
-        need_incident_join = (ambulance_id is not None) or (state_id is not None) or (etc_id is not None)
+        need_incident_join = (ambulance_id is not None) or (state_id is not None) or (etc_id is not None) or (incident_category_id is not None) or (year is not None) or (month is not None) or (search is not None)
         if need_incident_join:
             stmt = stmt.join(Claim.incident)
             count_stmt = count_stmt.join(Claim.incident)
+            
+            if search is not None:
+                from app.models.hospital import Hospital
+                from app.models.ambulance import Ambulance
+                from sqlalchemy import or_
+                
+                stmt = stmt.outerjoin(Hospital, Incident.etc_id == Hospital.id)
+                stmt = stmt.outerjoin(Ambulance, Incident.ambulance_id == Ambulance.id)
+                
+                count_stmt = count_stmt.outerjoin(Hospital, Incident.etc_id == Hospital.id)
+                count_stmt = count_stmt.outerjoin(Ambulance, Incident.ambulance_id == Ambulance.id)
+                
+                base_filters.append(
+                    or_(
+                        Claim.patient_name.ilike(f"%{search}%"),
+                        Hospital.name.ilike(f"%{search}%"),
+                        Ambulance.name.ilike(f"%{search}%")
+                    )
+                )
             
         if ambulance_id is not None:
             base_filters.append(Incident.ambulance_id == ambulance_id)
@@ -131,6 +157,9 @@ class CRUDClaim:
             
         if etc_id is not None:
             base_filters.append(Incident.etc_id == etc_id)
+
+        if incident_category_id is not None:
+            base_filters.append(Incident.incident_category_id == incident_category_id)
         
         if base_filters:
             stmt = stmt.where(and_(*base_filters))

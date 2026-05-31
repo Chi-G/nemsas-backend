@@ -44,6 +44,7 @@ async def read_incidents(
     incident_category_id: Optional[int] = None,
     sort_by_state: bool = False,
     event_status_type: Optional[str] = Query(default=None, alias="eventStatusType"),
+    year: Optional[int] = None,
     current_user: User = Depends(deps.get_current_user)
 ):
     """
@@ -94,7 +95,8 @@ async def read_incidents(
         mass_casualty=mass_casualty,
         incident_category_id=incident_category_id,
         sort_by_state=sort_by_state,
-        event_status_type=event_status_type
+        event_status_type=event_status_type,
+        year=year
     )
 
     return {

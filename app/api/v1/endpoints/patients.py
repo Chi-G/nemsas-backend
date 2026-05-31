@@ -187,7 +187,7 @@ async def get_patient_details(
             Service, EtcIntervention.drug_id == Service.id
         ).outerjoin(
             FeeCategory, Service.fee_category_id == FeeCategory.id
-        ).where(EtcIntervention.incident_id == patient.incident_id)
+        ).where(EtcIntervention.patient_id == patient_id)
         
         results = await db.execute(stmt_etc)
         for e_inv, service, is_medicine in results.all():
@@ -195,6 +195,7 @@ async def get_patient_details(
             drug_dict = obj_to_dict(service)
             if drug_dict is not None:
                 drug_dict["isMedicine"] = is_medicine if is_medicine is not None else False
+                e_dict["code"] = drug_dict.get("code")
             e_dict["drug"] = drug_dict
             etc_invs.append(e_dict)
 
@@ -252,6 +253,7 @@ async def add_etc_interventions(
         intervention_dict = intervention_data.model_dump(exclude_unset=True)
         # Force correct routing info
         intervention_dict["incident_id"] = patient.incident_id
+        intervention_dict["patient_id"] = patient_id
         intervention_dict["emergency_treatment_center_id"] = etc_id
         intervention_dict["id"] = next_id
         

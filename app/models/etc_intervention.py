@@ -15,7 +15,9 @@ class EtcIntervention(Base):
     ambulance_id = Column(Integer, nullable=True)
     emergency_treatment_center_id = Column(Integer, nullable=True)
     incident_id = Column(Integer, ForeignKey("incidents.id"), nullable=True)
+    patient_id = Column(Integer, ForeignKey("patients.id"), nullable=True)
     date_added = Column(DateTime(timezone=True), nullable=True)
 
     # Relationships
     incident = relationship("Incident", back_populates="etc_interventions")
+    patient = relationship("Patient", back_populates="etc_interventions")
