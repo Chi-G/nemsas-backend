@@ -23,6 +23,7 @@ from app.models.fee_category import FeeCategory
 from app.models.service import Service
 from app.models.etc_intervention import EtcIntervention
 from app.models.device import Device
+from app.models.transfer_form import TransferForm
 
 
 

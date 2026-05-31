@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List, Optional
+from uuid import UUID
 from app.api import deps
-from app.schemas.user import User as UserSchema, UserCreate
+from app.schemas.user import User as UserSchema, UserCreate, UserUpdate
 from app.models.user import User
 from app.schemas.common import PaginatedResponse, PaginationMeta, ResponseBase
 from app.crud.user import user_crud
@@ -163,3 +164,97 @@ async def mark_notification_as_read(
         "message": "Notification marked as read",
         "data": True
     }
+
+@router.delete("/{id}", response_model=ResponseBase[UserSchema], summary="(Disable User)")
+async def delete_user(
+    id: UUID,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+):
+    """
+    Disable a user (set is_active to False) instead of deleting to preserve relationships.
+    """
+    user = await user_crud.get(db, id=id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    # Enforce state restriction for state admins
+    if current_user.user_type == "ADMINSEMSASUSER" and current_user.state_id != user.state_id:
+        raise HTTPException(
+            status_code=403,
+            detail="You are not authorized to disable users from other states"
+        )
+        
+    user.is_active = False
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+    
+    return {
+        "success": True,
+        "message": "User successfully disabled",
+        "data": user
+    }
+
+@router.patch("/{id}", response_model=ResponseBase[UserSchema], summary="Edit User")
+async def update_user(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    id: UUID,
+    user_in: UserUpdate,
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+):
+    """
+    Update a user's details.
+    - SUPERADMINISTRATOR can update any user.
+    - ADMINSEMSASUSER can only update users belonging to their own state, and cannot change user state to another state.
+    """
+    user = await user_crud.get(db, id=id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    # Enforce state restriction for state admins
+    if current_user.user_type == "ADMINSEMSASUSER":
+        if current_user.state_id != user.state_id:
+            raise HTTPException(
+                status_code=403,
+                detail="You are not authorized to edit users from other states"
+            )
+        # Enforce that state admin cannot change the user's state to a different state
+        if user_in.state_id is not None and user_in.state_id != current_user.state_id:
+            raise HTTPException(
+                status_code=403,
+                detail=f"You can only assign users to your own state (ID: {current_user.state_id})"
+            )
+            
+    # Check email uniqueness if email is being updated
+    if user_in.email is not None and user_in.email != user.email:
+        existing_user_email = await user_crud.get_by_email(db, email=user_in.email)
+        if existing_user_email:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "message": "User update failed",
+                    "error": f"A user with email '{user_in.email}' already exists"
+                }
+            )
+
+    # Check username uniqueness if username is being updated
+    if user_in.user_name is not None and user_in.user_name != user.user_name:
+        existing_user_name = await user_crud.get_by_username(db, user_name=user_in.user_name)
+        if existing_user_name:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "message": "User update failed",
+                    "error": f"A user with username '{user_in.user_name}' already exists"
+                }
+            )
+
+    updated_user = await user_crud.update(db, db_obj=user, obj_in=user_in)
+    return {
+        "success": True,
+        "message": "User successfully updated",
+        "data": updated_user
+    }
+

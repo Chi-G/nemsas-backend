@@ -1,4 +1,44 @@
- [
+[
+        {
+            "id": 683,
+            "name": "AI Specialist Hospital Ambulance Service",
+            "code": "AMB-k30hBf",
+            "location": "Bajoga, Gombe",
+            "ambulanceTypeId": 1,
+            "stateId": 16,
+            "lgaId": 328,
+            "wardId": 4228,
+            "nhiAorSHIA": "GOHEALTH",
+            "serviceType": "",
+            "online": true,
+            "driverName": "Abdulhamid Jingi Abubakar",
+            "contactNumber": "08030805791",
+            "dateAdded": "2026-05-18T14:47:30.437888+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Gombe",
+            "eventStatusType": null
+        },
+        {
+            "id": 682,
+            "name": "faith",
+            "code": "AMB-dffdsm",
+            "location": "Faculty block A",
+            "ambulanceTypeId": 1,
+            "stateId": 1,
+            "lgaId": 51,
+            "wardId": 1053,
+            "nhiAorSHIA": "SAS-SAES",
+            "serviceType": "BLS",
+            "online": true,
+            "driverName": "Festus vincent",
+            "contactNumber": "08171446655",
+            "dateAdded": "2026-05-10T17:13:51.890063+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Abia",
+            "eventStatusType": null
+        },
         {
             "id": 681,
             "name": "Enugu SEMSAS 004",
@@ -78,7 +118,8 @@
             "runsheetViewModel": null,
             "stateName": "Enugu",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 677,
             "name": "ALIHSAN CLINIC AND DIAGNOSTIC CENTRE",
             "code": "AMB-yvpT2w",
@@ -97,7 +138,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 676,
             "name": "Cool Care",
             "code": "AMB-wgf1sd",
@@ -116,7 +158,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 675,
             "name": "Federal University of Health Sciences Teaching Hospital Otukpo",
             "code": "AMB-Opgkde",
@@ -135,7 +178,8 @@
             "runsheetViewModel": null,
             "stateName": "Benue",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 674,
             "name": "Healthclone Medical Center ",
             "code": "AMB-apsJkv",
@@ -154,7 +198,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 673,
             "name": "Ambulance Damboa S001 BOSEMSAS BLS",
             "code": "AMB-DgEsbd",
@@ -173,7 +218,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 672,
             "name": "ODSEMSAS - A01593RS ZEBRA 21",
             "code": "AMB-dcYx7l",
@@ -192,7 +238,8 @@
             "runsheetViewModel": null,
             "stateName": "Ondo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 671,
             "name": "ODSEMSAS - A01858RS ZEBRA 48",
             "code": "AMB-sdlssG",
@@ -211,7 +258,8 @@
             "runsheetViewModel": null,
             "stateName": "Ondo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 670,
             "name": "ODSEMSAS - C01283RS ZEBRA 53",
             "code": "AMB-3sagae",
@@ -230,7 +278,8 @@
             "runsheetViewModel": null,
             "stateName": "Ondo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 669,
             "name": "ODSEMSAS - CD615-A0/1",
             "code": "AMB-dwz1Vu",
@@ -249,7 +298,8 @@
             "runsheetViewModel": null,
             "stateName": "Ondo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 668,
             "name": "AEFUTHA/018B",
             "code": "AMB-xMMcoa",
@@ -268,7 +318,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 667,
             "name": "AEFUTHA/018A",
             "code": "AMB-csdjb0",
@@ -287,7 +338,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 666,
             "name": "DUFUTH/021B",
             "code": "AMB-scbddx",
@@ -306,7 +358,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 665,
             "name": "DUFUTH/021A",
             "code": "AMB-xfhJbJ",
@@ -325,7 +378,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 664,
             "name": "ODGH/004",
             "code": "AMB-gvGsH2",
@@ -344,7 +398,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 663,
             "name": "OYO SEMSAS 011",
             "code": "AMB-bdagqn",
@@ -363,7 +418,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 662,
             "name": "AHAJAS HOSPITAL",
             "code": "AMB-qyNvJT",
@@ -382,7 +438,28 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 661,
+            "name": "MADINA EYE SPECIALIST & MEDICAL CENTRE",
+            "code": "AMB-zmAd3s",
+            "location": "Gombe",
+            "ambulanceTypeId": 1,
+            "stateId": 16,
+            "lgaId": 328,
+            "wardId": 4233,
+            "nhiAorSHIA": "SHIA",
+            "serviceType": "",
+            "online": false,
+            "driverName": "Tuyen Kim",
+            "contactNumber": "08035680450",
+            "dateAdded": "2026-01-30T06:44:18.31691+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Gombe",
+            "eventStatusType": null
+        },
+        {
             "id": 660,
             "name": "ALIHSAN CLINIC AND DIAGNOSTIC CENTRE",
             "code": "AMB-dhlhbz",
@@ -401,7 +478,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 659,
             "name": "AHAJAS HOSPITAL",
             "code": "AMB-yrfeUn",
@@ -420,7 +498,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 658,
             "name": "ZEBRA 14 (FRSC RS3.3 GOMBE STAFF COOP)",
             "code": "AMB-2tsdaZ",
@@ -439,7 +518,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 657,
             "name": "OSUN EMS / 006",
             "code": "AMB-eddVkW",
@@ -458,7 +538,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 656,
             "name": "OSUN EMS / 031",
             "code": "AMB-dsDVGj",
@@ -477,7 +558,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 655,
             "name": "OSUN EMS / 005",
             "code": "AMB-OafqsU",
@@ -496,7 +578,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 654,
             "name": "OSUN EMS / 022",
             "code": "AMB-mdHdwz",
@@ -515,7 +598,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 653,
             "name": "OSUN EMS / 021",
             "code": "AMB-eDbfFo",
@@ -534,7 +618,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 652,
             "name": "OSUN EMS / 034",
             "code": "AMB-UEf3on",
@@ -553,7 +638,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 651,
             "name": "OSUN EMS / 026",
             "code": "AMB-WmBqls",
@@ -572,7 +658,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 650,
             "name": "OSUN EMS / 014",
             "code": "AMB-fw9ldd",
@@ -591,7 +678,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 649,
             "name": "OSUN EMS / 033",
             "code": "AMB-scdjIz",
@@ -610,7 +698,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 648,
             "name": "OSUN EMS / 027",
             "code": "AMB-Rd4l74",
@@ -629,7 +718,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 647,
             "name": "OSUN EMS / 025",
             "code": "AMB-SIyPud",
@@ -648,7 +738,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 646,
             "name": "OSUN EMS / 030",
             "code": "AMB-xvdsIv",
@@ -667,7 +758,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 645,
             "name": "OSUN EMS / 039",
             "code": "AMB-ldnwas",
@@ -686,7 +778,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 644,
             "name": "OSUN EMS / 027",
             "code": "AMB-xHy2ys",
@@ -705,7 +798,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 643,
             "name": "OSUN EMS / 019",
             "code": "AMB-RdwaSf",
@@ -724,7 +818,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 642,
             "name": "OSUN EMS / 008",
             "code": "AMB-xfddsc",
@@ -743,7 +838,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 641,
             "name": "OSUN EMS / 024 ",
             "code": "AMB-rasnZP",
@@ -762,7 +858,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 640,
             "name": "OSUN EMS / 016",
             "code": "AMB-RLnsxm",
@@ -781,7 +878,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 639,
             "name": "OSUN EMS / 013",
             "code": "AMB-xkqmNV",
@@ -800,7 +898,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 638,
             "name": "OSUN EMS / 020 ",
             "code": "AMB-cbsdvE",
@@ -819,7 +918,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 637,
             "name": "OSUN EMS / 002",
             "code": "AMB-wQWIds",
@@ -838,7 +938,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 636,
             "name": "OSUN EMS / 003 ",
             "code": "AMB-uebFtw",
@@ -857,7 +958,8 @@
             "runsheetViewModel": null,
             "stateName": "Osun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 635,
             "name": "YEMABUS-010 FIKA",
             "code": "AMB-derOQr",
@@ -876,7 +978,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 634,
             "name": "OYOSEMSAS 024",
             "code": "AMB-fHgFf6",
@@ -895,7 +998,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 633,
             "name": "OYOSEMSAS 023",
             "code": "AMB-eXanmS",
@@ -914,7 +1018,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 632,
             "name": "OYOSEMSAS 003",
             "code": "AMB-bgwLsw",
@@ -933,7 +1038,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 631,
             "name": "YEMABUS-AMB-004",
             "code": "AMB-fs41eE",
@@ -952,7 +1058,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 630,
             "name": "YEMABUS-AMB-002",
             "code": "AMB-gdsz9q",
@@ -971,7 +1078,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 629,
             "name": "YEMABUS-AMB-007",
             "code": "AMB-ghdjyn",
@@ -990,7 +1098,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 628,
             "name": "YEMABUS-AMB-003",
             "code": "AMB-KamfFd",
@@ -1009,7 +1118,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 627,
             "name": "YEMABUS-011",
             "code": "AMB-dfddXb",
@@ -1028,7 +1138,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 626,
             "name": "YEMABUS-022",
             "code": "AMB-Ebidsz",
@@ -1047,7 +1158,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 625,
             "name": "YEMABUS-033",
             "code": "AMB-yfRLld",
@@ -1066,7 +1178,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 624,
             "name": "YEMABUS-005",
             "code": "AMB-gysxa6",
@@ -1085,7 +1198,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 623,
             "name": "YEMABUS-009",
             "code": "AMB-7lcb7d",
@@ -1104,7 +1218,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 622,
             "name": "YEMABUS-001",
             "code": "AMB-3kJva6",
@@ -1123,7 +1238,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 621,
             "name": "EEM/020C",
             "code": "AMB-nhgdqH",
@@ -1142,7 +1258,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 620,
             "name": "EEM/020B",
             "code": "AMB-tORyfn",
@@ -1161,7 +1278,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 619,
             "name": "OGAMB 20",
             "code": "AMB-csvIOV",
@@ -1172,7 +1290,7 @@
             "wardId": 7492,
             "nhiAorSHIA": "SSHIA",
             "serviceType": "BLS",
-            "online": true,
+            "online": false,
             "driverName": "Kuye Hannah Anike",
             "contactNumber": "09065692220",
             "dateAdded": "2026-01-08T07:02:22.341871+00:00",
@@ -1180,7 +1298,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 618,
             "name": "OGAMB19",
             "code": "AMB-ggg9Gb",
@@ -1199,7 +1318,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 617,
             "name": "OGAMB 18",
             "code": "AMB-mXYxdc",
@@ -1218,7 +1338,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 616,
             "name": "OGAMB 17",
             "code": "AMB-sshpyf",
@@ -1237,7 +1358,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 615,
             "name": "OGAMB16",
             "code": "AMB-dfzDGJ",
@@ -1256,7 +1378,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 614,
             "name": "OGAMB 15",
             "code": "AMB-fNZtGn",
@@ -1275,7 +1398,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 613,
             "name": "OGAMB 14",
             "code": "AMB-wpjoZf",
@@ -1294,7 +1418,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 612,
             "name": "OGAMB 13",
             "code": "AMB-gbnyiq",
@@ -1313,7 +1438,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 611,
             "name": "OGAMB 12",
             "code": "AMB-hqsam0",
@@ -1332,7 +1458,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 610,
             "name": "OGAMB 11",
             "code": "AMB-zJcvh6",
@@ -1351,7 +1478,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 609,
             "name": "OGAMB 10",
             "code": "AMB-rdau5x",
@@ -1370,7 +1498,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 608,
             "name": "OGAMB 09",
             "code": "AMB-dddruA",
@@ -1389,7 +1518,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 607,
             "name": "OGAMB 08",
             "code": "AMB-gy1dti",
@@ -1408,7 +1538,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 606,
             "name": "OGAMB 07",
             "code": "AMB-fadfQd",
@@ -1427,7 +1558,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 605,
             "name": "OGAMB 06",
             "code": "AMB-IjbOef",
@@ -1446,7 +1578,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 604,
             "name": "OGAMB 05 ",
             "code": "AMB-1Eysdc",
@@ -1465,7 +1598,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 603,
             "name": "OGAMB 04",
             "code": "AMB-kekGag",
@@ -1484,7 +1618,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 602,
             "name": "OGAMB 03",
             "code": "AMB-wfgdHN",
@@ -1503,7 +1638,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 601,
             "name": "OGAMB 02",
             "code": "AMB-p7sxbv",
@@ -1522,7 +1658,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 600,
             "name": "OGAMB 01",
             "code": "AMB-aLcvJ0",
@@ -1541,7 +1678,8 @@
             "runsheetViewModel": null,
             "stateName": "Ogun",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 599,
             "name": "FCT EMS 010",
             "code": "AMB-dFbxfz",
@@ -1560,7 +1698,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 598,
             "name": "BEMSAS 011",
             "code": "AMB-fffdsw",
@@ -1579,7 +1718,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 597,
             "name": "BEMSAS 010",
             "code": "AMB-gxmxkn",
@@ -1598,7 +1738,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 596,
             "name": "BEMSAS 009",
             "code": "AMB-Vqs8sv",
@@ -1617,7 +1758,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 595,
             "name": "BEMSAS 008",
             "code": "AMB-ygqraq",
@@ -1636,7 +1778,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 594,
             "name": "BEMSAS 007",
             "code": "AMB-I8sFss",
@@ -1655,7 +1798,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 593,
             "name": "BEMSAS 006",
             "code": "AMB-XJscuq",
@@ -1674,7 +1818,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 592,
             "name": "BEMSAS 005",
             "code": "AMB-vOf8gk",
@@ -1693,7 +1838,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 591,
             "name": "BEMSAS 004",
             "code": "AMB-0gbLos",
@@ -1712,7 +1858,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 590,
             "name": "BEMSAS 003",
             "code": "AMB-qdddgs",
@@ -1731,7 +1878,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 589,
             "name": "BEMSAS 002",
             "code": "AMB-wdsjMH",
@@ -1750,7 +1898,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 588,
             "name": "BEMSAS 001",
             "code": "AMB-ddbibs",
@@ -1769,7 +1918,8 @@
             "runsheetViewModel": null,
             "stateName": "Bayelsa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 587,
             "name": "EDO EMS 004",
             "code": "AMB-kcvgud",
@@ -1788,7 +1938,8 @@
             "runsheetViewModel": null,
             "stateName": "Edo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 586,
             "name": "EDO EMS 003",
             "code": "AMB-maRgdd",
@@ -1807,7 +1958,8 @@
             "runsheetViewModel": null,
             "stateName": "Edo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 585,
             "name": "EDO EMS 002",
             "code": "AMB-TBvBJk",
@@ -1826,7 +1978,8 @@
             "runsheetViewModel": null,
             "stateName": "Edo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 584,
             "name": "EDO EMS 001",
             "code": "AMB-AsdhbP",
@@ -1845,7 +1998,8 @@
             "runsheetViewModel": null,
             "stateName": "Edo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 583,
             "name": "FCT EMS 011",
             "code": "AMB-Wyknks",
@@ -1864,7 +2018,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 581,
             "name": "FCT EMS 009",
             "code": "AMB-sCfDUP",
@@ -1883,7 +2038,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 580,
             "name": "FCT EMS 008",
             "code": "AMB-bdOyrd",
@@ -1902,7 +2058,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 579,
             "name": "FCT EMS 007",
             "code": "AMB-oa3ygJ",
@@ -1921,7 +2078,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 578,
             "name": "FCT EMS 006",
             "code": "AMB-gelWdw",
@@ -1940,7 +2098,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 577,
             "name": "FCT EMS 005",
             "code": "AMB-mfyTre",
@@ -1959,7 +2118,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 576,
             "name": "FCT EMS 004",
             "code": "AMB-dudfdy",
@@ -1978,7 +2138,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 575,
             "name": "FCT EMS 003",
             "code": "AMB-kTdfdc",
@@ -1997,7 +2158,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 574,
             "name": "FCT EMS 002",
             "code": "AMB-uMsvf0",
@@ -2016,7 +2178,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 573,
             "name": "FCT EMS 001",
             "code": "AMB-sOsf0j",
@@ -2035,7 +2198,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 570,
             "name": "Eksemsas/049",
             "code": "AMB-8fhQkd",
@@ -2054,7 +2218,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 569,
             "name": "Eksemsas/041",
             "code": "AMB-CglgsF",
@@ -2073,7 +2238,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 568,
             "name": "Eksemsas/048",
             "code": "AMB-xEadus",
@@ -2092,7 +2258,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 567,
             "name": "Eksemsas/040",
             "code": "AMB-6r5SWa",
@@ -2111,7 +2278,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 566,
             "name": "Eksemsas/047",
             "code": "AMB-sRvdsd",
@@ -2130,7 +2298,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 565,
             "name": "Eksemsas/046",
             "code": "AMB-KprxED",
@@ -2149,7 +2318,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 564,
             "name": "Eksemsas/045",
             "code": "AMB-iDdtYa",
@@ -2168,7 +2338,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 563,
             "name": "Eksemsas/044",
             "code": "AMB-Rys8Jw",
@@ -2187,7 +2358,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 562,
             "name": "Eksemsas/039",
             "code": "AMB-fewbky",
@@ -2206,7 +2378,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 561,
             "name": "Eksemsas/043",
             "code": "AMB-mIYXqd",
@@ -2225,7 +2398,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 560,
             "name": "Eksemsas/038",
             "code": "AMB-dwqwwl",
@@ -2244,7 +2418,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 559,
             "name": "Eksemsas/042",
             "code": "AMB-yld1Cn",
@@ -2263,7 +2438,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 558,
             "name": "Eksemsas/037",
             "code": "AMB-Zs8pcs",
@@ -2282,7 +2458,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 557,
             "name": "Eksemsas/036",
             "code": "AMB-ddwdxV",
@@ -2301,7 +2478,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 556,
             "name": "Eksemsas/029",
             "code": "AMB-EHec1v",
@@ -2320,7 +2498,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 555,
             "name": "Eksemsas/035",
             "code": "AMB-yfOblg",
@@ -2339,7 +2518,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 554,
             "name": "Eksemsas/028",
             "code": "AMB-nMOWys",
@@ -2358,7 +2538,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 553,
             "name": "Eksemsas/034",
             "code": "AMB-mdcGqV",
@@ -2377,7 +2558,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 552,
             "name": "Eksemsas/027",
             "code": "AMB-Zbvfqv",
@@ -2396,7 +2578,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 551,
             "name": "Eksemsas/026",
             "code": "AMB-MVmffh",
@@ -2415,7 +2598,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 550,
             "name": "Eksemsas/033",
             "code": "AMB-sfzrkL",
@@ -2434,7 +2618,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 549,
             "name": "Eksemsas/032",
             "code": "AMB-GsnbzG",
@@ -2453,7 +2638,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 548,
             "name": "Eksemsas/025",
             "code": "AMB-gsz1pi",
@@ -2472,7 +2658,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 547,
             "name": "Eksemsas/031",
             "code": "AMB-OLwqwP",
@@ -2491,7 +2678,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 546,
             "name": "Eksemsas/024",
             "code": "AMB-bdppSO",
@@ -2510,7 +2698,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 545,
             "name": "Eksemsas/030",
             "code": "AMB-s6zk4s",
@@ -2529,7 +2718,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 544,
             "name": "Eksemsas/023",
             "code": "AMB-vbOlea",
@@ -2548,7 +2738,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 543,
             "name": "Eksemsas/022",
             "code": "AMB-bblVfY",
@@ -2567,7 +2758,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 542,
             "name": "Eksemsas/019",
             "code": "AMB-q3Gegd",
@@ -2586,7 +2778,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 541,
             "name": "Eksemsas/018",
             "code": "AMB-eTgzsT",
@@ -2605,7 +2798,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 540,
             "name": "Eksemsas/021",
             "code": "AMB-FHgjsw",
@@ -2624,7 +2818,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 539,
             "name": "Eksemsas/017",
             "code": "AMB-wodAuG",
@@ -2643,7 +2838,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 538,
             "name": "Eksemsas/020",
             "code": "AMB-fhe9kc",
@@ -2662,7 +2858,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 537,
             "name": "Eksemsas/016",
             "code": "AMB-23Iqaw",
@@ -2681,7 +2878,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 536,
             "name": "Eksemsas/015",
             "code": "AMB-ladgrb",
@@ -2700,7 +2898,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 535,
             "name": "Eksemsas/014",
             "code": "AMB-bwsDfA",
@@ -2719,7 +2918,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 534,
             "name": "Eksemsas/013",
             "code": "AMB-0dsLzg",
@@ -2738,7 +2938,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 533,
             "name": "Eksemsas/012",
             "code": "AMB-qDxQy2",
@@ -2757,7 +2958,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 532,
             "name": "Eksemsas/011",
             "code": "AMB-dSWvpR",
@@ -2776,7 +2978,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 531,
             "name": "Eksemsas/010",
             "code": "AMB-0scAle",
@@ -2795,7 +2998,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 530,
             "name": "Eksemsas/009",
             "code": "AMB-83xqxn",
@@ -2814,7 +3018,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 529,
             "name": "Eksemsas/008",
             "code": "AMB-1wYIVs",
@@ -2833,7 +3038,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 528,
             "name": "Eksemsas/007",
             "code": "AMB-E5frgm",
@@ -2852,7 +3058,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 527,
             "name": "Eksemsas/006",
             "code": "AMB-wrKPfd",
@@ -2871,7 +3078,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 526,
             "name": "Eksemsas/005",
             "code": "AMB-vfcpM4",
@@ -2890,7 +3098,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 525,
             "name": "Eksemsas/004",
             "code": "AMB-wWfrya",
@@ -2909,7 +3118,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 524,
             "name": "Eksemsas/003",
             "code": "AMB-lYfs5y",
@@ -2928,7 +3138,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 523,
             "name": "Eksemsas/002",
             "code": "AMB-vbxjMf",
@@ -2947,7 +3158,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 522,
             "name": "Eksemsas/001",
             "code": "AMB-dqHxd7",
@@ -2966,7 +3178,8 @@
             "runsheetViewModel": null,
             "stateName": "Ekiti",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 521,
             "name": "AKISEMSAS/AK/031",
             "code": "AMB-CvduZm",
@@ -2985,7 +3198,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 520,
             "name": "AKISEMSAS/AK/030",
             "code": "AMB-sdCl1g",
@@ -3004,7 +3218,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 519,
             "name": "AKISEMSAS/AK/029",
             "code": "AMB-JzpLmw",
@@ -3023,7 +3238,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 518,
             "name": "AKISEMSAS/AK/028",
             "code": "AMB-fzdRsf",
@@ -3042,7 +3258,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 517,
             "name": "AKISEMSAS/AK/027",
             "code": "AMB-nusvIt",
@@ -3061,7 +3278,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 516,
             "name": "AKISEMSAS/AK/026",
             "code": "AMB-pwwhrA",
@@ -3080,7 +3298,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 515,
             "name": "AKISEMSAS/AK/025",
             "code": "AMB-gcsdNd",
@@ -3099,7 +3318,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 514,
             "name": "AKISEMSAS/AK/024",
             "code": "AMB-kYGisd",
@@ -3118,7 +3338,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 513,
             "name": "AKISEMSAS/AK/023",
             "code": "AMB-ubnNfD",
@@ -3137,7 +3358,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 512,
             "name": "AKISEMSAS/AK/022",
             "code": "AMB-sqSTMl",
@@ -3156,7 +3378,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 511,
             "name": "AKISEMSAS/AK/020",
             "code": "AMB-Uqbvls",
@@ -3175,7 +3398,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 510,
             "name": "AKISEMSAS/AK/019",
             "code": "AMB-Irzsml",
@@ -3186,7 +3410,7 @@
             "wardId": 1479,
             "nhiAorSHIA": "AKSHIA",
             "serviceType": "BLS",
-            "online": true,
+            "online": false,
             "driverName": "Benedict Okon Udo",
             "contactNumber": "07035395140",
             "dateAdded": "2026-01-01T22:39:44.919358+00:00",
@@ -3194,7 +3418,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 509,
             "name": "AKISEMSAS/AK/018",
             "code": "AMB-wgvKss",
@@ -3213,7 +3438,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 508,
             "name": "AKISEMSAS/AK/017",
             "code": "AMB-srdUot",
@@ -3232,7 +3458,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 507,
             "name": "NIGSEMSAS 004",
             "code": "AMB-nsmHqG",
@@ -3251,7 +3478,28 @@
             "runsheetViewModel": null,
             "stateName": "Niger",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 506,
+            "name": "AKISEMSAS/AK/016",
+            "code": "AMB-Qdsaey",
+            "location": "EKET GENERAL HOSPITAL",
+            "ambulanceTypeId": 1,
+            "stateId": 3,
+            "lgaId": 79,
+            "wardId": 1364,
+            "nhiAorSHIA": "AKSHIA",
+            "serviceType": "BLS",
+            "online": false,
+            "driverName": "Godwin Essien",
+            "contactNumber": "09020856854",
+            "dateAdded": "2026-01-01T22:26:34.913448+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Akwaibom",
+            "eventStatusType": null
+        },
+        {
             "id": 505,
             "name": "NIGSEMSAS 003",
             "code": "AMB-xcmhlY",
@@ -3270,7 +3518,28 @@
             "runsheetViewModel": null,
             "stateName": "Niger",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 504,
+            "name": "AKISEMSAS/AK/015",
+            "code": "AMB-ep0wbL",
+            "location": "EKET GENERAL HOSPITAL",
+            "ambulanceTypeId": 1,
+            "stateId": 3,
+            "lgaId": 79,
+            "wardId": 1363,
+            "nhiAorSHIA": "AKSHIA",
+            "serviceType": "BLS",
+            "online": false,
+            "driverName": "Nsikan James",
+            "contactNumber": "08063179332",
+            "dateAdded": "2026-01-01T22:23:47.528089+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Akwaibom",
+            "eventStatusType": null
+        },
+        {
             "id": 503,
             "name": "NIGSEMSAS 002",
             "code": "AMB-x3etms",
@@ -3289,7 +3558,8 @@
             "runsheetViewModel": null,
             "stateName": "Niger",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 502,
             "name": "AKISEMSAS/AK/014",
             "code": "AMB-mSveUw",
@@ -3308,7 +3578,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 501,
             "name": "NIGSEMSAS 001",
             "code": "AMB-rdrxGn",
@@ -3327,7 +3598,8 @@
             "runsheetViewModel": null,
             "stateName": "Niger",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 500,
             "name": "AKISEMSAS/AK/013",
             "code": "AMB-lzgki7",
@@ -3346,7 +3618,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 495,
             "name": "AKISEMSAS/AK/012",
             "code": "AMB-gqwnnq",
@@ -3357,7 +3630,7 @@
             "wardId": 1595,
             "nhiAorSHIA": "AKSHIA",
             "serviceType": "ALS",
-            "online": true,
+            "online": false,
             "driverName": "Sunday Effiong Ibanga",
             "contactNumber": "08067842658",
             "dateAdded": "2026-01-01T07:57:41.597925+00:00",
@@ -3365,7 +3638,28 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 494,
+            "name": "Ambulance S7 Bosemsas BLS ",
+            "code": "Man-of-war BB ",
+            "location": "Lamisula Police Station Junction ",
+            "ambulanceTypeId": 1,
+            "stateId": 8,
+            "lgaId": 203,
+            "wardId": 2839,
+            "nhiAorSHIA": "BOSCHMA ",
+            "serviceType": "Transportation ",
+            "online": true,
+            "driverName": "Abbas Alhaji Bukar ",
+            "contactNumber": "08060462504",
+            "dateAdded": "2025-12-31T22:29:29.79955+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Borno",
+            "eventStatusType": null
+        },
+        {
             "id": 493,
             "name": "AKISEMSAS/AK/011",
             "code": "AMB-asd2fK",
@@ -3384,7 +3678,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 492,
             "name": "AKISEMSAS/AK/010",
             "code": "AMB-M9HrRs",
@@ -3403,7 +3698,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 491,
             "name": "AKISEMSAS/AK/009",
             "code": "AMB-sssswx",
@@ -3422,7 +3718,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 490,
             "name": "AKISEMSAS/AK/008",
             "code": "AMB-zoRess",
@@ -3441,7 +3738,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 489,
             "name": "AKISEMSAS/AK/007",
             "code": "AMB-hfzsWx",
@@ -3460,7 +3758,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 488,
             "name": "AKISEMSAS/AK/006",
             "code": "AMB-sVbsaw",
@@ -3479,7 +3778,8 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 487,
             "name": "AKISEMSAS/AK/005",
             "code": "AMB-cSsaz8",
@@ -3498,7 +3798,48 @@
             "runsheetViewModel": null,
             "stateName": "Akwaibom",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 486,
+            "name": "AKISEMSAS/AK/004",
+            "code": "AMB-ntrXhg",
+            "location": " AKISEMSAS Operational Base",
+            "ambulanceTypeId": 2,
+            "stateId": 3,
+            "lgaId": 107,
+            "wardId": 1661,
+            "nhiAorSHIA": "AKSHIA",
+            "serviceType": "ALS",
+            "online": false,
+            "driverName": "Ufot Evans Inoh",
+            "contactNumber": "08066627335",
+            "dateAdded": "2025-12-31T14:06:51.681017+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Akwaibom",
+            "eventStatusType": null
+        },
+        {
+            "id": 485,
+            "name": "AKISEMSAS/AK/003",
+            "code": "AMB-mkegx7",
+            "location": " AKISEMSAS Operational Base",
+            "ambulanceTypeId": 2,
+            "stateId": 3,
+            "lgaId": 107,
+            "wardId": 1660,
+            "nhiAorSHIA": "AKSHIA",
+            "serviceType": "ALS/AMB",
+            "online": true,
+            "driverName": "Ette Sunday",
+            "contactNumber": "08068748456",
+            "dateAdded": "2025-12-31T14:03:48.200689+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Akwaibom",
+            "eventStatusType": null
+        },
+        {
             "id": 484,
             "name": "REMSAS - RV 154 A08",
             "code": "AMB-n2bgP4",
@@ -3517,7 +3858,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 483,
             "name": "REMSAS - HOI 258 RV",
             "code": "AMB-JLgdfS",
@@ -3536,7 +3878,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 482,
             "name": "REMSAS - RV 150 A08",
             "code": "AMB-vD4sRS",
@@ -3555,7 +3898,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 481,
             "name": "REMSAS - RV 150 A08",
             "code": "AMB-glE4k1",
@@ -3574,7 +3918,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 480,
             "name": "REMSAS -  RV 157 A08",
             "code": "AMB-vaOBbq",
@@ -3593,7 +3938,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 479,
             "name": "REMSAS - HOI 252 RV",
             "code": "AMB-wWkd8r",
@@ -3612,7 +3958,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 478,
             "name": "REMSAS - HOI 255 RV",
             "code": "AMB-xypcdg",
@@ -3631,7 +3978,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 477,
             "name": "REMSAS - HOI 251 RV",
             "code": "AMB-1swpF0",
@@ -3650,7 +3998,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 476,
             "name": "REMSAS - HOI 273 RV",
             "code": "AMB-sBaffw",
@@ -3669,7 +4018,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 475,
             "name": "REMSAS - RV 142 A08",
             "code": "AMB-1pdwsg",
@@ -3688,7 +4038,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 474,
             "name": "REMSAS - HOI 257 RV",
             "code": "AMB-oqalOf",
@@ -3707,7 +4058,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 473,
             "name": "REMSAS - RV 145 A08",
             "code": "AMB-Wscrye",
@@ -3726,7 +4078,8 @@
             "runsheetViewModel": null,
             "stateName": "Rivers",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 472,
             "name": "ODSEMSAS - FKJ755HY",
             "code": "AMB-0rfbk1",
@@ -3745,7 +4098,8 @@
             "runsheetViewModel": null,
             "stateName": "Ondo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 471,
             "name": "ODSEMSAS AAA159HA",
             "code": "AMB-sildhB",
@@ -3764,7 +4118,68 @@
             "runsheetViewModel": null,
             "stateName": "Ondo",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 470,
+            "name": "ODSEMSAS EMS 12-OD",
+            "code": "AMB-sq5fe9",
+            "location": "Akoko South West",
+            "ambulanceTypeId": 2,
+            "stateId": 29,
+            "lgaId": 636,
+            "wardId": 7500,
+            "nhiAorSHIA": "SSHIA ",
+            "serviceType": "ALS",
+            "online": true,
+            "driverName": "Omotayo Moses",
+            "contactNumber": "08146269898",
+            "dateAdded": "2025-12-30T21:55:53.40629+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Ondo",
+            "eventStatusType": null
+        },
+        {
+            "id": 469,
+            "name": "ODSEMSAS EMS 01-OD",
+            "code": "AMB-dfDZsU",
+            "location": "Ore",
+            "ambulanceTypeId": 1,
+            "stateId": 29,
+            "lgaId": 645,
+            "wardId": 7632,
+            "nhiAorSHIA": "SSHIA ",
+            "serviceType": "BLS",
+            "online": true,
+            "driverName": "Olanipekun Omotayo",
+            "contactNumber": "08135232696",
+            "dateAdded": "2025-12-30T21:53:11.380115+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Ondo",
+            "eventStatusType": null
+        },
+        {
+            "id": 468,
+            "name": "ODSEMSAS EMS 03-OD",
+            "code": "AMB-sqkkKx",
+            "location": "EMS Office Bolorunduro",
+            "ambulanceTypeId": 1,
+            "stateId": 29,
+            "lgaId": 647,
+            "wardId": 7655,
+            "nhiAorSHIA": "SSHIA ",
+            "serviceType": "BLS",
+            "online": true,
+            "driverName": "Olafusin Adebisi",
+            "contactNumber": "08030627799",
+            "dateAdded": "2025-12-30T21:50:36.731348+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Ondo",
+            "eventStatusType": null
+        },
+        {
             "id": 467,
             "name": "ODSEMSAS EMS 05-OD",
             "code": "AMB-JQH7dg",
@@ -3783,7 +4198,8 @@
             "runsheetViewModel": null,
             "stateName": "Ondo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 466,
             "name": "Ambulance S6 Bosemsas BLS ",
             "code": "AMB-edlsvs",
@@ -3802,7 +4218,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 465,
             "name": "PLAS/030",
             "code": "AMB-lD81vy",
@@ -3821,7 +4238,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 464,
             "name": "PLAS/029",
             "code": "AMB-B8gkrw",
@@ -3840,7 +4258,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 463,
             "name": "PLAS/028\t",
             "code": "AMB-sHvwfs",
@@ -3859,7 +4278,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 462,
             "name": "PLAS/027\t",
             "code": "AMB-vtg0rr",
@@ -3878,7 +4298,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 461,
             "name": "PLAS/026",
             "code": "AMB-gwhjsm",
@@ -3897,7 +4318,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 460,
             "name": "PLAS/025",
             "code": "AMB-iwFwdd",
@@ -3916,7 +4338,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 459,
             "name": "PLAS/023",
             "code": "AMB-fMcpuo",
@@ -3935,7 +4358,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 458,
             "name": "PLAS/022",
             "code": "AMB-dxvh2q",
@@ -3954,7 +4378,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 457,
             "name": "ZBWCH AMBULANCE SERVICE",
             "code": "AMB-d4xnya",
@@ -3973,7 +4398,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 456,
             "name": "ZAN2O MEDICAL AND AMBULANCE SERVICE",
             "code": "AMB-lsaepQ",
@@ -3992,7 +4418,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 455,
             "name": "YEE-BEE PARTNER AMBULANCE SERVICE",
             "code": "AMB-x9ur05",
@@ -4011,7 +4438,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 454,
             "name": "SSHG AMBULANCE SERVICE",
             "code": "AMB-b0xgEb",
@@ -4030,7 +4458,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 453,
             "name": "SKYSCAPE FOUNDATION AMBULANCE SERVICE",
             "code": "AMB-2oU8st",
@@ -4049,7 +4478,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 452,
             "name": "PLAS/021",
             "code": "AMB-RdEQbg",
@@ -4068,7 +4498,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 451,
             "name": "SBTRH AMBULANCE SERVICE",
             "code": "AMB-zLfedl",
@@ -4087,7 +4518,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 450,
             "name": "PLAS/020",
             "code": "AMB-wXadwd",
@@ -4106,7 +4538,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 449,
             "name": "SANATIVE SPECIALIST CLINIC AMBULANCE SERVICE",
             "code": "AMB-set4sx",
@@ -4125,7 +4558,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 448,
             "name": "PLAS/019",
             "code": "AMB-dvcAEb",
@@ -4144,7 +4578,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 447,
             "name": "PHEOC AMBULANCE SERVICE",
             "code": "AMB-w0qbGn",
@@ -4163,7 +4598,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 446,
             "name": "PLAS/018",
             "code": "AMB-xBdcia",
@@ -4182,7 +4618,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 445,
             "name": "PHCC TUKULMA AMBULANCE SERVICE",
             "code": "AMB-cTwhed",
@@ -4201,7 +4638,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 444,
             "name": "PHCC TUDUN WADA AMBULANCE SERVICE",
             "code": "AMB-k7BQf0",
@@ -4220,7 +4658,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 443,
             "name": "PLAS/017\t",
             "code": "AMB-dzavdK",
@@ -4239,7 +4678,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 442,
             "name": "PHCC TALASSE AMBULANCE SERVICE",
             "code": "AMB-DseOsf",
@@ -4258,7 +4698,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 441,
             "name": "PLAS/016",
             "code": "AMB-CVBgWw",
@@ -4277,7 +4718,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 440,
             "name": "PHCC PANTAMI AMBULANCE SERVICE",
             "code": "AMB-wddfni",
@@ -4296,7 +4738,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 439,
             "name": "PHCC NYUWAR AMBULANCE SERVICE",
             "code": "AMB-yevgkn",
@@ -4315,7 +4758,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 438,
             "name": "PLAS/015",
             "code": "AMB-ykkrFe",
@@ -4334,7 +4778,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 435,
             "name": "PLAS/012",
             "code": "AMB-hrndgd",
@@ -4353,7 +4798,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 433,
             "name": "PLAS/011",
             "code": "AMB-Vs6gab",
@@ -4372,7 +4818,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 432,
             "name": "PLAS/010",
             "code": "AMB-cbqlxE",
@@ -4391,7 +4838,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 431,
             "name": "PLAS/009",
             "code": "AMB-sbgasf",
@@ -4410,7 +4858,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 430,
             "name": "PLAS/008\t",
             "code": "AMB-spqbaa",
@@ -4429,7 +4878,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 429,
             "name": "PLAS/007",
             "code": "AMB-rdPhdm",
@@ -4448,7 +4898,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 428,
             "name": "PLAS/006",
             "code": "AMB-7dcaer",
@@ -4467,7 +4918,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 427,
             "name": "PLAS/005",
             "code": "AMB-ydbJps",
@@ -4486,7 +4938,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 426,
             "name": "PLAS/004",
             "code": "AMB-1zJfxb",
@@ -4505,7 +4958,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 425,
             "name": "PLAS/003\t",
             "code": "AMB-grzswW",
@@ -4524,7 +4978,8 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 424,
             "name": "PLAS/002\t",
             "code": "AMB-stxdss",
@@ -4543,7 +4998,28 @@
             "runsheetViewModel": null,
             "stateName": "Plateau",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 423,
+            "name": "PLAS/001\t",
+            "code": "AMB-eybo9f",
+            "location": "Dogon Agogo",
+            "ambulanceTypeId": 1,
+            "stateId": 32,
+            "lgaId": 718,
+            "wardId": 8442,
+            "nhiAorSHIA": "NHIA Present",
+            "serviceType": "BLS",
+            "online": false,
+            "driverName": "HARUNA RABIU",
+            "contactNumber": "\t08133309336",
+            "dateAdded": "2025-12-30T12:41:29.493257+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Plateau",
+            "eventStatusType": null
+        },
+        {
             "id": 422,
             "name": "PHCC KALSHINGI AMBULANCE SERVICE",
             "code": "AMB-ROrXqc",
@@ -4562,7 +5038,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 421,
             "name": "\tPHCC GADAM AMBULANCE SERVICE",
             "code": "AMB-w68awf",
@@ -4581,7 +5058,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 420,
             "name": "PHCC DEBA AMBULANCE SERVICE",
             "code": "AMB-vaRdds",
@@ -4600,7 +5078,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 419,
             "name": "PHCC CHAM AMBULANCE SERVICE",
             "code": "AMB-ENvwfd",
@@ -4619,7 +5098,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 418,
             "name": "PHCC BOGO AMBULANCE SERVICE",
             "code": "AMB-rswsdp",
@@ -4638,7 +5118,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 417,
             "name": "MIYETTI HOSPITAL AMBULANCE",
             "code": "AMB-eEylcR",
@@ -4657,7 +5138,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 416,
             "name": "MEDICAL REHABILITATION AMBULANCE SERVICE",
             "code": "AMB-kUCdde",
@@ -4676,7 +5158,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 415,
             "name": "MADI MEMORIAL HOSPITAL AMBULANCE SERVICE",
             "code": "AMB-aZCsdd",
@@ -4695,7 +5178,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 413,
             "name": "JEMC TULA AMBULANCE SERVICE",
             "code": "AMB-Dsc3dh",
@@ -4714,7 +5198,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 412,
             "name": "IDH ZAMBUK AMBULANCE SERVICE",
             "code": "AMB-3dcDdt",
@@ -4733,7 +5218,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 410,
             "name": "HASKE CONSULTANT HOSPITAL AMBULANCE SERVICE",
             "code": "AMB-ctLced",
@@ -4752,7 +5238,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 409,
             "name": "GSU AMBULANCE AMBULANCE SERVICE",
             "code": "AMB-neIfdb",
@@ -4771,7 +5258,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 408,
             "name": "GOMBE NORTH AMBULANCE SERVICE",
             "code": "AMB-ofhMxm",
@@ -4790,7 +5278,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 407,
             "name": "GOMBE EMERGENCY MEDICAL AMBULANCE SERVICE",
             "code": "AMB-uXfmjF",
@@ -4809,7 +5298,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 406,
             "name": "GH NAFADA AMBULANCE SERVICE",
             "code": "AMB-eCTsrg",
@@ -4828,7 +5318,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 405,
             "name": "GH KUMO AMBULANCE SERVICE",
             "code": "AMB-owrl1b",
@@ -4847,7 +5338,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 404,
             "name": "GH KASHERE AMBULANCE SERVICE",
             "code": "AMB-wuBymd",
@@ -4866,7 +5358,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 403,
             "name": "GH DUKKU AMBULANCE SERVICE",
             "code": "AMB-kssbKv",
@@ -4885,7 +5378,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 402,
             "name": "GH DEBA AMBULANCE SERVICE",
             "code": "AMB-fpbbdn",
@@ -4904,7 +5398,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 401,
             "name": "GH BILLIRI AMBULANCE SERVICE",
             "code": "AMB-Vgssyd",
@@ -4923,7 +5418,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 400,
             "name": "GH BAJOGA AMBULANCE SERVICE",
             "code": "AMB-eqng5C",
@@ -4942,7 +5438,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 399,
             "name": "DOMA HOSPITAL AMBULANCE SERVICE",
             "code": "AMB-hjbSd2",
@@ -4961,7 +5458,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 398,
             "name": "CH TUMU AMBULANCE SERVICE",
             "code": "AMB-26kRva",
@@ -4980,7 +5478,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 397,
             "name": "CH PUTOKI AMBULANCE SERVICE",
             "code": "AMB-FytBqs",
@@ -4999,7 +5498,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 396,
             "name": "CH PINDIGA AMBULANCE SERVICE",
             "code": "AMB-glfqdu",
@@ -5018,7 +5518,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 395,
             "name": "CH MALAM SIDI AMBULANCE SERVICE",
             "code": "AMB-sr5FlK",
@@ -5037,7 +5538,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 394,
             "name": "CH BOJUDE AMBULANCE SERVICE",
             "code": "AMB-9tuQfs",
@@ -5056,7 +5558,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 393,
             "name": "CH BAMBAM AMBULANCE SERVICE",
             "code": "AMB-tIvLdz",
@@ -5075,7 +5578,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 392,
             "name": "AVANTGARD AMBULANCE SERVICE",
             "code": "AMB-nPefbW",
@@ -5094,7 +5598,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 391,
             "name": "KADSEMSAS-AMB-011",
             "code": "AMB-Rbc1Jf",
@@ -5113,7 +5618,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 390,
             "name": "KADSEMSAS-AMB-010",
             "code": "AMB-EsBrsW",
@@ -5132,7 +5638,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 389,
             "name": "KADSEMSAS-AMB-009",
             "code": "AMB-qaxdvD",
@@ -5151,7 +5658,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 388,
             "name": "KADSEMSAS-AMB-008",
             "code": "AMB-dYawbe",
@@ -5170,7 +5678,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 387,
             "name": "KADSEMSAS-AMB-007",
             "code": "AMB-u23ssd",
@@ -5189,7 +5698,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 386,
             "name": "KADSEMSAS-AMB-006",
             "code": "AMB-wkVfFr",
@@ -5208,7 +5718,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 385,
             "name": "KADSEMSAS-AMB-005",
             "code": "AMB-CwdHbs",
@@ -5227,7 +5738,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 384,
             "name": "KADSEMSAS-AMB-004",
             "code": "AMB-vCvfew",
@@ -5246,7 +5758,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 383,
             "name": "KADSEMSAS-AMB-003",
             "code": "AMB-fFzxfg",
@@ -5265,7 +5778,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 382,
             "name": "KADSEMSAS-AMB-002",
             "code": "AMB-vbfjbd",
@@ -5284,7 +5798,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 381,
             "name": "KADSEMSAS-AMB-001",
             "code": "AMB-asOYd5",
@@ -5303,7 +5818,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 380,
             "name": "OYOSEMSAS 022",
             "code": "AMB-CDs69n",
@@ -5322,7 +5838,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 379,
             "name": "OYOSEMSAS 021",
             "code": "AMB-rsbnfa",
@@ -5341,7 +5858,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 378,
             "name": "OYOSEMSAS 020",
             "code": "AMB-dkQd9z",
@@ -5360,7 +5878,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 377,
             "name": "OYOSEMSAS 019",
             "code": "AMB-8gOidc",
@@ -5379,7 +5898,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 376,
             "name": "OYOSEMSAS 018",
             "code": "AMB-ssdRcr",
@@ -5398,7 +5918,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 375,
             "name": "OYOSEMSAS 017",
             "code": "AMB-gdqiAj",
@@ -5417,7 +5938,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 374,
             "name": "OYOSEMSAS 016",
             "code": "AMB-Avgdxn",
@@ -5436,7 +5958,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 373,
             "name": "OYOSEMSAS 015",
             "code": "AMB-khs4zB",
@@ -5455,7 +5978,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 372,
             "name": "OYOSEMSAS 014",
             "code": "AMB-vyMKev",
@@ -5474,7 +5998,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 371,
             "name": "SOSEMSAS05",
             "code": "AMB-hlNqfg",
@@ -5493,7 +6018,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 370,
             "name": "SOSEMSAS01",
             "code": "AMB-SK4des",
@@ -5512,7 +6038,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 369,
             "name": "OYOSEMSAS 013",
             "code": "AMB-nOkIAp",
@@ -5531,7 +6058,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 368,
             "name": "OYOSEMSAS 012",
             "code": "AMB-ERvlz2",
@@ -5550,7 +6078,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 367,
             "name": "GENERAL HOSPITAL                                                                          ",
             "code": "AMB-Jy3gJb",
@@ -5569,7 +6098,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 366,
             "name": "BAU_SEMSAS-AMB-01-043",
             "code": "AMB-6dR5fV",
@@ -5588,7 +6118,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 365,
             "name": "BAU_SEMSAS-AMB-01-042",
             "code": "AMB-mkabnb",
@@ -5607,7 +6138,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 364,
             "name": "BAU_SEMSAS-AMB-01-041",
             "code": "AMB-gEOsdd",
@@ -5626,7 +6158,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 363,
             "name": "BAU_SEMSAS-AMB-01-040",
             "code": "AMB-JzrdDd",
@@ -5645,7 +6178,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 362,
             "name": "BAU_SEMSAS-AMB-01-039",
             "code": "AMB-dTm9l3",
@@ -5664,7 +6198,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 361,
             "name": "BAU_SEMSAS-AMB-01-038",
             "code": "AMB-Orkl1l",
@@ -5683,7 +6218,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 360,
             "name": "BAU_SEMSAS-AMB-01-037",
             "code": "AMB-KdHVsO",
@@ -5702,7 +6238,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 359,
             "name": "BAU_SEMSAS-AMB-01-036",
             "code": "AMB-mddgIv",
@@ -5721,7 +6258,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 358,
             "name": "BAU_SEMSAS-AMB-01-035",
             "code": "AMB-qjUdaK",
@@ -5740,7 +6278,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 357,
             "name": "BAU_SEMSAS-AMB-01-034",
             "code": "AMB-JcmpzO",
@@ -5759,7 +6298,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 356,
             "name": "BAU_SEMSAS-AMB-01-033",
             "code": "AMB-kT2dLd",
@@ -5778,7 +6318,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 355,
             "name": "BAU_SEMSAS-AMB-01-032",
             "code": "AMB-gzdcjw",
@@ -5797,7 +6338,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 354,
             "name": "BAU_SEMSAS-AMB-01-031",
             "code": "AMB-ty17QS",
@@ -5816,7 +6358,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 353,
             "name": "BAU_SEMSAS-AMB-01-030",
             "code": "AMB-ydqakd",
@@ -5835,7 +6378,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 352,
             "name": "OYOSEMSAS 010",
             "code": "AMB-s3x7df",
@@ -5854,7 +6398,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 351,
             "name": "BAU_SEMSAS-AMB-01-029",
             "code": "AMB-2sNdyd",
@@ -5873,7 +6418,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 350,
             "name": "BAU_SEMSAS-AMB-01-028",
             "code": "AMB-8ediwc",
@@ -5892,7 +6438,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 349,
             "name": "BAU_SEMSAS-AMB-01-027",
             "code": "AMB-vsdXth",
@@ -5911,7 +6458,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 348,
             "name": "BAU_SEMSAS-AMB-01-026",
             "code": "AMB-dBnhmg",
@@ -5930,7 +6478,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 347,
             "name": "BAU_SEMSAS-AMB-01-025",
             "code": "AMB-sfbkhe",
@@ -5949,7 +6498,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 346,
             "name": "BAU_SEMSAS-AMB-01-024",
             "code": "AMB-Urmx3q",
@@ -5968,7 +6518,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 345,
             "name": "BAU_SEMSAS-AMB-01-023",
             "code": "AMB-vqBdyu",
@@ -5987,7 +6538,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 344,
             "name": "BAU_SEMSAS-AMB-01-009",
             "code": "AMB-dlcsyp",
@@ -6006,7 +6558,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 343,
             "name": "BAU_SEMSAS-AMB-01-022",
             "code": "AMB-Ckhrhs",
@@ -6025,7 +6578,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 342,
             "name": "BAU_SEMSAS-AMB-01-010",
             "code": "AMB-vrrrsf",
@@ -6044,7 +6598,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 341,
             "name": "BAU_SEMSAS-AMB-01-008",
             "code": "AMB-NZvoix",
@@ -6063,7 +6618,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 340,
             "name": "BAU_SEMSAS-AMB-01-021",
             "code": "AMB-SsbGsv",
@@ -6082,7 +6638,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 339,
             "name": "BAU_SEMSAS-AMB-01-020",
             "code": "AMB-ctjsgF",
@@ -6101,7 +6658,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 338,
             "name": "BAU_SEMSAS-AMB-01-019",
             "code": "AMB-cEdssu",
@@ -6120,7 +6678,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 337,
             "name": "BAU_SEMSAS-AMB-01-011",
             "code": "AMB-TdbwCs",
@@ -6139,7 +6698,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 336,
             "name": "BAU_SEMSAS-AMB-01-006",
             "code": "AMB-ztyjqz",
@@ -6158,7 +6718,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 335,
             "name": "BAU_SEMSAS-AMB-01-004",
             "code": "AMB-hc9A8z",
@@ -6177,7 +6738,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 334,
             "name": "BAU_SEMSAS-AMB-01-018",
             "code": "AMB-gQfsah",
@@ -6196,7 +6758,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 333,
             "name": "BAU_SEMSAS-AMB-01-017",
             "code": "AMB-8aFged",
@@ -6215,7 +6778,8 @@
             "runsheetViewModel": null,
             "stateName": "Bauchi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 330,
             "name": "YEMABUS-AMB-004",
             "code": "AMB-ddcbgF",
@@ -6234,7 +6798,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 329,
             "name": "YEMABUS-AMB-002",
             "code": "AMB-qfGfad",
@@ -6253,7 +6818,8 @@
             "runsheetViewModel": null,
             "stateName": "Yobe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 327,
             "name": "SOSEMSAS12",
             "code": "AMB-gwtweG",
@@ -6272,7 +6838,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 326,
             "name": "OYOSEMSAS 009",
             "code": "AMB-o8CDgZ",
@@ -6291,7 +6858,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 325,
             "name": "KNSEMSAS09",
             "code": "AMB-Izbega",
@@ -6310,7 +6878,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 324,
             "name": "KNSEMSAS08",
             "code": "AMB-vlVvcs",
@@ -6329,7 +6898,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 323,
             "name": "KNSEMSAS07",
             "code": "AMB-nsuxdL",
@@ -6348,7 +6918,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 322,
             "name": "KNSEMSAS06",
             "code": "AMB-ssnmgw",
@@ -6367,7 +6938,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 321,
             "name": "KNSEMSAS04",
             "code": "AMB-XdtAHr",
@@ -6386,7 +6958,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 320,
             "name": "KNSEMSAS05",
             "code": "AMB-weS1fa",
@@ -6405,7 +6978,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 319,
             "name": "OYOSEMSAS 008",
             "code": "AMB-Brqgum",
@@ -6424,7 +6998,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 318,
             "name": "OYOSEMSAS 007",
             "code": "AMB-mERBVJ",
@@ -6443,7 +7018,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 317,
             "name": "OYOSEMSAS 006",
             "code": "AMB-jeadmL",
@@ -6462,7 +7038,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 316,
             "name": "OYOSEMSAS 005",
             "code": "AMB-GxnbhJ",
@@ -6481,7 +7058,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 315,
             "name": "OYOSEMSAS 004",
             "code": "AMB-shuvWn",
@@ -6500,7 +7078,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 314,
             "name": "MINISTRY OF HEALTH.",
             "code": "AMB-QygqZe",
@@ -6519,7 +7098,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 313,
             "name": "OYOSEMSAS 002",
             "code": "AMB-nvdbfF",
@@ -6538,7 +7118,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 312,
             "name": "OYOSEMSAS 001",
             "code": "AMB-hVwafd",
@@ -6557,7 +7138,8 @@
             "runsheetViewModel": null,
             "stateName": "Oyo",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 310,
             "name": "ADASEMSAS08",
             "code": "AMB-4CQNws",
@@ -6576,7 +7158,8 @@
             "runsheetViewModel": null,
             "stateName": "Adamawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 309,
             "name": "ADASEMSAS07",
             "code": "AMB-ecRzWD",
@@ -6595,7 +7178,8 @@
             "runsheetViewModel": null,
             "stateName": "Adamawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 308,
             "name": "NAS 007",
             "code": "NAS007",
@@ -6614,7 +7198,8 @@
             "runsheetViewModel": null,
             "stateName": "Nasarawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 307,
             "name": "ADASEMSAS06",
             "code": "AMB-sluAEE",
@@ -6633,7 +7218,8 @@
             "runsheetViewModel": null,
             "stateName": "Adamawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 306,
             "name": "ADASEMSAS05",
             "code": "AMB-TDkfdl",
@@ -6652,7 +7238,8 @@
             "runsheetViewModel": null,
             "stateName": "Adamawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 305,
             "name": "Ambulance S9 Bosemsas BLS ",
             "code": "AMB-adgdns",
@@ -6671,7 +7258,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 304,
             "name": "EEM/020",
             "code": "AMB-lgXsxb",
@@ -6690,7 +7278,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 303,
             "name": "OGH/015",
             "code": "AMB-hfgMwH",
@@ -6709,7 +7298,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 302,
             "name": "UBGH/014",
             "code": "AMB-s6vsfd",
@@ -6728,7 +7318,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 301,
             "name": "EZGH/012.",
             "code": "AMB-R4rzgA",
@@ -6747,7 +7338,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 300,
             "name": "EZGH/012",
             "code": "AMB-kfsdgm",
@@ -6766,7 +7358,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 299,
             "name": "NGH/011",
             "code": "AMB-WzdQc0",
@@ -6785,7 +7378,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 298,
             "name": "IBGH/010",
             "code": "AMB-bd6sWs",
@@ -6804,7 +7398,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 297,
             "name": "ISGH/009",
             "code": "AMB-Hcsdgc",
@@ -6823,7 +7418,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 296,
             "name": "ADASEMSAS04",
             "code": "AMB-b0xd1w",
@@ -6842,7 +7438,8 @@
             "runsheetViewModel": null,
             "stateName": "Adamawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 295,
             "name": "ADASEMSAS03",
             "code": "AMB-qGzv1m",
@@ -6861,7 +7458,8 @@
             "runsheetViewModel": null,
             "stateName": "Adamawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 294,
             "name": "ADASEMSAS02",
             "code": "AMB-4xefqb",
@@ -6880,7 +7478,8 @@
             "runsheetViewModel": null,
             "stateName": "Adamawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 293,
             "name": "ADASEMSAS01",
             "code": "AMB-yvyVdg",
@@ -6899,7 +7498,8 @@
             "runsheetViewModel": null,
             "stateName": "Adamawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 292,
             "name": "ISGH/009",
             "code": "AMB-XkdHdr",
@@ -6918,7 +7518,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 291,
             "name": "AGH/008",
             "code": "AMB-gsdzcD",
@@ -6937,7 +7538,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 290,
             "name": "ONGH/006.",
             "code": "AMB-ztfdnv",
@@ -6956,7 +7558,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 289,
             "name": "ONGH/006",
             "code": "AMB-dhsqdd",
@@ -6975,7 +7578,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 288,
             "name": "UMGH/005",
             "code": "AMB-a4bX3l",
@@ -6994,7 +7598,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 287,
             "name": "OWGH/003.",
             "code": "AMB-Szyka7",
@@ -7013,7 +7618,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 286,
             "name": "OWGH/003",
             "code": "AMB-SrguO5",
@@ -7032,7 +7638,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 285,
             "name": "IGH/002",
             "code": "AMB-l9hZfU",
@@ -7051,7 +7658,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 284,
             "name": "EGH/001",
             "code": "AMB-Hhfddw",
@@ -7070,7 +7678,8 @@
             "runsheetViewModel": null,
             "stateName": "Ebonyi",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 283,
             "name": "DELSEAS/GH/008",
             "code": "AMB-OmDssb",
@@ -7089,26 +7698,8 @@
             "runsheetViewModel": null,
             "stateName": "Delta",
             "eventStatusType": null
-        }, {
-            "id": 282,
-            "name": "DELSEAS/GH/008",
-            "code": "AMB-9cVgsD",
-            "location": "DELSUTH OGHARAH",
-            "ambulanceTypeId": 1,
-            "stateId": 10,
-            "lgaId": 232,
-            "wardId": 3111,
-            "nhiAorSHIA": "DSCHC",
-            "serviceType": "BLS",
-            "online": true,
-            "driverName": "AKPOJIGHA JULIUS",
-            "contactNumber": "09128059791",
-            "dateAdded": "2025-12-26T10:01:00.030862+00:00",
-            "ambulanceTypeViewModel": null,
-            "runsheetViewModel": null,
-            "stateName": "Delta",
-            "eventStatusType": null
-        }, {
+        },
+        {
             "id": 281,
             "name": "DELSEAS/GH/007",
             "code": "AMB-wcvhvp",
@@ -7127,26 +7718,8 @@
             "runsheetViewModel": null,
             "stateName": "Delta",
             "eventStatusType": null
-        }, {
-            "id": 280,
-            "name": "DELSEAS/GH/007",
-            "code": "AMB-sbjxk5",
-            "location": "CH, AGBOR",
-            "ambulanceTypeId": 1,
-            "stateId": 10,
-            "lgaId": 235,
-            "wardId": 3135,
-            "nhiAorSHIA": "DSCHC",
-            "serviceType": "BLS",
-            "online": true,
-            "driverName": "EGWU CHINEDU",
-            "contactNumber": "07030440676",
-            "dateAdded": "2025-12-26T09:54:10.748946+00:00",
-            "ambulanceTypeViewModel": null,
-            "runsheetViewModel": null,
-            "stateName": "Delta",
-            "eventStatusType": null
-        }, {
+        },
+        {
             "id": 279,
             "name": "DELSEAS/GH/006",
             "code": "AMB-rWfPUv",
@@ -7165,7 +7738,8 @@
             "runsheetViewModel": null,
             "stateName": "Delta",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 278,
             "name": "DELSEAS/GH/005    ",
             "code": "AMB-JbqsGg",
@@ -7184,7 +7758,8 @@
             "runsheetViewModel": null,
             "stateName": "Delta",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 277,
             "name": "DELSEAS/GH/004",
             "code": "AMB-fdtFSp",
@@ -7203,7 +7778,8 @@
             "runsheetViewModel": null,
             "stateName": "Delta",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 276,
             "name": "DELSEAS/GH/003",
             "code": "AMB-fylwgS",
@@ -7222,7 +7798,8 @@
             "runsheetViewModel": null,
             "stateName": "Delta",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 275,
             "name": "DELSEAS/GH/002B",
             "code": "AMB-zfUbls",
@@ -7241,7 +7818,8 @@
             "runsheetViewModel": null,
             "stateName": "Delta",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 274,
             "name": "DELSEAS/GH/002",
             "code": "AMB-beideq",
@@ -7260,7 +7838,8 @@
             "runsheetViewModel": null,
             "stateName": "Delta",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 273,
             "name": "DELSEAS/GH/001",
             "code": "AMB-4by6ds",
@@ -7279,7 +7858,8 @@
             "runsheetViewModel": null,
             "stateName": "Delta",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 272,
             "name": "Ambulance S2 Bosemsas BLS ",
             "code": "AMB-hprJgB",
@@ -7298,7 +7878,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 271,
             "name": "KNSEMSAS03",
             "code": "AMB-FvsShs",
@@ -7317,7 +7898,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 270,
             "name": "KNSEMSAS02",
             "code": "AMB-rRdNsd",
@@ -7336,7 +7918,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 269,
             "name": "KNSEMSAS01",
             "code": "AMB-vxsy4k",
@@ -7355,7 +7938,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 267,
             "name": "LASAMBUS O08",
             "code": "AMB-grbB07",
@@ -7374,7 +7958,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 266,
             "name": "LASAMBUS 021",
             "code": "AMB-vH2ycs",
@@ -7393,7 +7978,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 265,
             "name": "LASAMBUS 012",
             "code": "AMB-Pv8x78",
@@ -7412,7 +7998,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 264,
             "name": "LASAMBUS  07",
             "code": "AMB-AVKmKf",
@@ -7431,7 +8018,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 263,
             "name": "LASAMBUS 020",
             "code": "AMB-mssfzd",
@@ -7450,7 +8038,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 262,
             "name": "LASAMBUS 011",
             "code": "AMB-akbsdg",
@@ -7469,7 +8058,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 261,
             "name": "Ambulance MMC S002 Bosemsas BLS ",
             "code": "AMB-kskGwv",
@@ -7480,7 +8070,7 @@
             "wardId": 2844,
             "nhiAorSHIA": "BOSCHMA",
             "serviceType": "Transportation ",
-            "online": true,
+            "online": false,
             "driverName": "Bunu Umar Babakura",
             "contactNumber": "08128176628",
             "dateAdded": "2025-12-22T11:17:50.535315+00:00",
@@ -7488,7 +8078,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 260,
             "name": "Ambulance MMC S001 Bosemsas BLS ",
             "code": "AMB-sMvc5L",
@@ -7499,7 +8090,7 @@
             "wardId": 2845,
             "nhiAorSHIA": "BOSCHMA",
             "serviceType": "Transportation ",
-            "online": true,
+            "online": false,
             "driverName": "Usman Mohammed Jibrin",
             "contactNumber": "08023703589",
             "dateAdded": "2025-12-22T11:08:14.648185+00:00",
@@ -7507,7 +8098,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 259,
             "name": "Ambulance Mafa S001 Bosemsas BLS ",
             "code": "AMB-BxwHGs",
@@ -7518,7 +8110,7 @@
             "wardId": 2825,
             "nhiAorSHIA": "BOSCHMA",
             "serviceType": "Transportation ",
-            "online": true,
+            "online": false,
             "driverName": "Alhaji Tamsungamdua",
             "contactNumber": "09045516488",
             "dateAdded": "2025-12-22T10:32:22.705004+00:00",
@@ -7526,7 +8118,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 258,
             "name": "Ambulance S4 Bosemsas BLS ",
             "code": "AMB-3eeIfw",
@@ -7545,7 +8138,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 257,
             "name": "SOSEMSAS15",
             "code": "AMB-xw6Dvd",
@@ -7564,7 +8158,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 256,
             "name": "SOSEMSAS14",
             "code": "AMB-4d1RLg",
@@ -7583,7 +8178,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 255,
             "name": "SOSEMSAS13",
             "code": "AMB-wa1gs7",
@@ -7602,7 +8198,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 254,
             "name": "SOSEMSAS11",
             "code": "AMB-zy4bsM",
@@ -7621,7 +8218,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 253,
             "name": "Gado Musa",
             "code": "AMB-lnsLsw",
@@ -7640,7 +8238,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 252,
             "name": "SOSEMSAS10",
             "code": "AMB-Vsfr7Q",
@@ -7659,7 +8258,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 251,
             "name": "NAS 006",
             "code": "NAS006",
@@ -7678,7 +8278,8 @@
             "runsheetViewModel": null,
             "stateName": "Nasarawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 250,
             "name": "NAS 007",
             "code": "AMB-XdgruY",
@@ -7697,7 +8298,8 @@
             "runsheetViewModel": null,
             "stateName": "Nasarawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 248,
             "name": "SOSEMSAS09",
             "code": "AMB-8svsw1",
@@ -7716,7 +8318,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 247,
             "name": "SOSEMSAS08",
             "code": "AMB-vz4zsw",
@@ -7735,7 +8338,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 246,
             "name": "SOSEMSAS07",
             "code": "AMB-iqddda",
@@ -7754,7 +8358,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 245,
             "name": "SOSEMSAS06",
             "code": "AMB-ZsGdVs",
@@ -7773,7 +8378,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 244,
             "name": "SOSEMSAS05",
             "code": "AMB-hsgKed",
@@ -7792,7 +8398,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 243,
             "name": "SOSEMSAS04",
             "code": "AMB-bhcyvz",
@@ -7811,7 +8418,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 242,
             "name": "SOSEMSAS03",
             "code": "AMB-ahwscd",
@@ -7830,7 +8438,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 241,
             "name": "SOSEMSAS02",
             "code": "AMB-tSIZgm",
@@ -7849,7 +8458,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 238,
             "name": "SOSEMSAS01",
             "code": "SOSEMSAS01",
@@ -7868,7 +8478,8 @@
             "runsheetViewModel": null,
             "stateName": "Sokoto",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 237,
             "name": "LASAMBUS 019",
             "code": "AMB-fgHzy2",
@@ -7887,7 +8498,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 236,
             "name": "NAS 005",
             "code": "NAS005",
@@ -7906,7 +8518,8 @@
             "runsheetViewModel": null,
             "stateName": "Nasarawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 235,
             "name": "NAS 004",
             "code": "NAS004",
@@ -7925,7 +8538,8 @@
             "runsheetViewModel": null,
             "stateName": "Nasarawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 234,
             "name": "NAS 003",
             "code": "NS003",
@@ -7944,7 +8558,8 @@
             "runsheetViewModel": null,
             "stateName": "Nasarawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 233,
             "name": "NAS 0O2",
             "code": "NAS 002",
@@ -7963,7 +8578,8 @@
             "runsheetViewModel": null,
             "stateName": "Nasarawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 232,
             "name": "LASAMBUS 016",
             "code": "AMB-avuRsb",
@@ -7982,7 +8598,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 231,
             "name": "LASAMBUS 015",
             "code": "AMB-zmmIbr",
@@ -8001,7 +8618,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 230,
             "name": "NAS 001",
             "code": "NAS001",
@@ -8020,7 +8638,8 @@
             "runsheetViewModel": null,
             "stateName": "Nasarawa",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 229,
             "name": "LASAMBUS 013",
             "code": "AMB-sdfrcq",
@@ -8039,7 +8658,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 228,
             "name": "LASAMBUS 018",
             "code": "AMB-eWMjss",
@@ -8058,7 +8678,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 227,
             "name": "LASAMBUS  06",
             "code": "AMB-7evBsA",
@@ -8077,7 +8698,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 226,
             "name": "LASAMBUS 025",
             "code": "AMB-asfcwd",
@@ -8096,7 +8718,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 225,
             "name": "LASAMBUS 002",
             "code": "AMB-ddTrsf",
@@ -8115,7 +8738,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 224,
             "name": "LASAMBUS 017",
             "code": "AMB-sRZaez",
@@ -8134,7 +8758,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 223,
             "name": "TASEMSAS 008",
             "code": "AMB-dxegJC",
@@ -8153,7 +8778,8 @@
             "runsheetViewModel": null,
             "stateName": "Taraba",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 222,
             "name": "LASAMBUS 024",
             "code": "AMB-fw0yu8",
@@ -8172,7 +8798,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 221,
             "name": "LASAMBUS 023",
             "code": "AMB-fb0zHM",
@@ -8191,7 +8818,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 220,
             "name": "LASAMBUS 022",
             "code": "AMB-qbgbxn",
@@ -8210,7 +8838,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 219,
             "name": "TASEMSAS 007",
             "code": "AMB-nukmPH",
@@ -8229,7 +8858,8 @@
             "runsheetViewModel": null,
             "stateName": "Taraba",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 218,
             "name": "LASAMBUS 014",
             "code": "AMB-Tsd2fd",
@@ -8248,7 +8878,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 217,
             "name": "TASEMSAS 006",
             "code": "AMB-oxwphf",
@@ -8267,7 +8898,8 @@
             "runsheetViewModel": null,
             "stateName": "Taraba",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 216,
             "name": "TASEMSAS 005",
             "code": "AMB-gt6pvG",
@@ -8286,7 +8918,8 @@
             "runsheetViewModel": null,
             "stateName": "Taraba",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 215,
             "name": "TASEMSAS 004",
             "code": "AMB-edkyqn",
@@ -8305,7 +8938,8 @@
             "runsheetViewModel": null,
             "stateName": "Taraba",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 214,
             "name": "CH FILIYA AMBULANCE SERVICE",
             "code": "AMB-dskssp",
@@ -8324,7 +8958,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 213,
             "name": "TASEMSAS 003",
             "code": "AMB-sgzkfz",
@@ -8343,7 +8978,8 @@
             "runsheetViewModel": null,
             "stateName": "Taraba",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 212,
             "name": "TASEMSAS 002",
             "code": "AMB-sCS2yh",
@@ -8362,7 +8998,8 @@
             "runsheetViewModel": null,
             "stateName": "Taraba",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 211,
             "name": "TASEMSAS 001",
             "code": "AMB-qs3gn8",
@@ -8381,7 +9018,28 @@
             "runsheetViewModel": null,
             "stateName": "Taraba",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 210,
+            "name": "LASAMBUS 010",
+            "code": "AMB-e2anp8",
+            "location": "IGANDO",
+            "ambulanceTypeId": 1,
+            "stateId": 25,
+            "lgaId": 565,
+            "wardId": 6733,
+            "nhiAorSHIA": "14A 132 LA",
+            "serviceType": "BLS",
+            "online": false,
+            "driverName": "ATOLAGBE, FOLORUNSHO",
+            "contactNumber": "08025059514",
+            "dateAdded": "2025-12-21T16:06:47.557621+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Lagos",
+            "eventStatusType": null
+        },
+        {
             "id": 209,
             "name": "LASAMBUS 009",
             "code": "AMB-dyqosr",
@@ -8400,7 +9058,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 208,
             "name": "LASAMBUS 005",
             "code": "AMB-ftrdna",
@@ -8419,7 +9078,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 207,
             "name": "LASAMBUS 004",
             "code": "AMB-3g2YqY",
@@ -8438,7 +9098,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 206,
             "name": "LASAMBUS 003",
             "code": "AMB-Fwshwf",
@@ -8457,7 +9118,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 205,
             "name": "LASAMBUS 001",
             "code": "AMB-RdRSn0",
@@ -8476,7 +9138,8 @@
             "runsheetViewModel": null,
             "stateName": "Lagos",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 204,
             "name": "Ambulance S5 Bosemsas BLS ",
             "code": "AMB-RdshPs",
@@ -8495,7 +9158,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 198,
             "name": "Ambulance S1 Bosemsas BLS ",
             "code": "AMB-ddsvyd",
@@ -8514,7 +9178,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 191,
             "name": "Ambulance S8 Bosemsas BLS ",
             "code": "AMB-aAyuBs",
@@ -8533,7 +9198,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 164,
             "name": "Ambulance S10 Bosemsas BLS ",
             "code": "AMB-smbuAf",
@@ -8552,7 +9218,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 155,
             "name": "Ambulance S3 Bosemsas BLS ",
             "code": "AMB-ddbcd4",
@@ -8571,7 +9238,8 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 127,
             "name": "Katsina_ambulance_2",
             "code": "AMB-ksoxpb",
@@ -8590,7 +9258,8 @@
             "runsheetViewModel": null,
             "stateName": "Katsina",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 126,
             "name": "Katsina_ambulance_1",
             "code": "AMB-t2csnd",
@@ -8609,7 +9278,28 @@
             "runsheetViewModel": null,
             "stateName": "Katsina",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 99,
+            "name": "Ambulance S8 Bosemsas bls active",
+            "code": "AMB-efqdbl",
+            "location": "Damboa road junction Late :Galadima of dikwa Residential House",
+            "ambulanceTypeId": 1,
+            "stateId": 8,
+            "lgaId": 203,
+            "wardId": 2842,
+            "nhiAorSHIA": "NHIA/SHIA/BOCHMA",
+            "serviceType": null,
+            "online": false,
+            "driverName": null,
+            "contactNumber": null,
+            "dateAdded": "2025-09-25T16:30:28.409187+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Borno",
+            "eventStatusType": null
+        },
+        {
             "id": 91,
             "name": "FCT EMS",
             "code": "AMB-yuofvX",
@@ -8628,7 +9318,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 90,
             "name": "FCT FEMA Asokoro",
             "code": "AMB-FEMA_01",
@@ -8647,7 +9338,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 89,
             "name": "NSCDC AMBULANCE\t",
             "code": "AMB-lcWb8W",
@@ -8666,7 +9358,28 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 88,
+            "name": "ambulance S9 Bosemsas BLS active ",
+            "code": "AMB-6hyRdx",
+            "location": "Mashidimamiopp bakasi housing estate ",
+            "ambulanceTypeId": 1,
+            "stateId": 8,
+            "lgaId": 203,
+            "wardId": 2842,
+            "nhiAorSHIA": "BOSCHMA",
+            "serviceType": null,
+            "online": false,
+            "driverName": null,
+            "contactNumber": null,
+            "dateAdded": "2025-09-16T11:28:29.446932+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Borno",
+            "eventStatusType": null
+        },
+        {
             "id": 83,
             "name": "Kabiru.Ambulance.Kaduna",
             "code": "AMB-S2Edtg",
@@ -8685,7 +9398,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 82,
             "name": "KdAmb01",
             "code": "AMB-Sxsdd3",
@@ -8704,7 +9418,8 @@
             "runsheetViewModel": null,
             "stateName": "Kaduna",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 80,
             "name": "Keke napep ",
             "code": "AMB-dwqFbR",
@@ -8723,7 +9438,28 @@
             "runsheetViewModel": null,
             "stateName": "Borno",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 73,
+            "name": "ambulance S8 Bosemsas BLS ",
+            "code": "AMB-bwsedm",
+            "location": "Damboa road  bus stop opp galadima of dikwa resident house",
+            "ambulanceTypeId": 1,
+            "stateId": 8,
+            "lgaId": 203,
+            "wardId": 2842,
+            "nhiAorSHIA": "BOSCHMA",
+            "serviceType": null,
+            "online": false,
+            "driverName": null,
+            "contactNumber": null,
+            "dateAdded": "2025-09-02T14:45:18.234492+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Borno",
+            "eventStatusType": null
+        },
+        {
             "id": 61,
             "name": "KanoAmbulance",
             "code": "AMB-Iof8ch",
@@ -8742,7 +9478,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 38,
             "name": "Kwankwassiya 6",
             "code": "AMB-rjedsK",
@@ -8761,7 +9498,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 37,
             "name": "Kwankwassiya 5",
             "code": "AMB-dysxbg",
@@ -8780,7 +9518,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 36,
             "name": "Kwankwassiya 4",
             "code": "AMB-dsgmfs",
@@ -8799,7 +9538,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 35,
             "name": "Kwankwassiya 3",
             "code": "AMB-drdesu",
@@ -8818,7 +9558,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 34,
             "name": "Kwankwassiya 2",
             "code": "AMB-fdVwg8",
@@ -8837,7 +9578,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 33,
             "name": "Kwankwassiya 1",
             "code": "AMB-frUfti",
@@ -8856,7 +9598,8 @@
             "runsheetViewModel": null,
             "stateName": "Kano",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 32,
             "name": "SSHGombe 02",
             "code": "AMB-qkdhUk",
@@ -8867,7 +9610,7 @@
             "wardId": 4233,
             "nhiAorSHIA": "Gohealth",
             "serviceType": null,
-            "online": true,
+            "online": false,
             "driverName": null,
             "contactNumber": null,
             "dateAdded": "2025-07-17T04:58:20.69254+00:00",
@@ -8875,7 +9618,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 31,
             "name": "General Hospital Deba",
             "code": "AMB-CzfkqN",
@@ -8894,7 +9638,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 30,
             "name": "General Hospital Dukku",
             "code": "AMB-vqNbjd",
@@ -8913,7 +9658,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 29,
             "name": "General Hospital Kaltungo",
             "code": "AMB-Sausgy",
@@ -8932,7 +9678,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 28,
             "name": "NEMTC",
             "code": "AMB-fjYd7k",
@@ -8951,7 +9698,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 27,
             "name": "Test",
             "code": "AMB-wDhZFe",
@@ -8970,7 +9718,8 @@
             "runsheetViewModel": null,
             "stateName": "Fct",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 26,
             "name": "Gombe State EOC Ambulance ",
             "code": "AMB-hdzZlD",
@@ -8989,7 +9738,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 25,
             "name": "SSH Gombe 01",
             "code": "AMB-ygefoe",
@@ -9008,7 +9758,8 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 24,
             "name": "Skyscape Ambulance Service",
             "code": "AMB-d4auHd",
@@ -9027,7 +9778,28 @@
             "runsheetViewModel": null,
             "stateName": "Gombe",
             "eventStatusType": null
-        }, {
+        },
+        {
+            "id": 23,
+            "name": "YobeNewAmbulance",
+            "code": "AMB-ffqfsa",
+            "location": "Yobe",
+            "ambulanceTypeId": 1,
+            "stateId": 36,
+            "lgaId": 801,
+            "wardId": 9390,
+            "nhiAorSHIA": "123",
+            "serviceType": "None",
+            "online": false,
+            "driverName": "Rasaq Baba",
+            "contactNumber": "08169815359",
+            "dateAdded": "2025-05-25T13:00:06.028316+00:00",
+            "ambulanceTypeViewModel": null,
+            "runsheetViewModel": null,
+            "stateName": "Yobe",
+            "eventStatusType": null
+        },
+        {
             "id": 22,
             "name": "Cedacrest Hospital",
             "code": "Cedacrest Hospital",
@@ -9046,7 +9818,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 21,
             "name": "FMC Jabi",
             "code": "FMC Jabi",
@@ -9065,7 +9838,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 20,
             "name": "Wuse District Hospital ",
             "code": "Wuse District Hospital ",
@@ -9084,7 +9858,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 19,
             "name": "National Hospital Abuja",
             "code": "National Hospital Abuja",
@@ -9103,7 +9878,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 18,
             "name": "Tolbert Specialist Hospital",
             "code": "Tolbert Specialist Hospital",
@@ -9122,7 +9898,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 17,
             "name": "FCT Medical Emergency Services",
             "code": "FCT Medical Emergency Services",
@@ -9141,7 +9918,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 15,
             "name": "Apo Masjid",
             "code": "Apo Masjid",
@@ -9160,7 +9938,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 14,
             "name": "Ibrahim Memorial Hospital Gwagwalada",
             "code": "Ibrahim Memorial Hospital Gwagwalada",
@@ -9179,7 +9958,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 13,
             "name": "Royal Specialist Hospital",
             "code": "Royal Specialist Hospital",
@@ -9198,7 +9978,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 12,
             "name": "NSCDC",
             "code": "NSCDC",
@@ -9217,7 +9998,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 11,
             "name": "FRSC - Zebra 47",
             "code": "FRSC - Zebra 47",
@@ -9236,7 +10018,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 10,
             "name": "FRSC - Zebra 38",
             "code": "FRSC - Zebra 38",
@@ -9255,7 +10038,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 9,
             "name": "FRSC - Zebra 34",
             "code": "FRSC - Zebra 34",
@@ -9274,7 +10058,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 8,
             "name": "FRSC - Zebra 12",
             "code": "FRSC - Zebra 12",
@@ -9293,7 +10078,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 7,
             "name": "FRSC - Zebra 7",
             "code": "FRSC - Zebra 7",
@@ -9312,7 +10098,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 6,
             "name": "FRSC - Zebra 6",
             "code": "FRSC - Zebra 6",
@@ -9331,7 +10118,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 5,
             "name": "FRSC - Zebra 5",
             "code": "FRSC - Zebra 5",
@@ -9350,7 +10138,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 4,
             "name": "FRSC - Zebra 4",
             "code": "FRSC - Zebra 4",
@@ -9369,7 +10158,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 3,
             "name": "FRSC - Zebra 3",
             "code": "FRSC - Zebra 3",
@@ -9388,7 +10178,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 2,
             "name": "FRSC - Zebra 2",
             "code": "FRSC - Zebra 2",
@@ -9407,7 +10198,8 @@
             "runsheetViewModel": null,
             "stateName": "Abia",
             "eventStatusType": null
-        }, {
+        },
+        {
             "id": 1,
             "name": "FRSC - Zebra 1",
             "code": "FRSC - Zebra 1",

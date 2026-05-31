@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from datetime import datetime
-from typing import Optional, List, Any
+from typing import Optional, List, Any, Dict
 from app.schemas.patient import Patient
 from app.schemas.incident import Incident
 
@@ -17,12 +17,14 @@ class ClaimBase(BaseModel):
     distance_covered: Optional[float] = Field(None, alias="distanceCovered")
     
     incident_date: Optional[str] = Field(None, alias="incidentDate")
-    status: Optional[str] = Field("New", alias="status")
+    ambulance_claim_status: Optional[str] = Field("New", alias="ambulanceClaimStatus")
+    etc_claim_status: Optional[str] = Field("New", alias="etcClaimStatus")
     review: Optional[str] = Field(None, alias="review")
     etc_review: Optional[str] = Field(None, alias="etcReview")
     
     incident_id: Optional[int] = Field(None, alias="incidentId")
     patient_id: Optional[int] = Field(None, alias="patientId")
+    rejection_reason: Optional[str] = Field(None, alias="rejectionReason")
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
@@ -37,6 +39,7 @@ from app.schemas.claim_image import ClaimImage
 class Claim(ClaimBase):
     id: int
     created_at: Optional[datetime] = Field(None, alias="createdAt")
+    status: Optional[str] = None
     
     patient: Optional[Patient] = None
     incident_view_model: Optional[Incident] = Field(None, alias="incidentViewModel")
@@ -45,6 +48,8 @@ class Claim(ClaimBase):
     # Response Compatibility fields
     details: List[Any] = Field(default_factory=list, alias="details")
     medical_interventions: List[Any] = Field(default_factory=list, alias="medicalInterventions")
+    drugs_list: Optional[List[Any]] = Field(default_factory=list, alias="drugsList")
+    patient_details: Optional[Dict[str, Any]] = Field(None, alias="patientDetails")
 
     @model_validator(mode='before')
     @classmethod
@@ -52,9 +57,11 @@ class Claim(ClaimBase):
         if isinstance(data, dict):
             if 'incident' in data:
                 data['incident_view_model'] = data['incident']
-        elif hasattr(data, "__dict__") and "incident" in data.__dict__:
-            if data.incident:
+            data['status'] = data.get('ambulance_claim_status') or data.get('ambulanceClaimStatus')
+        elif hasattr(data, "__dict__"):
+            if "incident" in data.__dict__ and data.incident:
                 data.incident_view_model = data.incident
+            data.status = getattr(data, 'ambulance_claim_status', None)
         return data
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
@@ -72,3 +79,17 @@ class ClaimResponse(BaseModel):
     success: bool
     message: str
     data: Claim
+
+class ClaimSummaryData(BaseModel):
+    total: int = 0
+    approved: int = 0
+    rejected: int = 0
+    pending: int = 0
+
+class ClaimSummaryResponse(BaseModel):
+    success: bool = True
+    message: str = "Claim summary retrieved successfully"
+    data: Any
+    totalCount: int = 1
+    refreshToken: Optional[str] = None
+    refreshTokenExpiryTime: Optional[str] = "0001-01-01T00:00:00"

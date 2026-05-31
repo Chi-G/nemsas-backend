@@ -9,14 +9,12 @@ class ClaimStatus(str, enum.Enum):
     APPROVED = "Approved"
     REJECTED = "Rejected"
     PAID = "Paid"
-
-class ClaimType(str, enum.Enum):
-    AMBULANCE = "Ambulance"
-    ETC = "ETC"
+    ENDORSED = "Endorsed"
 
 class ClaimAction(str, enum.Enum):
     APPROVE = "Approve"
     REJECT = "Reject"
+    ENDORSE = "Endorse"
 
 class ETCIntake(Base):
     __tablename__ = "etc_intakes"
@@ -43,8 +41,7 @@ class Claim(Base):
     patient_id = Column(Integer, ForeignKey("patients.id"), index=True, nullable=True)
     
     # Submission Meta
-    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True) 
-    claim_type = Column(SQLAlchemyEnum(ClaimType, native_enum=False), nullable=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
     
     # Descriptive Fields
     title = Column(String(255), nullable=True)
@@ -69,8 +66,10 @@ class Claim(Base):
     review = Column(String(500), nullable=True) # Holds codes like "Incorrect diagnosis", "Duplicate claim"
     etc_review = Column(String(500), nullable=True)
     
-    status = Column(String(50), default="New") # Standardizing on string status to exactly mirror "New", "Approved", etc.
-    rejection_reason = Column(String(255), nullable=True)
+    ambulance_claim_status = Column(String(50), default="New")
+    etc_claim_status = Column(String(50), default="New")
+    rejection_reason = Column(String(255), nullable=True)      # Ambulance rejection reason
+    etc_rejection_reason = Column(String(255), nullable=True)  # ETC rejection reason
     
     processed_at = Column(DateTime(timezone=True), nullable=True)
     processed_by_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)

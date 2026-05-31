@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from app.api.v1.api import api_router
 import app.models.base # Force register all models to load relationships
 from app.core.config import settings
@@ -7,13 +8,36 @@ from app.core.middleware import LoggingMiddleware
 from fastapi import Request, HTTPException
 from fastapi.responses import JSONResponse
 
+from contextlib import asynccontextmanager
+from app.services.notification_service import notification_service
+from app.core.notifications import notification_service as fcm_notification_service
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    try:
+        await notification_service.connect_redis()
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(
+            f"[Redis] Failed to connect to Redis on startup: {e}. "
+            "Real-time pub-sub notifications will be disabled."
+        )
+    yield
+    # Shutdown
+    try:
+        await notification_service.disconnect_redis()
+    except Exception as e:
+        pass
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
-
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
+    lifespan=lifespan,
 )
 
 from fastapi.exceptions import RequestValidationError
@@ -65,12 +89,12 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     logger.error(f"ValidationError: {exc.errors()} | Body: {body.decode()}")
     response = JSONResponse(
         status_code=400,
-        content={
+        content=jsonable_encoder({
             "success": False,
             "status": 400,
             "message": "Input validation failed",
             "error": exc.errors()
-        },
+        }),
     )
     origin = request.headers.get("origin")
     if origin:
@@ -130,6 +154,13 @@ import socketio
 from app.core.socket_manager import sio
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+# Ensure static upload directory exists
+import os
+os.makedirs("static/uploads", exist_ok=True)
+
+# Mount static files
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Mount Socket.IO
 socket_app = socketio.ASGIApp(sio, socketio_path='socket.io')

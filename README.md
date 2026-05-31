@@ -1,107 +1,92 @@
-# NEMSAS Backend
+# National Emergency Medical Service and Ambulance System (NEMSAS) Backend
 
-The backend system for the National Emergency Medical Service and Ambulance System (NEMSAS). This system provides API endpoints for incident management, dispatching, partner coordination, and claims processing.
+A robust, enterprise-grade backend API powered by **FastAPI** to drive the NEMSAS ecosystem. This system facilitates real-time incident logging, intelligent ambulance dispatch, emergency treatment center coordination, multi-tier claims processing, and electronic runsheet management.
 
-## Tech Stack
+---
 
-- **Framework:** [FastAPI](https://fastapi.tiangolo.com/)
-- **ORM:** [SQLAlchemy](https://www.sqlalchemy.org/)
-- **Migrations:** [Alembic](https://alembic.sqlalchemy.org/)
-- **Database:** PostgreSQL (via `asyncpg`)
-- **Package Manager:** [UV](https://github.com/astral-uv/uv)
-- **Validation:** [Pydantic v2](https://docs.pydantic.dev/)
+### 🌐 Interactive API Documentation
+* **Live OpenAPI Docs**: [https://nemsas-api.65.108.209.25.sslip.io/docs#/](https://nemsas-api.65.108.209.25.sslip.io/docs#/)
 
-## Installation
+---
+
+## 🚀 Architectural & System Highlights
+
+1. **Fully Asynchronous Runtime**: Engineered on FastAPI and SQLAlchemy asynchronously utilizing `asyncpg` for maximum throughput and concurrent performance.
+2. **Fine-Grained Role-Based Access Control (RBAC)**: Multi-tenant security patterns supporting system actors including Super Administrators, Nemsas Admins, Dispatchers, Ambulance Crews, Treatment Centers, and Observers.
+3. **Geographic Information Services (GIS)**: Built-in support for geographic layers (State -> LGA -> Ward) enabling precise geographic routing and incident tracking.
+4. **Resilient Seed Data Pipeline**: Batch-oriented seeding scripts designed to parse and load thousands of records, automatically handling missing references and foreign key lookups gracefully.
+5. **Enterprise-Grade Security**: Secure JWT-based stateless authentication with token rotation mechanisms.
+6. **Real-time Event Architecture**: Websocket manager enabling instant notification dispatch and live status synchronization.
+
+---
+
+## 🛠️ Technology Stack
+
+* **API Engine**: [FastAPI](https://fastapi.tiangolo.com/) (Pydantic v2 validation)
+* **Database & ORM**: PostgreSQL, [SQLAlchemy 2.0](https://www.sqlalchemy.org/) (Async engine)
+* **Migrations**: [Alembic](https://alembic.sqlalchemy.org/)
+* **Package Management**: [Astral UV](https://github.com/astral-uv/uv) (Ultra-fast resolver)
+* **Testing Framework**: [Pytest](https://pytest.org/) (Async integration test suites)
+
+---
+
+## 📦 Installation & Local Setup
 
 ### Prerequisites
+* Python 3.12+
+* [UV Package Manager](https://docs.astral.sh/uv/)
+* PostgreSQL Database
 
-- Python 3.12+
-- [UV package manager](https://docs.astral.sh/uv/getting-started/installation/)
-- PostgreSQL
+### Setup Instructions
 
-### Setup
-
-1. **Clone the repository:**
+1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/goodnessaig1/nemsas-backend.git
+   git clone https://github.com/Sydani-Tech/nemsas-backend.git
    cd nemsas-backend
    ```
 
-2. **Install dependencies:**
+2. **Synchronize Dependencies:**
    ```bash
    uv sync
    ```
 
 3. **Configure Environment Variables:**
-   Create a `.env` file in the root directory based on the parameters in `app/core/config.py`. Be sure to configure:
-   - `DATABASE_URL` (e.g., `postgresql+asyncpg://user:password@localhost/nemsas`)
-   - `SECRET_KEY`
-   - `JWT_ALGORITHM`
+   Create a `.env` file in the root directory based on `.env.example`:
+   ```bash
+   cp .env.example .env
+   ```
 
-4. **Run Database Migrations:**
+4. **Execute Database Migrations:**
    ```bash
    uv run alembic upgrade head
    ```
 
-5. **Database Seeding:**
-   You can populate the reference tables and test data using our hydration scripts located in the `scripts/` directory.
+5. **Hydrate Reference & Metadata Tables:**
+   Seed core reference data including LGAs, Wards, States, and Medical Interventions:
+   ```bash
+   PYTHONPATH=. uv run scripts/seed_all.py
+   ```
    
-   **Bulk Hydration:**
-   Populates all core data, reference types, entities (Ambulances, Hospitals), Incidents, and Patients in the correct dependency order:
+   *Or using python directly:*
    ```bash
    PYTHONPATH=. ./venv/bin/python3 scripts/seed_all.py
    ```
 
-   **Individual Seeders (Optimized & Resilient):**
-   These scripts use batch processing and handle missing foreign keys gracefully:
-   - **Incidents:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_incidents.py`
-   - **Patients:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_patients.py`
-   - **Medical Interventions:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_medical_interventions.py`
-   - **Ambulances:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_ambulances.py`
-   - **Hospitals:** `PYTHONPATH=. ./venv/bin/python3 scripts/seed_hospitals.py`
+---
 
-   **Database Management:**
-   - **Create Medical Interventions Table:** `PYTHONPATH=. ./venv/bin/python3 scripts/create_medical_interventions_table.py`
-   
-   **Update Incident State IDs:**
-   Syncs incident `state_id` based on `state_name` using `states.json`:
-   ```bash
-   PYTHONPATH=. ./venv/bin/python3 scripts/update_incident_state_ids.py
-   ```
+## 📡 Running the Server
 
-   **Monitor Progress:**
-   Check the current record counts in the database:
-   ```bash
-   ./venv/bin/python3 scripts/check_counts.py
-   ```
-
-### Utility Scripts
-
-**Update User Email:**
-Finds a user by email and updates it to a new one (e.g., updating `ahmednu@datharm.com` to `ahmednu@texis.com`):
+Start the Uvicorn development server with live reload:
 ```bash
-PYTHONPATH=. ./venv/bin/python3 scripts/update_user_email.py
+PYTHONPATH=. uv run uvicorn app.main:app --reload --port 8000
 ```
+The server will start at `http://127.0.0.1:8000`. You can access the local Swagger documentation at `http://127.0.0.1:8000/docs`.
 
-## Development
+---
 
-### Running the server Locally
+## 🧪 Testing
 
-Start the Uvicorn development server with auto-reload enabled:
-```bash
-PYTHONPATH=. uv run uvicorn app.main:app --reload
-```
-
-Alternatively, use the helper script:
-```bash
-./scripts/start.sh
-```
-
-The API will be accessible at `http://localhost:8000` (or the configured port).
-Interactive API Documentation is available at `/docs`.
-
-### Running Tests
-
+Execute the comprehensive Pytest integration and unit test suites:
 ```bash
 PYTHONPATH=. uv run pytest
 ```

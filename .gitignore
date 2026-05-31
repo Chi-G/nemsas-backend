@@ -35,7 +35,10 @@ captured_payloads.json
 scratch/
 
 # Additional cleanup
-uv.lock
 seed_log.txt
 sample_fields.txt
 nemsas-app-firebase.json
+mobile-screenshot.jpg.jpeg
+ 
+# Local Uploads Cache
+static/uploads/

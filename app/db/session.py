@@ -5,7 +5,7 @@ from app.core.config import settings
 from typing import Any
 
 connect_args: dict[str, Any] = {"statement_cache_size": 0}
-if "localhost" not in settings.DATABASE_URL and "127.0.0.1" not in settings.DATABASE_URL:
+if "localhost" not in settings.DATABASE_URL and "127.0.0.1" not in settings.DATABASE_URL and "db" not in settings.DATABASE_URL:
     connect_args["ssl"] = "require"
     connect_args["timeout"] = 60
 

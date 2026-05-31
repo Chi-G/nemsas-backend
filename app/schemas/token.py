@@ -7,6 +7,11 @@ class Token(BaseModel):
     token_type: str = "bearer"
     status: str = "success"
     message: str = "Login successful"
+    expires_in: int
+    refresh_expires_in: int
+
+class TokenRefreshRequest(BaseModel):
+    refresh_token: str
 
 class TokenPayload(BaseModel):
     sub: Optional[str] = None

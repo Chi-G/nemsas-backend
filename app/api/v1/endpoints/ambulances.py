@@ -2,7 +2,7 @@ from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
-from app.schemas.ambulance import AmbulanceResponse, AmbulanceCreate
+from app.schemas.ambulance import AmbulanceResponse, AmbulanceCreate, AmbulanceUpdate
 from app.crud.crud_ambulance import ambulance as ambulance_crud
 from app.models.user import User
 import string
@@ -120,3 +120,45 @@ async def read_ambulances_by_state(
         "refreshToken": None,
         "refreshTokenExpiryTime": "0001-01-01T00:00:00"
     }
+
+@router.patch("/{id}", response_model=AmbulanceResponse, summary="Edit Ambulance")
+async def update_ambulance(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    id: int,
+    ambulance_in: AmbulanceUpdate,
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+) -> Any:
+    """
+    Update an ambulance.
+    - SUPERADMINISTRATOR can update any ambulance.
+    - ADMINSEMSASUSER can only update ambulances in their own state.
+    """
+    ambulance_obj = await ambulance_crud.get(db, id=id)
+    if not ambulance_obj:
+        raise HTTPException(status_code=404, detail="Ambulance not found")
+        
+    # Enforce state restriction for state admins
+    if current_user.user_type == "ADMINSEMSASUSER":
+        if current_user.state_id != ambulance_obj.state_id:
+            raise HTTPException(
+                status_code=403,
+                detail="You are not authorized to edit ambulances from other states"
+            )
+        # Enforce state admin cannot change ambulance state to another state
+        if ambulance_in.state_id is not None and ambulance_in.state_id != current_user.state_id:
+            raise HTTPException(
+                status_code=403,
+                detail=f"You can only assign ambulances to your own state (ID: {current_user.state_id})"
+            )
+            
+    updated_ambulance = await ambulance_crud.update(db, db_obj=ambulance_obj, obj_in=ambulance_in)
+    return {
+        "success": True,
+        "message": "Ambulance successfully updated",
+        "data": updated_ambulance,
+        "totalCount": 1,
+        "refreshToken": None,
+        "refreshTokenExpiryTime": "0001-01-01T00:00:00"
+    }
+

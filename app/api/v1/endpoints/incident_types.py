@@ -15,6 +15,9 @@ async def read_incident_types(
     Retrieve all incident types.
     """
     types, total = await incident_type_crud.get_multi_with_count(db)
+    from app.crud.incident import incident_crud
+    for t in types:
+        t.last_event_status = await incident_crud.get_last_event_status(db, incident_category_id=t.id)
     return {
         "success": True,
         "message": "Incident Type(s) successfully fetched",

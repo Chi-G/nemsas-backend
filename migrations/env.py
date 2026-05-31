@@ -69,7 +69,7 @@ async def run_migrations_online() -> None:
         configuration = {}
     configuration["sqlalchemy.url"] = settings.DATABASE_URL
     connect_args = {}
-    if "localhost" not in settings.DATABASE_URL and "127.0.0.1" not in settings.DATABASE_URL:
+    if "localhost" not in settings.DATABASE_URL and "127.0.0.1" not in settings.DATABASE_URL and "db" not in settings.DATABASE_URL:
         connect_args["ssl"] = "require"
 
     connectable = async_engine_from_config(
