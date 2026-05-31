@@ -15,8 +15,10 @@ class CRUDClaim:
         
         return [
             selectinload(Claim.patient).selectinload(PatientModel.interventions),
+            selectinload(Claim.patient).selectinload(PatientModel.etc_interventions),
             selectinload(Claim.images),
             selectinload(Claim.incident).selectinload(Incident.patients).selectinload(PatientModel.interventions),
+            selectinload(Claim.incident).selectinload(Incident.patients).selectinload(PatientModel.etc_interventions),
             selectinload(Claim.incident).selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
             selectinload(Claim.incident).selectinload(Incident.hospital).selectinload(HospitalModel.state),
             selectinload(Claim.incident).selectinload(Incident.hospital).selectinload(HospitalModel.lga),
@@ -70,12 +72,13 @@ class CRUDClaim:
             await db.commit()
             
         # Eagerly load the claim with all relations to prevent any downstream lazy-loading / greenlet errors
+        db.expunge(db_obj)
         stmt = select(Claim).options(*self._get_claim_options()).where(Claim.id == db_obj.id)
         result = await db.execute(stmt)
         return result.scalars().first()
 
     async def get(self, db: AsyncSession, id: int) -> Optional[Claim]:
-        stmt = select(Claim).options(*self._get_claim_options()).where(Claim.id == id)
+        stmt = select(Claim).options(*self._get_claim_options()).where(Claim.id == id).execution_options(populate_existing=True)
         result = await db.execute(stmt)
         return result.scalars().first()
 

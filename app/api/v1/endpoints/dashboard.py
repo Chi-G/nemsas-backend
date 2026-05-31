@@ -293,10 +293,10 @@ async def _build_mobile_dashboard_data(
 
     if not activities_only:
         # 1. Claims Overview counts
-        stmt_claims = select(Claim.status, func.count(Claim.id))
+        stmt_claims = select(Claim.ambulance_claim_status, func.count(Claim.id))
         if effective_ambulance_id is not None:
             stmt_claims = stmt_claims.join(Claim.incident).where(Incident.ambulance_id == effective_ambulance_id)
-        stmt_claims = stmt_claims.group_by(Claim.status)
+        stmt_claims = stmt_claims.group_by(Claim.ambulance_claim_status)
         res_claims = await db.execute(stmt_claims)
     
         claims_counts = {}
@@ -449,7 +449,7 @@ async def _build_mobile_dashboard_data(
         })
 
     for cl in cl_list:
-        status_val = cl.status or "New"
+        status_val = cl.ambulance_claim_status or "New"
         status_str = status_val.value if hasattr(status_val, "value") else str(status_val)
         
         if status_str.lower() == "approved":

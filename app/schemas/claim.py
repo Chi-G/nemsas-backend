@@ -72,10 +72,18 @@ class Claim(ClaimBase):
                     interventions = patient.get('medical_interventions') if isinstance(patient, dict) else getattr(patient, 'medical_interventions', None)
                 if not isinstance(interventions, list):
                     interventions = []
+                else:
+                    interventions = [
+                        {k: v for k, v in item.__dict__.items() if not k.startswith('_')} if hasattr(item, '__dict__') else item
+                        for item in interventions
+                    ]
                 
                 drugs = patient.get('drugs') if isinstance(patient, dict) else getattr(patient, 'drugs', None)
                 if isinstance(drugs, list):
-                    drugs_list = drugs
+                    drugs_list = [
+                        {k: v for k, v in item.__dict__.items() if not k.startswith('_')} if hasattr(item, '__dict__') else item
+                        for item in drugs
+                    ]
                 elif isinstance(drugs, dict):
                     drugs_list = [drugs]
                 elif isinstance(drugs, str) and drugs:
@@ -244,10 +252,18 @@ class Claim(ClaimBase):
                     interventions = getattr(patient, 'medical_interventions', None)
                 if not isinstance(interventions, list):
                     interventions = []
+                else:
+                    interventions = [
+                        {k: v for k, v in item.__dict__.items() if not k.startswith('_')} if hasattr(item, '__dict__') else item
+                        for item in interventions
+                    ]
                 
                 drugs = getattr(patient, 'drugs', None)
                 if isinstance(drugs, list):
-                    drugs_list = drugs
+                    drugs_list = [
+                        {k: v for k, v in item.__dict__.items() if not k.startswith('_')} if hasattr(item, '__dict__') else item
+                        for item in drugs
+                    ]
                 elif isinstance(drugs, dict):
                     drugs_list = [drugs]
                 elif isinstance(drugs, str) and drugs:
