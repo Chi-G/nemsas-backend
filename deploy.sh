@@ -7,6 +7,7 @@
 # Called by GitHub Actions workflow_dispatch
 
 set -e  # Exit on error
+set -x  # Print commands for debugging
 
 # Colors for output
 RED='\033[0;31m'
