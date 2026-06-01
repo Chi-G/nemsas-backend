@@ -39,8 +39,8 @@ class Patient(PatientBase):
     id: int
     created_at: Optional[datetime] = Field(None, alias="createdAt")
     
-    # Relationship with real MedicalIntervention model
-    interventions: Optional[List["MedicalIntervention"]] = Field(default=[], alias="interventions")
+    # Relationship with real MedicalIntervention model or EtcIntervention
+    interventions: Optional[List[Any]] = Field(default=[], alias="interventions")
     
     # Populated dynamically from incident's etc_interventions
     medical_interventions: Optional[List[Dict[str, Any]]] = Field(default=None, alias="medicalInterventions")
@@ -58,6 +58,51 @@ class Patient(PatientBase):
     _etc_interventions: List[Any] = []
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)
+
+    @model_validator(mode='before')
+    @classmethod
+    def serialize_relations(cls, data: Any) -> Any:
+        if isinstance(data, dict):
+            invs = data.get('interventions')
+            if isinstance(invs, list):
+                new_invs = []
+                for item in invs:
+                    if not isinstance(item, dict) and hasattr(item, "__dict__"):
+                        from app.schemas.medical_intervention import MedicalIntervention as MedSchema
+                        new_invs.append(MedSchema.model_validate(item).model_dump(by_alias=True))
+                    else:
+                        new_invs.append(item)
+                data['interventions'] = new_invs
+        elif hasattr(data, "__dict__"):
+            res = {}
+            if hasattr(data, "__table__"):
+                for col in data.__table__.columns:
+                    res[col.name] = getattr(data, col.name)
+            
+            for key in ["id", "created_at", "first_name", "middle_name", "last_name", "do_b", "sex", "phone_number", "nhia", "address", "incident_id", "ambulance_id", "etc_id", "medical_interventions", "notes", "drugs", "runsheet", "extra_details"]:
+                if hasattr(data, key) and not isinstance(getattr(data, key), (list, tuple)):
+                    res[key] = getattr(data, key)
+                    
+            # Safe check to prevent lazy loading of 'interventions' relationship
+            invs = []
+            if 'interventions' in data.__dict__:
+                invs = data.interventions or []
+                
+            new_invs = []
+            for item in invs:
+                if not isinstance(item, dict) and hasattr(item, "__dict__"):
+                    from app.schemas.medical_intervention import MedicalIntervention as MedSchema
+                    new_invs.append(MedSchema.model_validate(item).model_dump(by_alias=True))
+                else:
+                    new_invs.append(item)
+            res['interventions'] = new_invs
+            
+            # Carry over dynamic properties
+            for prop in ['medical_interventions', 'drugs', 'etc_medical_interventions', 'etc_drugs', 'etcMedicalInterventions', 'etcDrugs']:
+                if hasattr(data, prop):
+                    res[prop] = getattr(data, prop)
+            return res
+        return data
 
     def populate_interventions_from_etc(self, etc_interventions: List[Any]) -> None:
         """

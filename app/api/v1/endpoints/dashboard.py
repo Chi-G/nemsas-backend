@@ -212,11 +212,16 @@ async def get_dashboard_monthly(
     """
     role = getattr(current_user, "user_type", "")
 
-    # Determine effective state scoping
-    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER"]:
-        effective_state_id = stateId
+    # State-scoped roles: always use the user's own state_id, ignore any stateId query param
+    STATE_SCOPED_ROLES = {"SEMSASUSER", "ADMINSEMSASUSER", "STATEVIEWER", "SEMSASDISPATCH", "SEMSASPIUUSER"}
+
+    if role in STATE_SCOPED_ROLES:
+        # Enforce own state — stateId query param is ignored for these roles
+        effective_state_id = getattr(current_user, "state_id", None)
     else:
-        effective_state_id = current_user.state_id
+        # National/admin roles (SUPERADMINISTRATOR, NEMSASADMIN, NEMSASUSER, NATIONALVIEWER, etc.)
+        # See all data by default; can optionally filter by stateId query param
+        effective_state_id = stateId  # None = no filter = all states
 
     today = date.today()
     effective_year = year or today.year
