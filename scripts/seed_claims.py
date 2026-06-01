@@ -69,7 +69,6 @@ async def seed_claims():
                 "etc_review": item.get("etcReview"),
                 "ambulance_claim_status": item.get("ambulanceClaimStatus") or item.get("ambulance_claim_status", "New"),
                 "etc_claim_status": item.get("etcClaimStatus") or item.get("etc_claim_status", "New"),
-                "claim_type": "ETC" if item.get("drugsList") else "Ambulance",
                 "incident_id": incident_id,
                 "patient_id": patient_id
             })
