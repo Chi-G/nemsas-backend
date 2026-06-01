@@ -346,7 +346,7 @@ jobs:
             chmod +x deploy.sh
             
             # Run deployment with environment variables
-            DEPLOY_PORT="${DEPLOY_PORT}" bash deploy.sh
+            DEPLOY_PORT="${DEPLOY_PORT}" bash deploy.sh < /dev/null
             
             DEPLOYMENT_RESULT=\$?
             
