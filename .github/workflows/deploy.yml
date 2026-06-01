@@ -340,13 +340,14 @@ jobs:
           DEPLOY_PORT="${{ env.DEPLOY_PORT }}"
           
           ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o TCPKeepAlive=yes "${SSH_USER}@${SERVER_IP}" << ENDSSH
+            set -x
             cd "${DEPLOY_PATH}"
             
             # Make deploy script executable
             chmod +x deploy.sh
             
             # Run deployment with environment variables
-            DEPLOY_PORT="${DEPLOY_PORT}" bash deploy.sh
+            DEPLOY_PORT="${DEPLOY_PORT}" bash deploy.sh < /dev/null
             
             DEPLOYMENT_RESULT=\$?
             

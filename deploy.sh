@@ -7,6 +7,7 @@
 # Called by GitHub Actions workflow_dispatch
 
 set -e  # Exit on error
+set -x  # Print commands for debugging
 
 # Colors for output
 RED='\033[0;31m'
@@ -105,10 +106,6 @@ echo -e "${GREEN}✅ ${APP_SERVICE_NAME} image built successfully${NC}"
 # START/UP CONTAINERS (INSTANT SWITCHOVER)
 # ============================================================================
 echo -e "\n${YELLOW}[4/6] Performing zero-downtime container switchover...${NC}"
-
-# TEMPORARY FIX: Restart DB to clear lingering locks
-echo "Temporarily restarting DB container to clear locks..."
-$DOCKER_COMPOSE_CMD restart db
 
 echo "Recreating and starting ${APP_SERVICE_NAME} container..."
 if ! $DOCKER_COMPOSE_CMD up -d --force-recreate ${APP_SERVICE_NAME}; then

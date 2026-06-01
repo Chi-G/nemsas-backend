@@ -223,10 +223,10 @@ async def seed_operational_data():
                         "incident_date": c.get("incidentDate"),
                         "total_price": parse_float(c.get("totalPrice")),
                         "distance_covered": parse_float(c.get("distanceCovered")),
-                        "status": c.get("status") or "New",
+                        "ambulance_claim_status": c.get("status") or "New",
+                        "etc_claim_status": c.get("status") or "New",
                         "review": c.get("review"),
-                        "etc_review": c.get("etcReview"),
-                        "claim_type": "ETC" if is_etc else "Ambulance"
+                        "etc_review": c.get("etcReview")
                     })
         
         claims_inserted = await upsert_data(session, Claim, claim_recs)

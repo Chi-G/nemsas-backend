@@ -28,6 +28,7 @@ json-data/
 *.sql
 *.bak
 .backups/
+gitActionLogs/
 
 # Sensitive / Temp Cache
 auth_token.json
