@@ -266,6 +266,13 @@ async def create_claim(
     """
     Create a new claim.
     """
+    if claim_in.incident_id:
+        existing_claim = await db.execute(
+            select(Claim).where(Claim.incident_id == claim_in.incident_id)
+        )
+        if existing_claim.scalars().first():
+            raise HTTPException(status_code=400, detail="A claim for this incident already exists")
+
     item = await crud_claim.create(db, obj_in=claim_in, current_user=current_user)
     return {
         "success": True,

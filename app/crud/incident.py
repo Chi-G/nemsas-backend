@@ -11,6 +11,7 @@ class CRUDIncident:
         from app.models.patient import Patient as PatientModel
         from app.models.hospital import Hospital as HospitalModel
         from app.models.claim import Claim as ClaimModel
+        from app.models.user import User as UserModel
         result = await db.execute(
             select(Incident)
             .filter(Incident.id == id)
@@ -21,6 +22,10 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
+                selectinload(Incident.ambulance),
+                selectinload(Incident.dispatcher).selectinload(UserModel.state),
+                selectinload(Incident.dispatcher).selectinload(UserModel.lga),
+                selectinload(Incident.dispatcher).selectinload(UserModel.ward),
                 selectinload(Incident.claims).selectinload(ClaimModel.images),
                 selectinload(Incident.etc_interventions)
             )
@@ -55,6 +60,7 @@ class CRUDIncident:
             selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
             selectinload(Incident.hospital).selectinload(HospitalModel.state),
             selectinload(Incident.hospital).selectinload(HospitalModel.lga),
+            selectinload(Incident.ambulance),
             selectinload(Incident.claims).selectinload(ClaimModel.images),
             selectinload(Incident.etc_interventions)
         )
@@ -180,6 +186,7 @@ class CRUDIncident:
         # Load relationships for the return
         from app.models.hospital import Hospital as HospitalModel
         from app.models.claim import Claim as ClaimModel
+        from app.models.user import User as UserModel
         result = await db.execute(
             select(Incident)
             .filter(Incident.id == db_obj.id)
@@ -190,6 +197,10 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
+                selectinload(Incident.ambulance),
+                selectinload(Incident.dispatcher).selectinload(UserModel.state),
+                selectinload(Incident.dispatcher).selectinload(UserModel.lga),
+                selectinload(Incident.dispatcher).selectinload(UserModel.ward),
                 selectinload(Incident.claims).selectinload(ClaimModel.images),
                 selectinload(Incident.etc_interventions)
             )
@@ -243,6 +254,7 @@ class CRUDIncident:
         from app.models.patient import Patient as PatientModel
         from app.models.hospital import Hospital as HospitalModel
         from app.models.claim import Claim as ClaimModel
+        from app.models.user import User as UserModel
         result = await db.execute(
             select(Incident)
             .filter(Incident.id == db_obj.id)
@@ -253,6 +265,10 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
+                selectinload(Incident.ambulance),
+                selectinload(Incident.dispatcher).selectinload(UserModel.state),
+                selectinload(Incident.dispatcher).selectinload(UserModel.lga),
+                selectinload(Incident.dispatcher).selectinload(UserModel.ward),
                 selectinload(Incident.claims).selectinload(ClaimModel.images),
                 selectinload(Incident.etc_interventions)
             )
@@ -309,6 +325,7 @@ class CRUDIncident:
             selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
             selectinload(Incident.hospital).selectinload(HospitalModel.state),
             selectinload(Incident.hospital).selectinload(HospitalModel.lga),
+            selectinload(Incident.ambulance),
             selectinload(Incident.claims).selectinload(ClaimModel.images),
             selectinload(Incident.etc_interventions)
         ).order_by(Incident.date_added.desc())

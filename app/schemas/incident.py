@@ -4,7 +4,9 @@ from datetime import datetime, date
 from uuid import UUID
 from app.schemas.patient import Patient, PatientCreate
 from app.schemas.hospital import Hospital as HospitalSchema
+from app.schemas.user import User as UserSchema
 from app.schemas.claim_image import ClaimImage
+from app.schemas.ambulance import Ambulance as AmbulanceSchema
 
 class IncidentBase(BaseModel):
     caller_name: Optional[str] = Field(None, alias="callerName")
@@ -88,6 +90,8 @@ class Incident(IncidentBase):
     date_added: Optional[datetime] = None
     patients: List[Patient] = []
     hospital: Optional[HospitalSchema] = Field(None, alias="emergencyTreatmentCenter")
+    ambulance: Optional[AmbulanceSchema] = None
+    dispatcher: Optional[UserSchema] = None
     
     incident_type_name: Optional[str] = Field(None, alias="incidentTypeName")
     # state_name_computed is read from the ORM property (via relationship) but excluded from output;
@@ -136,6 +140,7 @@ class IncidentSummary(BaseModel):
     date_added: Optional[datetime] = None
     patients: List[Patient] = []
     hospital: Optional[HospitalSchema] = Field(None, alias="emergencyTreatmentCenter")
+    ambulance: Optional[AmbulanceSchema] = None
     
     incident_type_name: Optional[str] = None
     # Excluded: merged into state_name by the validator below
