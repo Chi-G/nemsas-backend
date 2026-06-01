@@ -130,7 +130,8 @@ async def seed_users():
                         total_added += 1
                     except Exception as inner_e:
                         await session.rollback()
-                        print(f"❌ Skipping {single_item['email']}: {str(inner_e).split('\n')[0]}")
+                        error_msg = str(inner_e).split('\n')[0]
+                        print(f"❌ Skipping {single_item['email']}: {error_msg}")
         
         print(f"🏁 Done! Successfully processed {total_added} users.")
 
