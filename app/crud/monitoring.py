@@ -92,7 +92,7 @@ class CRUDMonitoring:
 
 
     async def get_monthly_aggregates(self, db: AsyncSession, year: Optional[int] = None, state_id: Optional[int] = None):
-        stmt = select(
+        base_stmt = select(
             Monitoring.month,
             func.sum(Monitoring.no_of_transport).label("noOfTransport"),
             func.sum(Monitoring.no_of_mamii_lgas).label("noOfMamiiLGAs"),
@@ -107,13 +107,25 @@ class CRUDMonitoring:
             func.sum(Monitoring.maternal_mortalities).label("maternalMortalities"),
             func.sum(Monitoring.neonatal_mortalities).label("neonatalMortalities"),
         ).group_by(Monitoring.month).order_by(Monitoring.month)
-        
+
         if year:
-            stmt = stmt.where(Monitoring.year == year)
+            base_stmt = base_stmt.where(Monitoring.year == year)
+
         if state_id is not None:
-            stmt = stmt.where(Monitoring.state_id == state_id)
-            
-        result = await db.execute(stmt)
+            # 1st priority: state-specific records
+            rows = (await db.execute(base_stmt.where(Monitoring.state_id == state_id))).all()
+            if rows:
+                return rows
+            # 2nd priority: national records (state_id IS NULL)
+            rows = (await db.execute(base_stmt.where(Monitoring.state_id.is_(None)))).all()
+            if rows:
+                return rows
+            # 3rd priority: all available records (no state-specific or national data exists yet)
+            result = await db.execute(base_stmt)
+            return result.all()
+
+        # No state filter — aggregate all records
+        result = await db.execute(base_stmt)
         return result.all()
 
     async def get(self, db: AsyncSession, *, id: int):

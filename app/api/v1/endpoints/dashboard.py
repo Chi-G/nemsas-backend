@@ -212,11 +212,16 @@ async def get_dashboard_monthly(
     """
     role = getattr(current_user, "user_type", "")
 
-    # Determine effective state scoping
-    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER"]:
-        effective_state_id = stateId
+    # State-scoped roles: always use the user's own state_id, ignore any stateId query param
+    STATE_SCOPED_ROLES = {"SEMSASUSER", "ADMINSEMSASUSER", "STATEVIEWER", "SEMSASDISPATCH", "SEMSASPIUUSER"}
+
+    if role in STATE_SCOPED_ROLES:
+        # Enforce own state — stateId query param is ignored for these roles
+        effective_state_id = getattr(current_user, "state_id", None)
     else:
-        effective_state_id = current_user.state_id
+        # National/admin roles (SUPERADMINISTRATOR, NEMSASADMIN, NEMSASUSER, NATIONALVIEWER, etc.)
+        # See all data by default; can optionally filter by stateId query param
+        effective_state_id = stateId  # None = no filter = all states
 
     today = date.today()
     effective_year = year or today.year
@@ -405,7 +410,7 @@ async def _build_mobile_dashboard_data(
     inc_list = res_inc.scalars().all()
 
     # Query claims
-    stmt_cl = select(Claim).order_by(desc(Claim.created_at))
+    stmt_cl = select(Claim).order_by(desc(Claim.updated_at))
     if effective_ambulance_id is not None:
         stmt_cl = stmt_cl.join(Claim.incident).where(Incident.ambulance_id == effective_ambulance_id)
     stmt_cl = stmt_cl.limit(limit_val)
@@ -454,11 +459,14 @@ async def _build_mobile_dashboard_data(
         
         if status_str.lower() == "approved":
             title = f"Claim #{cl.id} approved"
-            activity_desc = f"Patient: {cl.patient_name or 'Unknown'}"
+            activity_desc = f"Claim approved for patient {cl.patient_name or 'Unknown'}"
         elif status_str.lower() == "rejected":
             title = f"Claim #{cl.id} rejected"
-            activity_desc = cl.rejection_reason or "Incomplete documents submitted"
-        elif status_str.lower() in ["pending", "new", "endorsed"]:
+            activity_desc = f"Claim rejected: {cl.rejection_reason or 'Incomplete documents submitted'}"
+        elif status_str.lower() == "endorsed":
+            title = f"Claim #{cl.id} endorsed"
+            activity_desc = f"Claim endorsed for patient {cl.patient_name or 'Unknown'}"
+        elif status_str.lower() in ["pending", "new"]:
             title = f"Claim #{cl.id} pending review"
             activity_desc = "Awaiting hospital verification"
         else:
@@ -481,8 +489,8 @@ async def _build_mobile_dashboard_data(
                 "patientName": cl.patient_name
             },
             "status": status_str,
-            "createdAt": cl.created_at or datetime.min.replace(tzinfo=timezone.utc),
-            "date": get_relative_time(cl.created_at)
+            "createdAt": cl.updated_at or cl.created_at or datetime.min.replace(tzinfo=timezone.utc),
+            "date": get_relative_time(cl.updated_at or cl.created_at)
         })
 
     # Helper to sort datetimes with potential None/tz mismatches

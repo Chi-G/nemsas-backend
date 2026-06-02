@@ -11,6 +11,7 @@ class CRUDIncident:
         from app.models.patient import Patient as PatientModel
         from app.models.hospital import Hospital as HospitalModel
         from app.models.claim import Claim as ClaimModel
+        from app.models.user import User as UserModel
         result = await db.execute(
             select(Incident)
             .filter(Incident.id == id)
@@ -21,6 +22,10 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
+                selectinload(Incident.ambulance),
+                selectinload(Incident.dispatcher).selectinload(UserModel.state),
+                selectinload(Incident.dispatcher).selectinload(UserModel.lga),
+                selectinload(Incident.dispatcher).selectinload(UserModel.ward),
                 selectinload(Incident.claims).selectinload(ClaimModel.images),
                 selectinload(Incident.etc_interventions)
             )
@@ -55,6 +60,7 @@ class CRUDIncident:
             selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
             selectinload(Incident.hospital).selectinload(HospitalModel.state),
             selectinload(Incident.hospital).selectinload(HospitalModel.lga),
+            selectinload(Incident.ambulance),
             selectinload(Incident.claims).selectinload(ClaimModel.images),
             selectinload(Incident.etc_interventions)
         )
@@ -171,6 +177,8 @@ class CRUDIncident:
         for patient_in in obj_in.patients:
             patient_data = patient_in.model_dump()
             patient_data["incident_id"] = db_obj.id
+            patient_data["ambulance_id"] = db_obj.ambulance_id
+            patient_data["etc_id"] = db_obj.etc_id
             db_patient = PatientModel(**patient_data)
             db.add(db_patient)
 
@@ -180,6 +188,7 @@ class CRUDIncident:
         # Load relationships for the return
         from app.models.hospital import Hospital as HospitalModel
         from app.models.claim import Claim as ClaimModel
+        from app.models.user import User as UserModel
         result = await db.execute(
             select(Incident)
             .filter(Incident.id == db_obj.id)
@@ -190,6 +199,10 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
+                selectinload(Incident.ambulance),
+                selectinload(Incident.dispatcher).selectinload(UserModel.state),
+                selectinload(Incident.dispatcher).selectinload(UserModel.lga),
+                selectinload(Incident.dispatcher).selectinload(UserModel.ward),
                 selectinload(Incident.claims).selectinload(ClaimModel.images),
                 selectinload(Incident.etc_interventions)
             )
@@ -230,12 +243,27 @@ class CRUDIncident:
         from app.core.socket_manager import SocketManager
         
         old_ambulance_id = db_obj.ambulance_id
+        old_etc_id = db_obj.etc_id
         
         obj_data = obj_in.model_dump(exclude_unset=True)
         for field in obj_data:
             setattr(db_obj, field, obj_data[field])
         
         db.add(db_obj)
+
+        # Propagate ambulance_id and etc_id updates to patients
+        if db_obj.ambulance_id != old_ambulance_id or db_obj.etc_id != old_etc_id:
+            from app.models.patient import Patient as PatientModel
+            from sqlalchemy import update as sqlalchemy_update
+            await db.execute(
+                sqlalchemy_update(PatientModel)
+                .where(PatientModel.incident_id == db_obj.id)
+                .values(
+                    ambulance_id=db_obj.ambulance_id,
+                    etc_id=db_obj.etc_id
+                )
+            )
+
         await db.commit()
         await db.refresh(db_obj)
 
@@ -243,6 +271,7 @@ class CRUDIncident:
         from app.models.patient import Patient as PatientModel
         from app.models.hospital import Hospital as HospitalModel
         from app.models.claim import Claim as ClaimModel
+        from app.models.user import User as UserModel
         result = await db.execute(
             select(Incident)
             .filter(Incident.id == db_obj.id)
@@ -253,6 +282,10 @@ class CRUDIncident:
                 selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
                 selectinload(Incident.hospital).selectinload(HospitalModel.state),
                 selectinload(Incident.hospital).selectinload(HospitalModel.lga),
+                selectinload(Incident.ambulance),
+                selectinload(Incident.dispatcher).selectinload(UserModel.state),
+                selectinload(Incident.dispatcher).selectinload(UserModel.lga),
+                selectinload(Incident.dispatcher).selectinload(UserModel.ward),
                 selectinload(Incident.claims).selectinload(ClaimModel.images),
                 selectinload(Incident.etc_interventions)
             )
@@ -309,6 +342,7 @@ class CRUDIncident:
             selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
             selectinload(Incident.hospital).selectinload(HospitalModel.state),
             selectinload(Incident.hospital).selectinload(HospitalModel.lga),
+            selectinload(Incident.ambulance),
             selectinload(Incident.claims).selectinload(ClaimModel.images),
             selectinload(Incident.etc_interventions)
         ).order_by(Incident.date_added.desc())

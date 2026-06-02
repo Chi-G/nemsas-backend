@@ -71,7 +71,7 @@ async def get_etc_patients(
         Incident, Patient.incident_id == Incident.id
     ).outerjoin(
         State, Incident.state_id == State.id
-    ).where(Patient.etc_id == etc_id)
+    ).where(Patient.etc_id == etc_id).order_by(Patient.created_at.desc())
     
     # Count query
     count_stmt = select(func.count(Patient.id)).outerjoin(

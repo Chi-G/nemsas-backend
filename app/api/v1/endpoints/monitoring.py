@@ -22,7 +22,17 @@ async def read_monitoring(
     Returns monthly monitoring records matching the production payload.
     - Allows optional filtering by year, month, stateId, and remark.
     """
-    items = await crud_monitoring.get_all(db, year=year, month=month, state_id=stateId, remark=remark)
+    role = getattr(current_user, "user_type", "")
+
+    # State-scoped roles: always use the user's own state_id, ignore any stateId query param
+    STATE_SCOPED_ROLES = {"SEMSASUSER", "ADMINSEMSASUSER", "STATEVIEWER", "SEMSASDISPATCH", "SEMSASPIUUSER"}
+
+    if role in STATE_SCOPED_ROLES:
+        effective_state_id = getattr(current_user, "state_id", None)
+    else:
+        effective_state_id = stateId
+
+    items = await crud_monitoring.get_all(db, year=year, month=month, state_id=effective_state_id, remark=remark)
     return {
         "success": True,
         "message": "Monthly data fetched successfully",

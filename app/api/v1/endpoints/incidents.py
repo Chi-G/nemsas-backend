@@ -207,6 +207,14 @@ async def create_incident(
     # If state_id is not provided in payload, use user's state_id
     if not incident_in.state_id and current_user.state_id is not None:
         incident_in.state_id = cast(int, current_user.state_id)
+        
+    # Set dispatcher details
+    incident_in.dispatcher_id = current_user.id
+    first_name = current_user.first_name or ""
+    last_name = current_user.last_name or ""
+    incident_in.dispatch_full_name = f"{first_name} {last_name}".strip()
+    from datetime import datetime
+    incident_in.dispatch_date = datetime.now().date()
 
     # Resolve incident category name to ID if needed
     if not incident_in.incident_category_id and incident_in.incident_category:
