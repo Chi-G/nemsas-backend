@@ -410,7 +410,7 @@ async def _build_mobile_dashboard_data(
     inc_list = res_inc.scalars().all()
 
     # Query claims
-    stmt_cl = select(Claim).order_by(desc(Claim.created_at))
+    stmt_cl = select(Claim).order_by(desc(Claim.updated_at))
     if effective_ambulance_id is not None:
         stmt_cl = stmt_cl.join(Claim.incident).where(Incident.ambulance_id == effective_ambulance_id)
     stmt_cl = stmt_cl.limit(limit_val)
@@ -459,11 +459,14 @@ async def _build_mobile_dashboard_data(
         
         if status_str.lower() == "approved":
             title = f"Claim #{cl.id} approved"
-            activity_desc = f"Patient: {cl.patient_name or 'Unknown'}"
+            activity_desc = f"Claim approved for patient {cl.patient_name or 'Unknown'}"
         elif status_str.lower() == "rejected":
             title = f"Claim #{cl.id} rejected"
-            activity_desc = cl.rejection_reason or "Incomplete documents submitted"
-        elif status_str.lower() in ["pending", "new", "endorsed"]:
+            activity_desc = f"Claim rejected: {cl.rejection_reason or 'Incomplete documents submitted'}"
+        elif status_str.lower() == "endorsed":
+            title = f"Claim #{cl.id} endorsed"
+            activity_desc = f"Claim endorsed for patient {cl.patient_name or 'Unknown'}"
+        elif status_str.lower() in ["pending", "new"]:
             title = f"Claim #{cl.id} pending review"
             activity_desc = "Awaiting hospital verification"
         else:
@@ -486,8 +489,8 @@ async def _build_mobile_dashboard_data(
                 "patientName": cl.patient_name
             },
             "status": status_str,
-            "createdAt": cl.created_at or datetime.min.replace(tzinfo=timezone.utc),
-            "date": get_relative_time(cl.created_at)
+            "createdAt": cl.updated_at or cl.created_at or datetime.min.replace(tzinfo=timezone.utc),
+            "date": get_relative_time(cl.updated_at or cl.created_at)
         })
 
     # Helper to sort datetimes with potential None/tz mismatches

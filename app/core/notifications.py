@@ -204,19 +204,19 @@ class NotificationService:
         
         # Build Android notification config
         android_config = None
-        if sound:
+        if sound and sound != "default":
             # Android expects sound file name without extension in res/raw
             android_sound = sound.split(".")[0]
             android_config = messaging.AndroidConfig(
                 notification=messaging.AndroidNotification(
                     sound=android_sound,
-                    channel_id="incident-channel" if android_sound == "incident_sound" else "default"
+                    channel_id="incident-channel" if android_sound == "incident_sound" else "standard-channel"
                 )
             )
         else:
             android_config = messaging.AndroidConfig(
                 notification=messaging.AndroidNotification(
-                    channel_id="default"
+                    channel_id="standard-channel"
                 )
             )
             
