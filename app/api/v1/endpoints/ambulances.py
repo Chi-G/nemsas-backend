@@ -14,6 +14,7 @@ router = APIRouter()
 async def read_ambulances(
     db: AsyncSession = Depends(deps.get_db),
     driverName: Optional[str] = None,
+    name: Optional[str] = None,
     stateId: Optional[int] = None,
     typeId: Optional[int] = None,
     days: Optional[int] = None,
@@ -29,6 +30,7 @@ async def read_ambulances(
     ambulances, total_count = await ambulance_crud.get_multi_with_count(
         db, 
         driver_name=driverName,
+        name=name,
         state_id=effective_state_id,
         ambulance_type_id=typeId,
         days=days

@@ -62,14 +62,26 @@ class CRUDAmbulance:
         db: AsyncSession, 
         *, 
         driver_name: Optional[str] = None,
+        name: Optional[str] = None,
         state_id: Optional[int] = None,
         ambulance_type_id: Optional[int] = None,
         days: Optional[int] = None
     ) -> Tuple[List[Ambulance], int]:
         query = select(Ambulance)
         
-        if driver_name:
-            query = query.filter(Ambulance.driver_name.ilike(f"%{driver_name}%"))
+        if driver_name and name:
+            from sqlalchemy import or_
+            query = query.filter(
+                or_(
+                    Ambulance.driver_name.ilike(f"%{driver_name}%"),
+                    Ambulance.name.ilike(f"%{name}%")
+                )
+            )
+        else:
+            if driver_name:
+                query = query.filter(Ambulance.driver_name.ilike(f"%{driver_name}%"))
+            if name:
+                query = query.filter(Ambulance.name.ilike(f"%{name}%"))
         if state_id:
             query = query.filter(Ambulance.state_id == state_id)
         if ambulance_type_id:
