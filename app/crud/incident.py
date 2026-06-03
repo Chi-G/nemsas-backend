@@ -66,15 +66,19 @@ class CRUDIncident:
         )
 
         if search:
+            query = query.outerjoin(PatientModel).distinct()
             search_filter = or_(
                 Incident.serial_no.ilike(f"%{search}%"),
                 Incident.caller_name.ilike(f"%{search}%"),
                 Incident.caller_number.ilike(f"%{search}%"),
-                Incident.description.ilike(f"%{search}%"),
-                Incident.incident_location.ilike(f"%{search}%"),
-                Incident.street.ilike(f"%{search}%"),
-                Incident.district_ward.ilike(f"%{search}%"),
-                Incident.area_council.ilike(f"%{search}%")
+                # Incident.description.ilike(f"%{search}%"),
+                # Incident.incident_location.ilike(f"%{search}%"),
+                # Incident.street.ilike(f"%{search}%"),
+                # Incident.district_ward.ilike(f"%{search}%"),
+                # Incident.area_council.ilike(f"%{search}%"),
+                PatientModel.first_name.ilike(f"%{search}%"),
+                PatientModel.middle_name.ilike(f"%{search}%"),
+                PatientModel.last_name.ilike(f"%{search}%")
             )
             query = query.filter(search_filter)
 
@@ -100,12 +104,22 @@ class CRUDIncident:
             query = query.filter(extract('year', Incident.date_added) == year)
 
         # Count - optimized to run without subquery compilation
-        count_q = select(func.count(Incident.id))
+        from sqlalchemy import distinct
+        count_q = select(func.count(distinct(Incident.id)))
         if search:
+            count_q = count_q.outerjoin(PatientModel)
             search_filter = or_(
                 Incident.serial_no.ilike(f"%{search}%"),
                 Incident.caller_name.ilike(f"%{search}%"),
-                Incident.description.ilike(f"%{search}%")
+                Incident.caller_number.ilike(f"%{search}%"),
+                Incident.description.ilike(f"%{search}%"),
+                Incident.incident_location.ilike(f"%{search}%"),
+                Incident.street.ilike(f"%{search}%"),
+                Incident.district_ward.ilike(f"%{search}%"),
+                Incident.area_council.ilike(f"%{search}%"),
+                PatientModel.first_name.ilike(f"%{search}%"),
+                PatientModel.middle_name.ilike(f"%{search}%"),
+                PatientModel.last_name.ilike(f"%{search}%")
             )
             count_q = count_q.filter(search_filter)
         if status:
