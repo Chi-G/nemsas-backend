@@ -1,0 +1,360 @@
+{
+    "success": true,
+    "message": "Fetched successfully",
+    "data": {
+        "summary": {
+            "total": 9,
+            "pending": 4,
+            "fulfilled": 2,
+            "notFulfilled": 3
+        },
+        "list": {
+            "data": [
+                {
+                    "id": 31,
+                    "pledgeId": "PLG-00031",
+                    "contactDetails": "091345567894",
+                    "donorName": "Goodness",
+                    "pledgeType": "donation",
+                    "numberOfAmbulance": 45,
+                    "ambulanceType": {
+                        "id": 1,
+                        "name": "BLS"
+                    },
+                    "ward": {
+                        "id": 4174,
+                        "name": "Nyanya"
+                    },
+                    "state": {
+                        "id": 15,
+                        "name": "Fct"
+                    },
+                    "lga": {
+                        "id": 322,
+                        "name": "Municipal"
+                    },
+                    "facility": {
+                        "id": 3396,
+                        "name": "GBAGALAPE PHC"
+                    },
+                    "pledgeDate": "2026-03-12",
+                    "deliveryDate": "2026-03-13",
+                    "status": "fulfilled",
+                    "dateAdded": "2026-03-12",
+                    "addedBy": {
+                        "firstName": "Goodness",
+                        "lastName": "Aigbokha",
+                        "id": 24,
+                        "middleName": ""
+                    }
+                },
+                {
+                    "id": 30,
+                    "pledgeId": "PLG-00030",
+                    "contactDetails": "09045456345",
+                    "donorName": "Salihu",
+                    "pledgeType": "donation",
+                    "numberOfAmbulance": 6,
+                    "ambulanceType": {
+                        "id": 3,
+                        "name": "Keke"
+                    },
+                    "ward": {
+                        "id": 3116,
+                        "name": "Mosogar Ii"
+                    },
+                    "state": {
+                        "id": 10,
+                        "name": "Delta"
+                    },
+                    "lga": {
+                        "id": 233,
+                        "name": "Ethiope-West"
+                    },
+                    "facility": {
+                        "id": 2087,
+                        "name": "UGBOKPA PHC"
+                    },
+                    "pledgeDate": "2026-01-27",
+                    "deliveryDate": "2026-01-31",
+                    "status": "pending",
+                    "dateAdded": "2026-01-15",
+                    "addedBy": {
+                        "firstName": "Qozeem",
+                        "lastName": "Uthman",
+                        "id": 6,
+                        "middleName": ""
+                    }
+                },
+                {
+                    "id": 29,
+                    "pledgeId": "PLG-00029",
+                    "contactDetails": "07098995644",
+                    "donorName": "gambo lami",
+                    "pledgeType": "donation",
+                    "numberOfAmbulance": 55,
+                    "ambulanceType": {
+                        "id": 3,
+                        "name": "Keke"
+                    },
+                    "ward": {
+                        "id": 2363,
+                        "name": "Ikensi 2"
+                    },
+                    "state": {
+                        "id": 6,
+                        "name": "Bayelsa"
+                    },
+                    "lga": {
+                        "id": 155,
+                        "name": "Nembe"
+                    },
+                    "facility": {
+                        "id": 2415,
+                        "name": "PHC OBIATA"
+                    },
+                    "pledgeDate": "2023-12-16",
+                    "deliveryDate": "2024-12-04",
+                    "status": "not_fulfilled",
+                    "dateAdded": "2025-12-27",
+                    "addedBy": {
+                        "firstName": "Qozeem",
+                        "lastName": "Uthman",
+                        "id": 6,
+                        "middleName": ""
+                    }
+                },
+                {
+                    "id": 28,
+                    "pledgeId": "PLG-00028",
+                    "contactDetails": "09012346373",
+                    "donorName": "Ezekiel Mike",
+                    "pledgeType": "donation",
+                    "numberOfAmbulance": 1,
+                    "ambulanceType": {
+                        "id": 2,
+                        "name": "ALS"
+                    },
+                    "ward": {
+                        "id": 2327,
+                        "name": "EWOAMA"
+                    },
+                    "state": {
+                        "id": 6,
+                        "name": "Bayelsa"
+                    },
+                    "lga": {
+                        "id": 152,
+                        "name": "Brass"
+                    },
+                    "facility": {
+                        "id": 512,
+                        "name": "PHC EWOAMA"
+                    },
+                    "pledgeDate": "2025-12-25",
+                    "deliveryDate": "2025-12-26",
+                    "status": "not_fulfilled",
+                    "dateAdded": "2025-12-25",
+                    "addedBy": {
+                        "firstName": "Mike",
+                        "lastName": "Ezekiel",
+                        "id": 5,
+                        "middleName": ""
+                    }
+                }, {
+                    "id": 27,
+                    "pledgeId": "PLG-00027",
+                    "contactDetails": "090129202912",
+                    "donorName": "Cletus Jackson",
+                    "pledgeType": "donation",
+                    "numberOfAmbulance": 2,
+                    "ambulanceType": {
+                        "id": 3,
+                        "name": "Keke"
+                    },
+                    "ward": {
+                        "id": 2945,
+                        "name": "Ik. Ishie"
+                    },
+                    "state": {
+                        "id": 9,
+                        "name": "Cross River"
+                    },
+                    "lga": {
+                        "id": 217,
+                        "name": "Cal Mun"
+                    },
+                    "facility": {
+                        "id": 2775,
+                        "name": "IKOT ISHIE PRIMARY HEALTH CARE"
+                    },
+                    "pledgeDate": "2025-12-25",
+                    "deliveryDate": "2025-12-31",
+                    "status": "pending",
+                    "dateAdded": "2025-12-25",
+                    "addedBy": {
+                        "firstName": "Mike",
+                        "lastName": "Ezekiel",
+                        "id": 5,
+                        "middleName": ""
+                    }
+                }, {
+                    "id": 26,
+                    "pledgeId": "PLG-00026",
+                    "contactDetails": "08178102812",
+                    "donorName": "Micheal Akpan",
+                    "pledgeType": "investment",
+                    "numberOfAmbulance": 2,
+                    "ambulanceType": {
+                        "id": 2,
+                        "name": "ALS"
+                    },
+                    "ward": {
+                        "id": 1660,
+                        "name": "Etoi 1"
+                    },
+                    "state": {
+                        "id": 3,
+                        "name": "Akwaibom"
+                    },
+                    "lga": {
+                        "id": 107,
+                        "name": "Uyo"
+                    },
+                    "facility": {
+                        "id": 2280,
+                        "name": "MBIABONG ANYANYA HEALTH POST"
+                    },
+                    "pledgeDate": "2025-12-25",
+                    "deliveryDate": "2025-12-31",
+                    "status": "pending",
+                    "dateAdded": "2025-12-25",
+                    "addedBy": {
+                        "firstName": "Mike",
+                        "lastName": "Ezekiel",
+                        "id": 5,
+                        "middleName": ""
+                    }
+                }, {
+                    "id": 25,
+                    "pledgeId": "PLG-00025",
+                    "contactDetails": "Abuja",
+                    "donorName": "Taye Kehinde",
+                    "pledgeType": "donation",
+                    "numberOfAmbulance": 3,
+                    "ambulanceType": {
+                        "id": 1,
+                        "name": "BLS"
+                    },
+                    "ward": {
+                        "id": 2077,
+                        "name": "Lanzai West"
+                    },
+                    "state": {
+                        "id": 5,
+                        "name": "Bauchi"
+                    },
+                    "lga": {
+                        "id": 133,
+                        "name": "Darazo"
+                    },
+                    "facility": {
+                        "id": 2522,
+                        "name": "S/LAYIKAUGAMA MCH"
+                    },
+                    "pledgeDate": "2025-12-24",
+                    "deliveryDate": "2025-12-31",
+                    "status": "fulfilled",
+                    "dateAdded": "2025-12-24",
+                    "addedBy": {
+                        "firstName": "Qozeem",
+                        "lastName": "Uthman",
+                        "id": 6,
+                        "middleName": ""
+                    }
+                }, {
+                    "id": 24,
+                    "pledgeId": "PLG-00024",
+                    "contactDetails": "Abuja",
+                    "donorName": "Mubaraq",
+                    "pledgeType": "investment",
+                    "numberOfAmbulance": 3,
+                    "ambulanceType": {
+                        "id": 1,
+                        "name": "BLS"
+                    },
+                    "ward": {
+                        "id": 2328,
+                        "name": "CAPEFORMOSA"
+                    },
+                    "state": {
+                        "id": 6,
+                        "name": "Bayelsa"
+                    },
+                    "lga": {
+                        "id": 152,
+                        "name": "Brass"
+                    },
+                    "facility": {
+                        "id": 3141,
+                        "name": "PHC EGWEAMA"
+                    },
+                    "pledgeDate": "2025-12-24",
+                    "deliveryDate": "2025-12-31",
+                    "status": "not_fulfilled",
+                    "dateAdded": "2025-12-24",
+                    "addedBy": {
+                        "firstName": "Qozeem",
+                        "lastName": "Uthman",
+                        "id": 6,
+                        "middleName": ""
+                    }
+                }, {
+                    "id": 23,
+                    "pledgeId": "PLG-00023",
+                    "contactDetails": "Abuja",
+                    "donorName": "Harold Baba",
+                    "pledgeType": "investment",
+                    "numberOfAmbulance": 2,
+                    "ambulanceType": {
+                        "id": 1,
+                        "name": "BLS"
+                    },
+                    "ward": {
+                        "id": 2496,
+                        "name": "Mbayer/Yandev"
+                    },
+                    "state": {
+                        "id": 7,
+                        "name": "Benue"
+                    },
+                    "lga": {
+                        "id": 165,
+                        "name": "Guma"
+                    },
+                    "facility": {
+                        "id": 777,
+                        "name": "CHC YOGBO"
+                    },
+                    "pledgeDate": "2025-12-24",
+                    "deliveryDate": "2025-12-31",
+                    "status": "pending",
+                    "dateAdded": "2025-12-24",
+                    "addedBy": {
+                        "firstName": "Qozeem",
+                        "lastName": "Uthman",
+                        "id": 6,
+                        "middleName": ""
+                    }
+                }
+            ],
+            "pagination": {
+                "total": 9,
+                "page": 1,
+                "limit": 10,
+                "nextPage": null,
+                "prevPage": null
+            }
+        }
+    }
+}
