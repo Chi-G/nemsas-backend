@@ -1,0 +1,140 @@
+{
+    "success": true,
+    "message": "Fetched successfully",
+    "data": {
+        "ambulances": {
+            "data": [
+                {
+                    "id": 32,
+                    "ambulanceId": "Amb 32",
+                    "basicInformation": {
+                        "plateNumber": "v234rtyz",
+                        "make": "Honda",
+                        "model": "v23e",
+                        "year": 2024,
+                        "accreditationType": "BLS",
+                        "state": {
+                            "id": 9,
+                            "name": "Cross River"
+                        },
+                        "lga": {
+                            "id": 218,
+                            "name": "Cal South"
+                        },
+                        "ward": {
+                            "id": 2955,
+                            "name": "Ward 8"
+                        },
+                        "facility": {
+                            "id": 2776,
+                            "name": "ESSIERIOBOM, BEACG SIDE PRIMARY HEALTH CARE"
+                        },
+                        "vehicleOwnershipType": "public",
+                        "driverName": "Henry",
+                        "contactNumber": "21345678909",
+                        "createdAt": "2025-12-24",
+                        "updatedAt": "2025-12-24"
+                    },
+                    "technicalSpecification": {
+                        "fuelType": "CNG (Compressed Natural Gas)",
+                        "otherFuelTypeOption": "",
+                        "fuelCapicity": "100",
+                        "communicationDevices": ["Mobile Phone"],
+                        "otherCommunicationDeviceOption": "",
+                        "latitude": "40.000000",
+                        "longitude": "80.000000"
+                    },
+                    "equipmentInventory": {
+                        "equipments": ["Bandaid"]
+                    },
+                    "complianceAndDocumentation": {
+                        "roadWorthinessAssessmentDate": "2025-11-28",
+                        "roadWorthinessStatus": "passed",
+                        "lastInspectionDate": "2025-11-02",
+                        "nextScheduledMaintenance": "2025-12-27",
+                        "inspectionNotes": "N/A",
+                        "insuranceProvider": "N/A",
+                        "insuranceExpirationDate": "2025-12-27"
+                    },
+                    "documents": {},
+                    "status": {
+                        "status": "active",
+                        "isOutForMaintenance": false,
+                        "isOutOfService": false
+                    }
+                }, {
+                    "id": 31,
+                    "ambulanceId": "Amb 31",
+                    "basicInformation": {
+                        "plateNumber": "3",
+                        "make": "2",
+                        "model": "1",
+                        "year": 2025,
+                        "accreditationType": "BLS",
+                        "state": {
+                            "id": 10,
+                            "name": "Delta"
+                        },
+                        "lga": {
+                            "id": 236,
+                            "name": "Isoko-North"
+                        },
+                        "ward": {
+                            "id": 3157,
+                            "name": "Ozoro I"
+                        },
+                        "facility": {
+                            "id": 3922,
+                            "name": "Uruto Phc"
+                        },
+                        "vehicleOwnershipType": "private",
+                        "driverName": "Baddooo",
+                        "contactNumber": "08167564532",
+                        "createdAt": "2025-12-24",
+                        "updatedAt": "2025-12-24"
+                    },
+                    "technicalSpecification": {
+                        "fuelType": "Petrol",
+                        "otherFuelTypeOption": "",
+                        "fuelCapicity": "300",
+                        "communicationDevices": ["Radio Communication (Two-Way Radio)"],
+                        "otherCommunicationDeviceOption": "",
+                        "latitude": "5.500000",
+                        "longitude": "6.100000"
+                    },
+                    "equipmentInventory": {
+                        "equipments": ["oxygen", "plaster"]
+                    },
+                    "complianceAndDocumentation": {
+                        "roadWorthinessAssessmentDate": "2025-12-24",
+                        "roadWorthinessStatus": "passed",
+                        "lastInspectionDate": "2025-12-23",
+                        "nextScheduledMaintenance": "2025-12-27",
+                        "inspectionNotes": "Ongoing",
+                        "insuranceProvider": "CPU",
+                        "insuranceExpirationDate": "2025-12-31"
+                    },
+                    "documents": {},
+                    "status": {
+                        "status": "active",
+                        "isOutForMaintenance": false,
+                        "isOutOfService": false
+                    }
+                }
+            ],
+            "pagination": {
+                "total": 2,
+                "page": 1,
+                "limit": 10,
+                "nextPage": null,
+                "prevPage": null
+            }
+        },
+        "ambulanceSummary": {
+            "total": 3,
+            "active": 3,
+            "outOfService": 0,
+            "outForMaintenance": 0
+        }
+    }
+}

@@ -1,0 +1,95 @@
+{
+    "success": true,
+    "message": "Fetched successfully",
+    "data": {
+        "overViewList": {
+            "data": [
+                {
+                    "id": "Amb 37",
+                    "plateNumber": "kuj-23456",
+                    "driverName": "Goodness",
+                    "state": "Fct",
+                    "lga": "Municipal",
+                    "ward": "Nyanya",
+                    "facility": "Nyanya",
+                    "isOutForMaintenance": false,
+                    "isOutOfService": false,
+                    "vehicleOwnershipType": "private",
+                    "status": "approved",
+                    "createdAt": "2026-03-12",
+                    "updatedAt": "2026-03-12"
+                }, {
+                    "id": "Amb 32",
+                    "plateNumber": "v234rtyz",
+                    "driverName": "Henry",
+                    "state": "Cross River",
+                    "lga": "Cal South",
+                    "ward": "Ward 8",
+                    "facility": "Ward 8",
+                    "isOutForMaintenance": false,
+                    "isOutOfService": false,
+                    "vehicleOwnershipType": "public",
+                    "status": "approved",
+                    "createdAt": "2025-12-24",
+                    "updatedAt": "2025-12-24"
+                }, {
+                    "id": "Amb 31",
+                    "plateNumber": "3",
+                    "driverName": "Baddooo",
+                    "state": "Delta",
+                    "lga": "Isoko-North",
+                    "ward": "Ozoro I",
+                    "facility": "Ozoro I",
+                    "isOutForMaintenance": false,
+                    "isOutOfService": false,
+                    "vehicleOwnershipType": "private",
+                    "status": "approved",
+                    "createdAt": "2025-12-24",
+                    "updatedAt": "2025-12-24"
+                }
+            ],
+            "pagination": {
+                "total": 3,
+                "page": 1,
+                "limit": 10,
+                "nextPage": null,
+                "prevPage": null
+            }
+        },
+        "overViewCards": {
+            "ambulance": {
+                "total": 3,
+                "statusCounts": {
+                    "active": 3,
+                    "under_maintenance": 0,
+                    "out_of_service": 0
+                },
+                "ownershipCounts": {
+                    "private": 2,
+                    "public": 1
+                }
+            },
+            "healthFacility": {
+                "total": 3,
+                "ownershipType": {
+                    "public": 0,
+                    "private": 3
+                },
+                "facilityLocation": {
+                    "urban": 1,
+                    "rural": 2
+                }
+            },
+            "required": {
+                "requiredAmbulances": 8901,
+                "coveragePercentage": 0.03,
+                "gapPercentage": 99.97
+            },
+            "gaps": {
+                "gapCount": 8898,
+                "coveragePercentage": 0.03,
+                "gapPercentage": 99.97
+            }
+        }
+    }
+}

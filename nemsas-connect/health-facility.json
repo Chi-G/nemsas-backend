@@ -1,0 +1,140 @@
+{
+    "success": true,
+    "message": "Fetched successfully",
+    "data": {
+        "data": [
+            {
+                "id": 27,
+                "numberOfAmbulance": 30,
+                "ward": {
+                    "id": 1389,
+                    "name": "Odoro Ikot 1"
+                },
+                "state": {
+                    "id": 3,
+                    "name": "Akwaibom"
+                },
+                "lga": {
+                    "id": 81,
+                    "name": "Essien Udim"
+                },
+                "status": "approved",
+                "dateAdded": "2025-12-24",
+                "addedBy": {
+                    "firstName": "Ismail",
+                    "lastName": "Jibrin",
+                    "id": 15,
+                    "middleName": null
+                },
+                "facilityAddress": "N/A",
+                "facilityContactInformation": "N/A",
+                "facilityId": "Fac-00027",
+                "facilityName": "N/A",
+                "facilityType": "PHC",
+                "facilityLocation": "urban",
+                "ownershipType": "private",
+                "communicationDevices": [""]
+            }, {
+                "id": 25,
+                "numberOfAmbulance": 2,
+                "ward": {
+                    "id": 2480,
+                    "name": "Mbaavarakaa"
+                },
+                "state": {
+                    "id": 7,
+                    "name": "Benue"
+                },
+                "lga": {
+                    "id": 164,
+                    "name": "Gboko"
+                },
+                "status": "approved",
+                "dateAdded": "2025-12-24",
+                "addedBy": {
+                    "firstName": "Ismail",
+                    "lastName": "Jibrin",
+                    "id": 15,
+                    "middleName": null
+                },
+                "facilityAddress": "Benue",
+                "facilityContactInformation": "08165453432",
+                "facilityId": "Fac-00025",
+                "facilityName": "DDuro SHC",
+                "facilityType": "SHC",
+                "facilityLocation": "rural",
+                "ownershipType": "private",
+                "communicationDevices": ["Radio"]
+            }, {
+                "id": 24,
+                "numberOfAmbulance": 3,
+                "ward": {
+                    "id": 2076,
+                    "name": "Lago"
+                },
+                "state": {
+                    "id": 5,
+                    "name": "Bauchi"
+                },
+                "lga": {
+                    "id": 133,
+                    "name": "Darazo"
+                },
+                "status": "approved",
+                "dateAdded": "2025-12-24",
+                "addedBy": {
+                    "firstName": "Ismail",
+                    "lastName": "Jibrin",
+                    "id": 15,
+                    "middleName": null
+                },
+                "facilityAddress": "Bauchi",
+                "facilityContactInformation": "DPRS",
+                "facilityId": "Fac-00024",
+                "facilityName": "BRU PHC",
+                "facilityType": "SHC",
+                "facilityLocation": "rural",
+                "ownershipType": "private",
+                "communicationDevices": ["Phone"]
+            }, {
+                "id": 23,
+                "numberOfAmbulance": 2,
+                "ward": {
+                    "id": 2480,
+                    "name": "Mbaavarakaa"
+                },
+                "state": {
+                    "id": 7,
+                    "name": "Benue"
+                },
+                "lga": {
+                    "id": 164,
+                    "name": "Gboko"
+                },
+                "status": "pending",
+                "dateAdded": "2025-12-24",
+                "addedBy": {
+                    "firstName": "Qozeem",
+                    "lastName": "Uthman",
+                    "id": 6,
+                    "middleName": ""
+                },
+                "facilityAddress": "Benue",
+                "facilityContactInformation": "08190909090",
+                "facilityId": "Fac-00023",
+                "facilityName": "Bala PHC",
+                "facilityType": "PHC",
+                "facilityLocation": "rural",
+                "ownershipType": "private",
+                "communicationDevices": ["Radio"]
+            }
+        ],
+        "pagination": {
+            "total": 4,
+            "page": 1,
+            "limit": 10,
+            "nextPage": null,
+            "prevPage": null
+        }
+    }
+}
