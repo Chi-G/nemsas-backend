@@ -6,6 +6,7 @@ from app.api.v1.endpoints import (
     medical_interventions, fee_categories, services, devices, dashboard,
     patient_transfer_forms, patients
 )
+from app.partners.router import router as partners_router
 
 api_router = APIRouter()
 api_router.include_router(auth.router, prefix="/auth", tags=["auth"])
@@ -33,5 +34,6 @@ api_router.include_router(run_sheets.router, prefix="/runsheets", tags=["runshee
 api_router.include_router(monitoring.router, prefix="/monitoring", tags=["monitoring"])
 api_router.include_router(patient_transfer_forms.router, prefix="/transferForms", tags=["transferForms"])
 api_router.include_router(patients.router, prefix="/patients", tags=["patients"])
+api_router.include_router(partners_router, prefix="/partners", tags=["partners"])
 api_router.include_router(websockets.router, prefix="/ws", tags=["websockets"])
 api_router.include_router(dashboard.router, prefix="/dashboard", tags=["dashboard"])
