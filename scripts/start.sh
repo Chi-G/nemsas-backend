@@ -64,6 +64,10 @@ PYTHONPATH=. python scripts/seed_runsheets.py
 echo "[$(date)] 📊 Seeding monthly monitoring data..."
 PYTHONPATH=. python scripts/seed_monitoring.py
 
+# Seed partner connect data
+echo "[$(date)] 🤝 Seeding partner connect data..."
+PYTHONPATH=. python scripts/seed_partner_connect.py
+
 echo "[$(date)] ✨ Startup sequence complete."
 
 echo "Starting application server..."
