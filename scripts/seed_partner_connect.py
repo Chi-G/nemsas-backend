@@ -96,12 +96,6 @@ async def seed_partner_data():
 
         partner_user_id = user.id
 
-        # Clean existing entries to prevent duplicates in seed run
-        await db.execute(text("DELETE FROM partner_pledges;"))
-        await db.execute(text("DELETE FROM partner_facilities;"))
-        await db.execute(text("DELETE FROM partner_ambulances;"))
-        await db.commit()
-
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
         connect_dir = os.path.join(base_dir, "nemsas-connect")
 
@@ -113,6 +107,12 @@ async def seed_partner_data():
                 data = json.load(f)
                 items = data.get("data", {}).get("list", {}).get("data", [])
                 for i, item in enumerate(items):
+                    item_id = item.get("id")
+                    # Skip if already exists
+                    exist_check = await db.execute(select(PartnerPledge).where(PartnerPledge.id == item_id))
+                    if exist_check.scalar_one_or_none():
+                        continue
+
                     state_json = item.get("state") or {}
                     lga_json = item.get("lga") or {}
                     ward_json = item.get("ward") or {}
@@ -129,7 +129,7 @@ async def seed_partner_data():
                     delivery_date = datetime.strptime(item["deliveryDate"], "%Y-%m-%d").replace(tzinfo=timezone.utc) if item.get("deliveryDate") else None
 
                     plg = PartnerPledge(
-                        id=item.get("id"),
+                        id=item_id,
                         pledge_id_str=item.get("pledgeId"),
                         contact_details=item.get("contactDetails"),
                         donor_name=item.get("donorName"),
@@ -157,6 +157,12 @@ async def seed_partner_data():
                 data = json.load(f)
                 items = data.get("data", {}).get("data", [])
                 for item in items:
+                    item_id = item.get("id")
+                    # Skip if already exists
+                    exist_check = await db.execute(select(PartnerFacility).where(PartnerFacility.id == item_id))
+                    if exist_check.scalar_one_or_none():
+                        continue
+
                     state_json = item.get("state") or {}
                     lga_json = item.get("lga") or {}
                     ward_json = item.get("ward") or {}
@@ -168,7 +174,7 @@ async def seed_partner_data():
                     devices = ",".join(item.get("communicationDevices", []))
 
                     fac = PartnerFacility(
-                        id=item.get("id"),
+                        id=item_id,
                         facility_id_str=item.get("facilityId"),
                         facility_name=item.get("facilityName"),
                         facility_type=item.get("facilityType"),
@@ -196,6 +202,12 @@ async def seed_partner_data():
                 data = json.load(f)
                 items = data.get("data", {}).get("ambulances", {}).get("data", [])
                 for item in items:
+                    item_id = item.get("id")
+                    # Skip if already exists
+                    exist_check = await db.execute(select(PartnerAmbulance).where(PartnerAmbulance.id == item_id))
+                    if exist_check.scalar_one_or_none():
+                        continue
+
                     basic = item.get("basicInformation") or {}
                     tech = item.get("technicalSpecification") or {}
                     equip = item.get("equipmentInventory") or {}
@@ -221,7 +233,7 @@ async def seed_partner_data():
                     ins_exp_date = datetime.strptime(comp["insuranceExpirationDate"], "%Y-%m-%d").replace(tzinfo=timezone.utc) if comp.get("insuranceExpirationDate") else None
 
                     amb = PartnerAmbulance(
-                        id=item.get("id"),
+                        id=item_id,
                         ambulance_id_str=item.get("ambulanceId"),
                         plate_number=basic.get("plateNumber"),
                         make=basic.get("make"),
