@@ -12,6 +12,7 @@ from app.models.incident import Incident, IncidentStatusHistory, QAFinding
 from app.models.dispatch import Dispatch, GPSHistory
 from app.models.run_sheet import RunSheet, RunSheetDrugEntry, RunSheetHistory
 from app.models.partner import Partner, Pledge, FacilityRequest
+from app.partners.models import PartnerUser, PartnerPledge, PartnerFacility, PartnerAmbulance
 from app.models.claim import Claim, ClaimAuditLog, ETCIntake, ClaimImage
 from app.models.drug import Drug
 from app.models.audit import SystemAuditLog

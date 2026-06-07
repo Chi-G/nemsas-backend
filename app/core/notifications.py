@@ -7,7 +7,7 @@ import redis.asyncio as redis
 from app.core.config import settings
 from app.models.device import Device
 from app.crud.device import device_crud
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession 
 import time
 import os
 from pathlib import Path
