@@ -14,6 +14,7 @@ class PartnerUser(Base):
     hashed_password = Column(String(255), nullable=False)
     phone_number = Column(String(20), nullable=True)
     organisation_name = Column(String(255), nullable=True)
+    user_type = Column(String(50), nullable=True) # "organization", "admin", "partner"
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 

@@ -17,6 +17,14 @@ class CRUDPartnerUser:
         return result.scalar_one_or_none()
 
     async def create(self, db: AsyncSession, *, obj_in: PartnerRegister) -> PartnerUser:
+        # Determine userType: if organisation_name is present, it's 'organization', otherwise 'partner'
+        user_type = obj_in.user_type
+        if not user_type or not user_type.strip():
+            if obj_in.organisation_name and obj_in.organisation_name.strip():
+                user_type = "organization"
+            else:
+                user_type = "partner"
+
         db_obj = PartnerUser(
             first_name=obj_in.first_name,
             middle_name=obj_in.middle_name,
@@ -24,7 +32,8 @@ class CRUDPartnerUser:
             email=obj_in.email,
             hashed_password=get_password_hash(obj_in.password),
             phone_number=obj_in.phone_number,
-            organisation_name=obj_in.organisation_name
+            organisation_name=obj_in.organisation_name,
+            user_type=user_type
         )
         db.add(db_obj)
         await db.commit()

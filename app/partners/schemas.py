@@ -26,6 +26,9 @@ class PartnerRegister(BaseModel):
     password: str
     phone_number: Optional[str] = None
     organisation_name: Optional[str] = None
+    user_type: Optional[str] = Field(None, alias="userType")
+
+    model_config = ConfigDict(populate_by_name=True)
 
 class PartnerLogin(BaseModel):
     email: EmailStr
@@ -39,10 +42,11 @@ class PartnerUserResponse(BaseModel):
     email: str
     phone_number: Optional[str] = None
     organisation_name: Optional[str] = None
+    user_type: Optional[str] = Field(None, alias="userType")
     is_active: bool
     created_at: datetime
 
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
 class PartnerToken(BaseModel):
     access_token: str

@@ -1,18 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import APIRouter, Depends
 from app.api import deps
-from app.schemas.partner import Partner as PartnerSchema
-from app.models.partner import Partner
+from app.partners.models import PartnerUser
+from app.partners.schemas import PartnerUserResponse
 from app.schemas.common import ResponseBase
 
 router = APIRouter()
 
-@router.get("/me", response_model=ResponseBase[PartnerSchema])
+@router.get("/me", response_model=ResponseBase[PartnerUserResponse])
 async def read_partner_me(
-    current_partner: Partner = Depends(deps.get_current_partner),
+    current_partner: PartnerUser = Depends(deps.get_current_partner_user),
 ):
     """
-    Get current partner details using partner's token
+    Get current partner user details using partner token
     """
     return {
         "success": True,
