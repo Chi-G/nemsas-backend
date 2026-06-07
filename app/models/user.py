@@ -45,3 +45,4 @@ class User(Base):
     state = relationship("State")
     lga = relationship("LGA")
     ward = relationship("Ward")
+    partner = relationship("Partner", back_populates="user", uselist=False)

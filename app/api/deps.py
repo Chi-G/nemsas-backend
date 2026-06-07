@@ -51,7 +51,8 @@ async def get_current_user(
         .options(
             selectinload(User.state),
             selectinload(User.lga),
-            selectinload(User.ward)
+            selectinload(User.ward),
+            selectinload(User.partner)
         )
     )
     user = result.scalar_one_or_none()
@@ -95,3 +96,56 @@ class PermissionChecker:
                 detail="The user doesn't have enough privileges",
             )
         return current_user
+
+
+async def get_current_partner(
+    db: AsyncSession = Depends(get_db),
+    token: HTTPAuthorizationCredentials = Depends(reusable_oauth2)
+) -> any:
+    from app.models.partner import Partner
+    token_str = token.credentials
+    
+    # 1. Try to find the partner by the static token column in the database
+    result = await db.execute(
+        select(Partner)
+        .where(Partner.token == token_str)
+        .options(selectinload(Partner.user))
+    )
+    partner = result.scalar_one_or_none()
+    
+    # 2. If not found, try to decode it as a JWT and find by sub
+    if not partner:
+        try:
+            payload = jwt.decode(
+                token_str, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+            )
+            sub = payload.get("sub")
+            if sub:
+                import uuid
+                # Check if sub is a UUID (user_id) or an integer (partner.id)
+                try:
+                    user_uuid = uuid.UUID(sub)
+                    result = await db.execute(
+                        select(Partner)
+                        .where(Partner.user_id == user_uuid)
+                        .options(selectinload(Partner.user))
+                    )
+                    partner = result.scalar_one_or_none()
+                except ValueError:
+                    # Try as integer partner ID
+                    partner_id = int(sub)
+                    result = await db.execute(
+                        select(Partner)
+                        .where(Partner.id == partner_id)
+                        .options(selectinload(Partner.user))
+                    )
+                    partner = result.scalar_one_or_none()
+        except Exception:
+            pass
+            
+    if not partner:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate partner credentials",
+        )
+    return partner
