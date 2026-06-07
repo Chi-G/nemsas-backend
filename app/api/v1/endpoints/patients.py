@@ -17,7 +17,7 @@ from app.models.fee_category import FeeCategory
 from app.schemas.etc_intervention import EtcInterventionBase
 from app.schemas.patient import PatientUpdate
 from pydantic import BaseModel
-from datetime import date, datetime
+from datetime import date, datetime 
 
 router = APIRouter()
 
@@ -71,7 +71,7 @@ async def get_etc_patients(
         Incident, Patient.incident_id == Incident.id
     ).outerjoin(
         State, Incident.state_id == State.id
-    ).where(Patient.etc_id == etc_id).order_by(Patient.created_at.desc())
+    ).where(Patient.etc_id == etc_id)
     
     # Count query
     count_stmt = select(func.count(Patient.id)).outerjoin(

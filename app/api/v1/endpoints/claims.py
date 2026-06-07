@@ -10,7 +10,7 @@ from app.schemas.claim_setting import ClaimSetting
 from fastapi import UploadFile, File
 import cloudinary
 import cloudinary.uploader
-from app.core.config import settings
+from app.core.config import settings 
 from sqlalchemy.future import select
 from sqlalchemy import func
 from sqlalchemy.orm import selectinload
@@ -266,13 +266,6 @@ async def create_claim(
     """
     Create a new claim.
     """
-    if claim_in.incident_id:
-        existing_claim = await db.execute(
-            select(Claim).where(Claim.incident_id == claim_in.incident_id)
-        )
-        if existing_claim.scalars().first():
-            raise HTTPException(status_code=400, detail="A claim for this incident already exists")
-
     item = await crud_claim.create(db, obj_in=claim_in, current_user=current_user)
     return {
         "success": True,
@@ -436,66 +429,6 @@ class ClaimRejectionRequest(BaseModel):
                 raise ValueError("rejectionReason is mandatory and cannot be empty")
         return data
 
-async def _notify_ambulance_claim_status(db: AsyncSession, claim_obj: Claim):
-    """
-    Sends a push notification to the ambulance users linked to the claim's incident,
-    and broadcasts the claim update over Socket.IO websockets.
-    """
-    from app.crud.claim import claim as crud_claim
-    refreshed_claim = await crud_claim.get(db, id=claim_obj.id)
-    if not refreshed_claim:
-        return
-    claim_obj = refreshed_claim
-
-    if not claim_obj.incident or not claim_obj.incident.ambulance_id:
-        return
-        
-    from app.core.notifications import notification_service
-    
-    status_str = claim_obj.ambulance_claim_status
-    status_lower = status_str.lower() if status_str else "processed"
-    title = f"Ambulance Claim {status_str}"
-    body = f"Claim #{claim_obj.id} for patient {claim_obj.patient_name or 'Unknown'} has been {status_lower}."
-    
-    # Include necessary data fields so the mobile app can route the user or take action
-    data = {
-        "claimId": str(claim_obj.id),
-        "incidentId": str(claim_obj.incident_id),
-        "status": str(status_str),
-        "type": "claim"
-    }
-    
-    # 1. Send push notification
-    try:
-        await notification_service.send_to_ambulance(
-            db=db,
-            ambulance_id=claim_obj.incident.ambulance_id,
-            title=title,
-            body=body,
-            data=data,
-            sound="default"
-        )
-    except Exception as e:
-        print(f"[Notification Error] Failed to send push notification to ambulance: {e}")
-
-    # 2. Live-stream update over WebSockets
-    if claim_obj.incident.state_id:
-        try:
-            from app.core.socket_manager import SocketManager
-            from app.schemas.claim import Claim as ClaimSchema
-            
-            claim_schema = ClaimSchema.model_validate(claim_obj)
-            payload = {
-                "type": "CLAIM_UPDATED",
-                "claim": claim_schema.model_dump(by_alias=True, mode="json")
-            }
-            await SocketManager.broadcast_incident_update(
-                state_id=claim_obj.incident.state_id,
-                payload=payload
-            )
-        except Exception as e:
-            print(f"[Socket Error] Failed to broadcast claim update: {e}")
-
 @router.post("/{id}/approve", response_model=ClaimResponse)
 async def approve_claim(
     id: int,
@@ -526,9 +459,6 @@ async def approve_claim(
     )
     db.add(audit_log)
     await db.commit()
-    
-    # Send push notification to the ambulance users
-    await _notify_ambulance_claim_status(db, claim_obj)
     
     updated_item = await crud_claim.get(db, id=id)
     return {
@@ -574,9 +504,6 @@ async def reject_claim(
     db.add(audit_log)
     await db.commit()
     
-    # Send push notification to the ambulance users
-    await _notify_ambulance_claim_status(db, claim_obj)
-    
     updated_item = await crud_claim.get(db, id=id)
     return {
         "success": True,
@@ -613,9 +540,6 @@ async def endorse_claim(
     )
     db.add(audit_log)
     await db.commit()
-    
-    # Send push notification to the ambulance users
-    await _notify_ambulance_claim_status(db, claim_obj)
     
     updated_item = await crud_claim.get(db, id=id)
     return {

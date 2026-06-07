@@ -9,6 +9,7 @@ from sqlalchemy.orm import selectinload
 from app.core.config import settings
 from app.db.session import SessionLocal, get_db
 from app.models.user import User
+from app.partners.models import PartnerUser
 from app.schemas.token import TokenPayload
 
 # Switched to HTTPBearer for a simple "Bearer <token>" input in Swagger
@@ -63,6 +64,47 @@ async def get_current_user(
         raise HTTPException(status_code=400, detail="Inactive user")
         
     return user
+
+
+async def get_current_partner_user(
+    db: AsyncSession = Depends(get_db),
+    token: HTTPAuthorizationCredentials = Depends(reusable_oauth2)
+) -> PartnerUser:
+    try:
+        payload = jwt.decode(
+            token.credentials, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        token_data = TokenPayload(**payload)
+        if token_data.sub is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+            )
+    except (JWTError, Exception):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+        )
+    try:
+        partner_user_id = int(token_data.sub)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+        )
+
+    result = await db.execute(
+        select(PartnerUser).where(PartnerUser.id == partner_user_id)
+    )
+    partner_user = result.scalar_one_or_none()
+    
+    if not partner_user:
+        raise HTTPException(status_code=404, detail="Partner user not found")
+    if not partner_user.is_active:
+        raise HTTPException(status_code=400, detail="Inactive partner user")
+        
+    return partner_user
+
 
 
 class PermissionChecker:

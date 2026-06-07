@@ -11,8 +11,7 @@ class CRUDClaim:
     def _get_claim_options(self) -> List[Any]:
         from app.models.patient import Patient as PatientModel
         from app.models.hospital import Hospital as HospitalModel
-        from app.models.claim import Claim as ClaimModel
-        from app.models.user import User as UserModel
+        from app.models.claim import Claim as ClaimModel 
         
         return [
             selectinload(Claim.patient).selectinload(PatientModel.interventions),
@@ -23,10 +22,6 @@ class CRUDClaim:
             selectinload(Claim.incident).selectinload(Incident.hospital).selectinload(HospitalModel.hospital_type),
             selectinload(Claim.incident).selectinload(Incident.hospital).selectinload(HospitalModel.state),
             selectinload(Claim.incident).selectinload(Incident.hospital).selectinload(HospitalModel.lga),
-            selectinload(Claim.incident).selectinload(Incident.ambulance),
-            selectinload(Claim.incident).selectinload(Incident.dispatcher).selectinload(UserModel.state),
-            selectinload(Claim.incident).selectinload(Incident.dispatcher).selectinload(UserModel.lga),
-            selectinload(Claim.incident).selectinload(Incident.dispatcher).selectinload(UserModel.ward),
             selectinload(Claim.incident).selectinload(Incident.incident_type),
             selectinload(Claim.incident).selectinload(Incident.state),
             selectinload(Claim.incident).selectinload(Incident.claims).selectinload(ClaimModel.images),
@@ -132,22 +127,16 @@ class CRUDClaim:
             base_filters.append(extract('month', Incident.date_added) == month)
 
         # Note: We do not filter by claim_type because the same claim record is used for both ETC and Ambulance.
-        # The user requested that both endpoints return the exact same claims (same totals)
-        # and only differentiate via their respective status values.
+        # However, to avoid showing irrelevant "New" states, we could filter by whether the incident has an ambulance or etc
+        if is_etc is True:
+            base_filters.append(Incident.etc_id != None)
+        elif is_etc is False:
+            base_filters.append(Incident.ambulance_id != None)
 
         stmt = select(Claim).options(*self._get_claim_options()).order_by(desc(Claim.id))
         count_stmt = select(func.count()).select_from(Claim)
         
-        need_incident_join = (
-            (ambulance_id is not None) or 
-            (state_id is not None) or 
-            (etc_id is not None) or 
-            (incident_category_id is not None) or 
-            (year is not None) or 
-            (month is not None) or 
-            (search is not None) or
-            (is_etc is not None)
-        )
+        need_incident_join = (ambulance_id is not None) or (state_id is not None) or (etc_id is not None) or (incident_category_id is not None) or (year is not None) or (month is not None) or (search is not None)
         if need_incident_join:
             stmt = stmt.join(Claim.incident)
             count_stmt = count_stmt.join(Claim.incident)
@@ -215,7 +204,7 @@ class CRUDClaim:
         }
 
         if user_type == "AMBULANCEUSER":
-            stmt = select(Claim.ambulance_claim_status, func.count(Claim.id)).join(Claim.incident)
+            stmt = select(Claim.ambulance_claim_status, func.count(Claim.id)).join(Claim.incident).where(Incident.ambulance_id != None)
             if ambulance_id is not None:
                 stmt = stmt.where(Incident.ambulance_id == ambulance_id)
             stmt = stmt.group_by(Claim.ambulance_claim_status)
@@ -226,7 +215,7 @@ class CRUDClaim:
             }
             
         elif user_type == "EMERGENCYTREATMENTUSER":
-            stmt = select(Claim.etc_claim_status, func.count(Claim.id)).join(Claim.incident)
+            stmt = select(Claim.etc_claim_status, func.count(Claim.id)).join(Claim.incident).where(Incident.etc_id != None)
             if etc_id is not None:
                 stmt = stmt.where(Incident.etc_id == etc_id)
             stmt = stmt.group_by(Claim.etc_claim_status)
@@ -238,14 +227,14 @@ class CRUDClaim:
             
         else:
             # Admin: return both
-            stmt_amb = select(Claim.ambulance_claim_status, func.count(Claim.id)).join(Claim.incident)
+            stmt_amb = select(Claim.ambulance_claim_status, func.count(Claim.id)).join(Claim.incident).where(Incident.ambulance_id != None)
             if state_id is not None:
                 stmt_amb = stmt_amb.where(Incident.state_id == state_id)
             stmt_amb = stmt_amb.group_by(Claim.ambulance_claim_status)
             res_amb = await db.execute(stmt_amb)
             amb_stats = calculate_counts(res_amb.all())
             
-            stmt_etc = select(Claim.etc_claim_status, func.count(Claim.id)).join(Claim.incident)
+            stmt_etc = select(Claim.etc_claim_status, func.count(Claim.id)).join(Claim.incident).where(Incident.etc_id != None)
             if state_id is not None:
                 stmt_etc = stmt_etc.where(Incident.state_id == state_id)
             stmt_etc = stmt_etc.group_by(Claim.etc_claim_status)
