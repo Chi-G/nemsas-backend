@@ -1,17 +1,19 @@
 from typing import Any, Optional, List
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from fastapi import APIRouter, Depends, HTTPException, status, Query, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import uuid
 
 from app.api import deps
 from app.core import security
 from app.core.config import settings
+from app.core.email import send_verification_email, send_password_reset_email
 from app.partners.models import PartnerUser, PartnerPledge, PartnerFacility, PartnerAmbulance
 from app.partners.schemas import (
     PartnerRegister, PartnerLogin, PartnerToken, PartnerUserResponse,
+    PartnerVerifyAccount, PartnerResendCode, PartnerForgotPassword, PartnerResetPassword,
     PartnerPledgeCreate, PartnerPledgeResponse, PartnerPledgesListResponse,
     PartnerFacilityCreate, PartnerFacilityResponse, PartnerFacilitiesListResponse,
     PartnerAmbulanceCreate, PartnerAmbulanceResponse, PartnerAmbulancesListResponse,
@@ -52,9 +54,10 @@ def map_added_by(user: PartnerUser) -> AddedBySchema:
 async def register(
     *,
     db: AsyncSession = Depends(deps.get_db),
-    user_in: PartnerRegister
+    user_in: PartnerRegister,
+    background_tasks: BackgroundTasks
 ) -> Any:
-    """Register a new partner user."""
+    """Register a new partner user and send verification email."""
     existing_user = await crud_partner_user.get_by_email(db, email=user_in.email)
     if existing_user:
         raise HTTPException(
@@ -62,7 +65,137 @@ async def register(
             detail="A partner user with this email already exists."
         )
     user = await crud_partner_user.create(db, obj_in=user_in)
+    
+    if user.verification_code:
+        background_tasks.add_task(
+            send_verification_email,
+            to_email=user.email,
+            name=f"{user.first_name} {user.last_name}",
+            code=user.verification_code
+        )
     return user
+
+@router.post("/auth/verify-account")
+async def verify_account(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    body: PartnerVerifyAccount
+) -> Any:
+    """Verify partner user account using code."""
+    user = await crud_partner_user.get_by_email(db, email=body.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="Partner user not found.")
+        
+    if user.is_verified:
+        return {"success": True, "message": "Account already verified."}
+
+    if user.verification_code != body.code:
+        raise HTTPException(status_code=400, detail="Invalid verification code.")
+
+    if user.verification_code_expires_at:
+        expires_at = user.verification_code_expires_at
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if datetime.now(timezone.utc) > expires_at:
+            raise HTTPException(status_code=400, detail="Verification code has expired. Please request a new one.")
+
+    user.is_verified = True
+    user.verification_code = None
+    user.verification_code_expires_at = None
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+
+    return {"success": True, "message": "Account successfully verified."}
+
+@router.post("/auth/resend-code")
+async def resend_verification_code(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    body: PartnerResendCode,
+    background_tasks: BackgroundTasks
+) -> Any:
+    """Resend verification code to partner email."""
+    user = await crud_partner_user.get_by_email(db, email=body.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="Partner user not found.")
+        
+    if user.is_verified:
+        return {"success": True, "message": "Account already verified."}
+
+    import random
+    user.verification_code = str(random.randint(100000, 999999))
+    user.verification_code_expires_at = datetime.now(timezone.utc) + timedelta(seconds=90)
+    
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+
+    background_tasks.add_task(
+        send_verification_email,
+        to_email=user.email,
+        name=f"{user.first_name} {user.last_name}",
+        code=user.verification_code
+    )
+    return {"success": True, "message": "Verification code successfully resent."}
+
+@router.post("/auth/forgot-password")
+async def forgot_password(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    body: PartnerForgotPassword,
+    background_tasks: BackgroundTasks
+) -> Any:
+    """Send password reset code to partner email."""
+    user = await crud_partner_user.get_by_email(db, email=body.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="Partner user not found.")
+
+    import random
+    user.reset_password_code = str(random.randint(100000, 999999))
+    user.reset_password_code_expires_at = datetime.now(timezone.utc) + timedelta(seconds=90)
+    
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+
+    background_tasks.add_task(
+        send_password_reset_email,
+        to_email=user.email,
+        name=f"{user.first_name} {user.last_name}",
+        code=user.reset_password_code
+    )
+    return {"success": True, "message": "Password reset code successfully sent."}
+
+@router.post("/auth/reset-password")
+async def reset_password(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    body: PartnerResetPassword
+) -> Any:
+    """Reset partner user password using code."""
+    user = await crud_partner_user.get_by_email(db, email=body.email)
+    if not user:
+        raise HTTPException(status_code=404, detail="Partner user not found.")
+
+    if not user.reset_password_code or user.reset_password_code != body.code:
+        raise HTTPException(status_code=400, detail="Invalid password reset code.")
+
+    if user.reset_password_code_expires_at:
+        expires_at = user.reset_password_code_expires_at
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+        if datetime.now(timezone.utc) > expires_at:
+            raise HTTPException(status_code=400, detail="Reset code has expired. Please request a new one.")
+
+    user.hashed_password = security.get_password_hash(body.new_password)
+    user.reset_password_code = None
+    user.reset_password_code_expires_at = None
+    db.add(user)
+    await db.commit()
+    await db.refresh(user)
+
+    return {"success": True, "message": "Password successfully reset."}
 
 @router.post("/auth/login", response_model=PartnerToken)
 async def login(
@@ -79,6 +212,12 @@ async def login(
         )
     if not user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user account")
+        
+    if not user.is_verified:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Account email is not verified. Please verify your email first."
+        )
     
     # Generate tokens, setting role="PARTNER_CONNECT" or similar
     access_token = security.create_access_token(user.id, role="PARTNER_CONNECT")
@@ -92,6 +231,13 @@ async def login(
         "expires_in": expires_in,
         "user": user
     }
+
+@router.get("/auth/me", response_model=PartnerUserResponse)
+async def get_me(
+    current_user: PartnerUser = Depends(deps.get_current_partner_user)
+) -> Any:
+    """Get current partner user details."""
+    return current_user
 
 # --- Dashboard / Overview ---
 @router.get("/dashboard", response_model=PartnerDashboardResponse)

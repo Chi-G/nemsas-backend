@@ -97,3 +97,11 @@ class User(UserBase):
     state: Optional[State] = None
     lga: Optional[LGA] = None
     ward: Optional[Ward] = None
+    token: Optional[str] = None
+
+    @model_validator(mode='after')
+    def load_partner_token(self) -> 'User':
+        partner_obj = getattr(self, "partner", None)
+        if partner_obj:
+            self.token = getattr(partner_obj, "token", None)
+        return self

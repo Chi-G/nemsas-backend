@@ -21,15 +21,17 @@ class Partner(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), unique=True)
-    organisation_name = Column(String(255))
+    organisation_name = Column(String(255), nullable=True)
     contact_person = Column(String(255), nullable=True)
     contact_phone = Column(String(20), nullable=True)
     address = Column(String(500), nullable=True)
     
     is_verified = Column(Boolean, default=False)
+    user_type = Column(String(50), nullable=True) # "organization", "admin", "partner"
+    token = Column(String(500), unique=True, nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
     
-    user = relationship("User")
+    user = relationship("User", back_populates="partner")
     pledges = relationship("Pledge", back_populates="partner")
 
 class Pledge(Base):

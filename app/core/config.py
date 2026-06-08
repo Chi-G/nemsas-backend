@@ -38,6 +38,21 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: Optional[str] = None
     CLOUDINARY_API_SECRET: Optional[str] = None
 
+    # SMTP / Email Settings
+    EMAIL_HOST: str = "mail.privateemail.com"
+    EMAIL_HOST_USER: str = "demo@sydanitechnologies.com"
+    EMAIL_HOST_PASSWORD: str = "@StechDemo887"
+    EMAIL_PORT: int = 587
+    EMAIL_USE_TLS: bool = True
+    EMAILS_FROM_EMAIL: str = "demo@sydanitechnologies.com"
+
+    # Email Provider Toggle: "default" (SMTP) or "brevo" (Brevo API)
+    EMAIL_PROVIDER: str = "default"
+
+    # Brevo (Sendinblue) API Settings
+    BREVO_API_KEY: Optional[str] = None
+    BREVO_SENDER_EMAIL: Optional[str] = None
+
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=True, extra="ignore")
 
 settings = Settings()
