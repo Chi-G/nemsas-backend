@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     REDIS_URL: str = "redis://localhost:6379/0"
 
     # Redis Settings
-    REDIS_HOST: str = "localhost"
+    REDIS_HOST: str = "localhost" 
     REDIS_PORT: int = 6379
     REDIS_DB: int = 0
     REDIS_USERNAME: Optional[str] = None

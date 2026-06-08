@@ -19,7 +19,7 @@ _LOGO_WHITE = f"https://ik.imagekit.io/eqh0cjetc/amazon-image/logo-white.png"
 # ------------------------------------------------------------------
 def _send_via_smtp(to_email: str, subject: str, html_content: str):
     """Send email using traditional SMTP relay."""
-    try:
+    try: 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
         msg["From"] = settings.EMAILS_FROM_EMAIL
