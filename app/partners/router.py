@@ -93,6 +93,13 @@ async def login(
         "user": user
     }
 
+@router.get("/auth/me", response_model=PartnerUserResponse)
+async def get_me(
+    current_user: PartnerUser = Depends(deps.get_current_partner_user)
+) -> Any:
+    """Get current partner user details."""
+    return current_user
+
 # --- Dashboard / Overview ---
 @router.get("/dashboard", response_model=PartnerDashboardResponse)
 async def get_dashboard(

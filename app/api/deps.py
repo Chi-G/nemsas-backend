@@ -89,7 +89,7 @@ async def get_current_partner_user(
     except (ValueError, TypeError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail="Could not validate credentials. Please ensure you are using a Partner token, not a normal User token.",
         )
 
     result = await db.execute(
