@@ -12,6 +12,8 @@ class CRUDClaim:
         from app.models.patient import Patient as PatientModel
         from app.models.hospital import Hospital as HospitalModel
         from app.models.claim import Claim as ClaimModel 
+        from app.models.ambulance import Ambulance as AmbulanceModel
+        from app.models.user import User as UserModel
         
         return [
             selectinload(Claim.patient).selectinload(PatientModel.interventions),
@@ -24,6 +26,12 @@ class CRUDClaim:
             selectinload(Claim.incident).selectinload(Incident.hospital).selectinload(HospitalModel.lga),
             selectinload(Claim.incident).selectinload(Incident.incident_type),
             selectinload(Claim.incident).selectinload(Incident.state),
+            selectinload(Claim.incident).selectinload(Incident.ambulance).selectinload(AmbulanceModel.state),
+            selectinload(Claim.incident).selectinload(Incident.ambulance).selectinload(AmbulanceModel.lga),
+            selectinload(Claim.incident).selectinload(Incident.ambulance).selectinload(AmbulanceModel.ward),
+            selectinload(Claim.incident).selectinload(Incident.dispatcher).selectinload(UserModel.state),
+            selectinload(Claim.incident).selectinload(Incident.dispatcher).selectinload(UserModel.lga),
+            selectinload(Claim.incident).selectinload(Incident.dispatcher).selectinload(UserModel.ward),
             selectinload(Claim.incident).selectinload(Incident.claims).selectinload(ClaimModel.images),
             # Required: Incident schema model_validator reads etc_interventions to split into drugs/procedures per patient
             selectinload(Claim.incident).selectinload(Incident.etc_interventions),
