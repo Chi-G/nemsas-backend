@@ -105,7 +105,6 @@ async def get_current_partner_user(
     return partner_user
 
 
-
 class PermissionChecker:
     def __init__(self, allowed_roles: list[str] | None = None, allowed_users: list[str] | None = None):
         """
