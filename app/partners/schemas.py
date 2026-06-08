@@ -26,7 +26,7 @@ class PartnerRegister(BaseModel):
     password: str
     phone_number: Optional[str] = None
     organisation_name: Optional[str] = None
-    user_type: Optional[str] = Field(None, alias="userType")
+    user_type: Optional[str] = Field("organization", alias="userType")
 
     model_config = ConfigDict(populate_by_name=True)
 
@@ -42,7 +42,7 @@ class PartnerUserResponse(BaseModel):
     email: str
     phone_number: Optional[str] = None
     organisation_name: Optional[str] = None
-    user_type: Optional[str] = Field(None, alias="userType")
+    user_type: Optional[str] = Field("organization", alias="userType")
     is_active: bool
     is_verified: bool = Field(False, alias="isVerified")
     created_at: datetime

@@ -11,13 +11,24 @@ router = APIRouter()
 @router.get("/", response_model=ResponseBase[List[Service]])
 async def read_services(
     db: AsyncSession = Depends(deps.get_db),
-    fee_category_id: int = Query(None, alias="feeCategoryId"),
-    is_medicine: bool = Query(None, alias="isMedicine")
+    fee_category_id: str = Query(None, alias="feeCategoryId"),
+    is_medicine: str = Query(None, alias="isMedicine")
 ):
+    parsed_fee_category_id = None
+    if fee_category_id and fee_category_id.strip():
+        try:
+            parsed_fee_category_id = int(fee_category_id)
+        except ValueError:
+            pass
+
+    parsed_is_medicine = None
+    if is_medicine and is_medicine.strip():
+        parsed_is_medicine = is_medicine.lower() in ('true', '1', 't', 'yes', 'y')
+
     services = await service_crud.get_all_services(
         db,
-        fee_category_id=fee_category_id,
-        is_medicine=is_medicine
+        fee_category_id=parsed_fee_category_id,
+        is_medicine=parsed_is_medicine
     )
         
     return {
