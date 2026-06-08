@@ -1,4 +1,5 @@
 from typing import List, Optional, Tuple, Any
+from datetime import datetime, timedelta, timezone
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy import func, desc, and_, or_
@@ -17,6 +18,8 @@ class CRUDPartnerUser:
         return result.scalar_one_or_none()
 
     async def create(self, db: AsyncSession, *, obj_in: PartnerRegister) -> PartnerUser:
+        import random
+        
         # Determine userType: if organisation_name is present, it's 'organization', otherwise 'partner'
         user_type = obj_in.user_type
         if not user_type or not user_type.strip():
@@ -24,6 +27,10 @@ class CRUDPartnerUser:
                 user_type = "organization"
             else:
                 user_type = "partner"
+
+        # Generate 6-digit verification code
+        v_code = str(random.randint(100000, 999999))
+        v_expires = datetime.now(timezone.utc) + timedelta(seconds=90)
 
         db_obj = PartnerUser(
             first_name=obj_in.first_name,
@@ -33,7 +40,10 @@ class CRUDPartnerUser:
             hashed_password=get_password_hash(obj_in.password),
             phone_number=obj_in.phone_number,
             organisation_name=obj_in.organisation_name,
-            user_type=user_type
+            user_type=user_type,
+            is_verified=False,
+            verification_code=v_code,
+            verification_code_expires_at=v_expires
         )
         db.add(db_obj)
         await db.commit()

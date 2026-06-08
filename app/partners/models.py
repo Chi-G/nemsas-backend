@@ -16,6 +16,11 @@ class PartnerUser(Base):
     organisation_name = Column(String(255), nullable=True)
     user_type = Column(String(50), nullable=True) # "organization", "admin", "partner"
     is_active = Column(Boolean, default=True)
+    is_verified = Column(Boolean, default=False, nullable=False)
+    verification_code = Column(String(50), nullable=True)
+    verification_code_expires_at = Column(DateTime(timezone=True), nullable=True)
+    reset_password_code = Column(String(50), nullable=True)
+    reset_password_code_expires_at = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
 
 class PartnerPledge(Base):
