@@ -315,6 +315,8 @@ class CRUDIncident:
                 {
                     "type": "INCIDENT_UPDATE",
                     "incidentId": final_obj.id,
+                    "serialNo": final_obj.serial_no,
+                    "etcId": final_obj.etc_id,
                     "status": final_obj.event_status_type or final_obj.incident_status_type,
                     "triage": final_obj.triage_category
                 }
