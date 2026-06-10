@@ -190,15 +190,24 @@ async def read_ambulance_claims(
     user_role = getattr(current_user, "user_type", None)
     is_admin = user_role in admin_roles
 
-    if not is_admin and not user_ambulance_id:
+    filter_ambulance_id = ambulance_id if is_admin else None
+    filter_etc_id = None
+
+    if is_admin:
+        pass
+    elif user_role == "EMERGENCYTREATMENTUSER":
+        filter_etc_id = getattr(current_user, "etc_id", None)
+        if filter_etc_id is None:
+            filter_etc_id = getattr(current_user, "emergency_treatment_center_id", None)
+        if filter_etc_id is None:
+            raise HTTPException(status_code=403, detail="ETC ID is required for ETC users")
+    elif user_ambulance_id:
+        filter_ambulance_id = user_ambulance_id
+    else:
         raise HTTPException(
             status_code=400,
-            detail="The current signed-in user is not associated with any ambulance."
+            detail="The current signed-in user is not associated with any ambulance or ETC."
         )
-    
-    # If the user is an ambulance provider, they can only view their own claims.
-    # If the user is an admin, they can view all claims or filter by query param ambulance_id.
-    filter_ambulance_id = user_ambulance_id if not is_admin else (ambulance_id or user_ambulance_id)
     
     items, total = await crud_claim.get_multi_with_count(
         db,
@@ -209,6 +218,7 @@ async def read_ambulance_claims(
         year=year,
         month=month,
         ambulance_id=filter_ambulance_id,
+        etc_id=filter_etc_id,
         incident_category_id=incident_category_id
     )
     return {
@@ -306,13 +316,24 @@ async def get_all_ambulance_claims(
     admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"}
     is_admin = user_type in admin_roles
 
-    if not is_admin and not user_ambulance_id:
+    filter_ambulance_id = None
+    filter_etc_id = None
+
+    if is_admin:
+        pass
+    elif user_type == "EMERGENCYTREATMENTUSER":
+        filter_etc_id = getattr(current_user, "etc_id", None)
+        if filter_etc_id is None:
+            filter_etc_id = getattr(current_user, "emergency_treatment_center_id", None)
+        if filter_etc_id is None:
+            raise HTTPException(status_code=403, detail="ETC ID is required for ETC users")
+    elif user_ambulance_id:
+        filter_ambulance_id = user_ambulance_id
+    else:
         raise HTTPException(
             status_code=400,
-            detail="The current signed-in user is not associated with any ambulance."
+            detail="The current signed-in user is not associated with any ambulance or ETC."
         )
-
-    filter_ambulance_id = user_ambulance_id if not is_admin else None
 
     items, total = await crud_claim.get_multi_with_count(
         db,
@@ -325,6 +346,7 @@ async def get_all_ambulance_claims(
         month=month,
         is_etc=False,
         ambulance_id=filter_ambulance_id,
+        etc_id=filter_etc_id,
         state_id=filter_state_id,
         incident_category_id=incident_category_id
     )

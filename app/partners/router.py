@@ -95,7 +95,7 @@ async def verify_account(
     if user.verification_code_expires_at:
         expires_at = user.verification_code_expires_at
         if expires_at.tzinfo is None:
-            expires_at = expires_at.replace(tzinfo=timezone.utc)
+            expires_at = expires_at.replace(tzinfo=timezone.utc) 
         if datetime.now(timezone.utc) > expires_at:
             raise HTTPException(status_code=400, detail="Verification code has expired. Please request a new one.")
 

@@ -12,6 +12,8 @@ class CRUDClaim:
         from app.models.patient import Patient as PatientModel
         from app.models.hospital import Hospital as HospitalModel
         from app.models.claim import Claim as ClaimModel 
+        from app.models.ambulance import Ambulance as AmbulanceModel
+        from app.models.user import User as UserModel
         
         return [
             selectinload(Claim.patient).selectinload(PatientModel.interventions),
@@ -24,6 +26,12 @@ class CRUDClaim:
             selectinload(Claim.incident).selectinload(Incident.hospital).selectinload(HospitalModel.lga),
             selectinload(Claim.incident).selectinload(Incident.incident_type),
             selectinload(Claim.incident).selectinload(Incident.state),
+            selectinload(Claim.incident).selectinload(Incident.ambulance).selectinload(AmbulanceModel.state),
+            selectinload(Claim.incident).selectinload(Incident.ambulance).selectinload(AmbulanceModel.lga),
+            selectinload(Claim.incident).selectinload(Incident.ambulance).selectinload(AmbulanceModel.ward),
+            selectinload(Claim.incident).selectinload(Incident.dispatcher).selectinload(UserModel.state),
+            selectinload(Claim.incident).selectinload(Incident.dispatcher).selectinload(UserModel.lga),
+            selectinload(Claim.incident).selectinload(Incident.dispatcher).selectinload(UserModel.ward),
             selectinload(Claim.incident).selectinload(Incident.claims).selectinload(ClaimModel.images),
             # Required: Incident schema model_validator reads etc_interventions to split into drugs/procedures per patient
             selectinload(Claim.incident).selectinload(Incident.etc_interventions),
@@ -136,7 +144,7 @@ class CRUDClaim:
         stmt = select(Claim).options(*self._get_claim_options()).order_by(desc(Claim.id))
         count_stmt = select(func.count()).select_from(Claim)
         
-        need_incident_join = (ambulance_id is not None) or (state_id is not None) or (etc_id is not None) or (incident_category_id is not None) or (year is not None) or (month is not None) or (search is not None)
+        need_incident_join = (is_etc is not None) or (ambulance_id is not None) or (state_id is not None) or (etc_id is not None) or (incident_category_id is not None) or (year is not None) or (month is not None) or (search is not None)
         if need_incident_join:
             stmt = stmt.join(Claim.incident)
             count_stmt = count_stmt.join(Claim.incident)
@@ -178,7 +186,7 @@ class CRUDClaim:
             
         total_count = await db.scalar(count_stmt)
         result = await db.execute(stmt.offset(skip).limit(limit))
-        return list(result.scalars().all()), total_count or 0
+        return list(result.scalars().unique().all()), total_count or 0
 
     async def get_summary(self, db: AsyncSession, state_id: Optional[int] = None, ambulance_id: Optional[int] = None, etc_id: Optional[int] = None, user_type: Optional[str] = None) -> dict:
         need_incident_join = (state_id is not None) or (ambulance_id is not None) or (etc_id is not None)
