@@ -103,9 +103,8 @@ async def get_etc_patients(
         stmt = stmt.where(extract('month', Incident.date_added) == month)
         count_stmt = count_stmt.where(extract('month', Incident.date_added) == month)
         
-    # Apply pagination
-    stmt = stmt.offset(skip).limit(pageSize)
-    
+    # Apply pagination and ordering
+    stmt = stmt.order_by(Patient.created_at.desc()).offset(skip).limit(pageSize)    
     # Execute queries
     total = (await db.execute(count_stmt)).scalar() or 0
     results = await db.execute(stmt)
@@ -199,11 +198,18 @@ async def get_patient_details(
             e_dict["drug"] = drug_dict
             etc_invs.append(e_dict)
 
+    patient_dict = obj_to_dict(patient)
+    if patient.incident_id:
+        stmt_inc = select(Incident).where(Incident.id == patient.incident_id)
+        incident = (await db.execute(stmt_inc)).scalar_one_or_none()
+        if incident:
+            patient_dict["triageCategory"] = incident.triage_category
+
     return {
         "success": True,
         "message": "Patient details fetched successfully",
         "data": {
-            "patient": obj_to_dict(patient),
+            "patient": patient_dict,
             "hospital": obj_to_dict(hospital),
             "ambulance": obj_to_dict(ambulance),
             "medicalInterventions": [obj_to_dict(m) for m in med_invs],
