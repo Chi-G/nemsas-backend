@@ -13,15 +13,27 @@ router = APIRouter()
 
 @router.get("/me", response_model=ResponseBase[UserSchema])
 async def read_user_me(
+    db: AsyncSession = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_user),
 ):
     """
     Get current user details
     """
+    user_data = UserSchema.model_validate(current_user)
+    
+    if current_user.user_type == "AMBULANCEUSER" and current_user.ambulance_id:
+        from app.models.ambulance import Ambulance
+        from sqlalchemy.orm import selectinload
+        stmt = select(Ambulance).where(Ambulance.id == current_user.ambulance_id).options(selectinload(Ambulance.ambulance_type))
+        result = await db.execute(stmt)
+        ambulance = result.scalar_one_or_none()
+        if ambulance and ambulance.ambulance_type:
+            user_data.ambulance_type = ambulance.ambulance_type.name
+
     return {
         "success": True,
         "message": "User details successfully fetched",
-        "data": current_user
+        "data": user_data
     }
 
 @router.get("/", response_model=PaginatedResponse[UserSchema])
@@ -32,7 +44,7 @@ async def read_users(
     offset: Optional[int] = None,
     search: Optional[str] = None,
     state_id: Optional[int] = None,
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER","NATIONALVIEWER", "STATEVIEWER"])),
 ):
     """
     Get all users (SUPERADMINISTRATOR can see all or filter by state, ADMINSEMSASUSER only their state)
@@ -44,9 +56,11 @@ async def read_users(
     # 2. SUPERADMINISTRATOR can filter by state_id query param if provided, otherwise sees all.
     effective_state_id = None
     
-    if current_user.user_type == "ADMINSEMSASUSER":
+    if current_user.user_type in ["ADMINSEMSASUSER", "STATEVIEWER"]:
         effective_state_id = current_user.state_id
     elif current_user.user_type == "SUPERADMINISTRATOR":
+        effective_state_id = state_id
+    elif current_user.user_type == "NATIONALVIEWER":
         effective_state_id = state_id
         
     users, total = await user_crud.get_multi_with_count(

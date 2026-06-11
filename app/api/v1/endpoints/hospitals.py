@@ -23,7 +23,7 @@ async def read_hospitals(
     Retrieve hospitals with filtering (SUPERADMINISTRATOR sees all, ADMINSEMSASUSER only their state).
     """
     effective_state_id = stateId
-    if current_user.user_type == "ADMINSEMSASUSER":
+    if current_user.user_type in ["ADMINSEMSASUSER", "STATEVIEWER"]:
         effective_state_id = current_user.state_id
     
     hospitals, total = await hospital_crud.get_multi_with_count(
