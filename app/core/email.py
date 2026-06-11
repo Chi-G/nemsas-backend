@@ -30,7 +30,8 @@ def _send_via_smtp(to_email: str, subject: str, html_content: str):
         server = smtplib.SMTP(settings.EMAIL_HOST, settings.EMAIL_PORT, timeout=10)
         if settings.EMAIL_USE_TLS:
             server.starttls()
-        server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
+        if settings.EMAIL_HOST_USER and settings.EMAIL_HOST_PASSWORD:
+            server.login(settings.EMAIL_HOST_USER, settings.EMAIL_HOST_PASSWORD)
         server.sendmail(settings.EMAILS_FROM_EMAIL, to_email, msg.as_string())
         server.quit()
         print(f"[Email Success – SMTP] Sent email to {to_email}")

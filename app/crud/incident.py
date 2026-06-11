@@ -13,7 +13,7 @@ class CRUDIncident:
         from app.models.claim import Claim as ClaimModel
         from app.models.user import User as UserModel
         result = await db.execute(
-            select(Incident) 
+            select(Incident)  
             .filter(Incident.id == id)
             .options(
                 selectinload(Incident.patients).selectinload(PatientModel.interventions),
