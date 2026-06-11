@@ -98,6 +98,7 @@ class User(UserBase):
     lga: Optional[LGA] = None
     ward: Optional[Ward] = None
     token: Optional[str] = None
+    ambulance_type: Optional[str] = Field(None, alias="ambulanceType")
 
     @model_validator(mode='after')
     def load_partner_token(self) -> 'User':
