@@ -134,7 +134,7 @@ async def read_claims(
 @router.get("/summary", response_model=ClaimSummaryResponse)
 async def read_claim_summary(
     db: AsyncSession = Depends(deps.get_db),
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "EMERGENCYTREATMENTUSER", "AMBULANCEUSER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "EMERGENCYTREATMENTUSER", "AMBULANCEUSER", "STATEVIEWER"]))
 ) -> Any:
     """
     Get aggregated summary counts of all claims.
@@ -143,7 +143,7 @@ async def read_claim_summary(
     ambulance_id = None
     etc_id = None
     user_type = getattr(current_user, "user_type", None)
-    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "STATEVIEWER"]:
         state_id = getattr(current_user, "state_id", None)
         if state_id is None:
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
@@ -306,14 +306,14 @@ async def get_all_ambulance_claims(
     # Resolve state_id constraint for SEMSAS users
     user_type = getattr(current_user, "user_type", None)
     filter_state_id = stateId
-    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "STATEVIEWER"]:
         user_state_id = getattr(current_user, "state_id", None)
         if user_state_id is None:
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
         filter_state_id = user_state_id
 
     user_ambulance_id = getattr(current_user, "ambulance_id", None)
-    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"}
+    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "NATIONALVIEWER", "STATEVIEWER"}
     is_admin = user_type in admin_roles
 
     filter_ambulance_id = None
@@ -385,7 +385,7 @@ async def get_all_etc_claims(
     filter_etc_id = None
     filter_is_etc = True
     
-    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH"]:
+    if user_type in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "STATEVIEWER"]:
         user_state_id = getattr(current_user, "state_id", None)
         if user_state_id is None:
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
