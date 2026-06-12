@@ -91,6 +91,18 @@ class ChangePasswordRequest(BaseModel):
     current_password: str = Field(..., alias="currentPassword")
     new_password: str = Field(..., alias="newPassword")
 
+class EtcDetails(BaseModel):
+    id: int
+    name: str
+    hospital_type: Optional[str] = Field(None, alias="hospitalType")
+    address1: Optional[str] = None
+    latitude: Optional[str] = None
+    longitude: Optional[str] = None
+
+    class Config:
+        populate_by_name = True
+        from_attributes = True
+
 class User(UserBase):
     id: UUID
     date_joined: datetime = Field(..., alias="dateJoined")
@@ -99,6 +111,7 @@ class User(UserBase):
     ward: Optional[Ward] = None
     token: Optional[str] = None
     ambulance_type: Optional[str] = Field(None, alias="ambulanceType")
+    etc_details: Optional[EtcDetails] = Field(None, alias="etcDetails")
 
     @model_validator(mode='after')
     def load_partner_token(self) -> 'User':
