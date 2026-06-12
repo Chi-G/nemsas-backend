@@ -86,19 +86,13 @@ async def seed_partner_data():
                 hashed_password=get_password_hash("Password@1"),
                 phone_number="08012345678",
                 organisation_name="John Doe Corp",
-                is_active=True,
-                is_verified=True
+                is_active=True
             )
             db.add(user)
             await db.flush()
-            print(f"✅ Created Verified Partner User: johndoe@gmail.com")
+            print(f"✅ Created Partner User: johndoe@gmail.com")
         else:
-            if not user.is_verified:
-                user.is_verified = True
-                await db.flush()
-                print(f"✅ Updated Partner User: johndoe@gmail.com to be verified")
-            else:
-                print("Partner User already exists and is verified.")
+            print("Partner User already exists.")
 
         partner_user_id = user.id
 
