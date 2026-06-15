@@ -9,7 +9,7 @@ from app.models.incident import Incident
 from app.models.state import State
 from app.models.hospital import Hospital
 from app.models.ambulance import Ambulance
-from app.models.medical_intervention import MedicalIntervention
+from app.models.medical_intervention import MedicalIntervention 
 from app.models.etc_intervention import EtcIntervention
 from app.models.drug import Drug
 from app.models.service import Service

@@ -134,7 +134,7 @@ async def read_claims(
 @router.get("/summary", response_model=ClaimSummaryResponse)
 async def read_claim_summary(
     db: AsyncSession = Depends(deps.get_db),
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "EMERGENCYTREATMENTUSER", "AMBULANCEUSER", "STATEVIEWER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "EMERGENCYTREATMENTUSER", "AMBULANCEUSER", "STATEVIEWER", "NATIONALVIEWER"]))
 ) -> Any:
     """
     Get aggregated summary counts of all claims.
@@ -186,12 +186,19 @@ async def read_ambulance_claims(
     Get claims specifically for the signed-in ambulance user or all ambulance claims for administrators.
     """
     user_ambulance_id = getattr(current_user, "ambulance_id", None)
-    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER"}
+    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "NATIONALVIEWER", "STATEVIEWER"}
     user_role = getattr(current_user, "user_type", None)
     is_admin = user_role in admin_roles
 
     filter_ambulance_id = ambulance_id if is_admin else None
     filter_etc_id = None
+    filter_state_id = None
+
+    if user_role in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "STATEVIEWER"]:
+        user_state_id = getattr(current_user, "state_id", None)
+        if user_state_id is None:
+            raise HTTPException(status_code=403, detail="State ID is required for state-level users")
+        filter_state_id = user_state_id
 
     if is_admin:
         pass
@@ -219,6 +226,7 @@ async def read_ambulance_claims(
         month=month,
         ambulance_id=filter_ambulance_id,
         etc_id=filter_etc_id,
+        state_id=filter_state_id,
         incident_category_id=incident_category_id
     )
     return {

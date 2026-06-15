@@ -1,0 +1,57 @@
+# NEMSAS Backend Project Guidelines (.cursorrules)
+
+## 1. Project Context & Domain
+This is the backend for the **National Emergency Medical Service and Ambulance System (NEMSAS)**, an enterprise-grade emergency response platform.
+Key Domains:
+- **Incident Management:** Logging and tracking emergency incidents.
+- **Dispatch & Routing:** Finding the nearest ambulance using Google Maps API road distance.
+- **Ambulance Run Sheets:** Electronic medical records created by ambulance crews, progressively saved, and co-signed by Emergency Treatment Centers (ETC).
+- **Claims Processing:** Handling billing for BLS (Basic Life Support) and ALS (Advanced Life Support) services.
+- **Fleet Management:** Ambulance registration, bulk uploads, allocation.
+- **Role-Based Access Control (RBAC):** Strict separation of concerns (Super Admin, SEMSAS Admin, Dispatcher, Crew, ETC Staff, QA).
+- **Partner & Gap Analysis:** NEMSAS Connect Platform for partner pledges, and coverage calculation (Target = 1 ambulance per 50,000 population).
+
+## 2. Technology Stack
+- **Framework:** FastAPI (Python 3.12+)
+- **Database:** PostgreSQL with `asyncpg`
+- **ORM:** SQLAlchemy 2.0 (strictly asynchronous `AsyncSession`)
+- **Migrations:** Alembic
+- **Dependency Manager:** UV (`astral-uv`)
+- **Real-time:** `python-socketio`, Redis, WebSockets
+- **Push Notifications:** Firebase Admin SDK
+- **Data Validation:** Pydantic v2
+- **Testing:** Pytest (async)
+
+## 3. Architecture & Code Structure
+- `app/api/v1/endpoints/`: Route handlers. Keep these thin.
+- `app/core/`: Settings, middleware, security, and WebSocket/Notification managers.
+- `app/crud/`: Database interaction layer. Use SQLAlchemy 2.0 syntax (`select()`, `execute()`).
+- `app/db/`: Session management and base models.
+- `app/models/`: SQLAlchemy ORM models.
+- `app/schemas/`: Pydantic validation schemas.
+- `app/services/`: Complex business logic, third-party integrations (e.g., Maps, Cloudinary).
+
+## 4. Development Workflow & Rules
+1. **Asynchronous Code Only:** All database operations, file I/O, and network requests must use `async`/`await`. Never use synchronous `Session`.
+2. **Database Queries:** Always use `async_session.execute(select(Model))` instead of the legacy `query()` method.
+3. **Dependency Management:** Never use `pip`. Always use `uv add <package>` and `uv sync` to manage dependencies.
+4. **Validation:** All incoming API payloads and outgoing responses must be validated via Pydantic schemas. Use `response_model` in FastAPI route decorators.
+5. **Error Handling:** Standardize errors by raising `HTTPException` with structured dictionaries matching the global exception handler in `main.py` (success, status, message, error).
+6. **Migrations:** When altering `app/models/`, immediately run `uv run alembic revision --autogenerate -m "description"`.
+7. **Security:** Every endpoint must be guarded by RBAC dependencies (e.g., checking if the user is a SEMSAS Admin and strictly scoping data to their state). Password hashing uses `bcrypt` (cost >= 12).
+8. **Audit Trail:** Critical actions (login, updates, status changes, claims approval) must be logged either in an audit table or status history tables.
+
+## 5. Local Setup
+```bash
+# Sync dependencies
+uv sync
+
+# Run Migrations
+uv run alembic upgrade head
+
+# Seed Reference Data (States, LGAs, NHIA Drugs)
+PYTHONPATH=. uv run scripts/seed_all.py
+
+# Start Server
+PYTHONPATH=. uv run uvicorn app.main:app --reload --port 8000
+```

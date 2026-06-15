@@ -29,6 +29,23 @@ async def read_user_me(
         ambulance = result.scalar_one_or_none()
         if ambulance and ambulance.ambulance_type:
             user_data.ambulance_type = ambulance.ambulance_type.name
+            
+    elif current_user.user_type == "EMERGENCYTREATMENTUSER" and current_user.emergency_treatment_center_id:
+        from app.models.hospital import Hospital
+        from sqlalchemy.orm import selectinload
+        stmt = select(Hospital).where(Hospital.id == current_user.emergency_treatment_center_id).options(selectinload(Hospital.hospital_type))
+        result = await db.execute(stmt)
+        hospital = result.scalar_one_or_none()
+        if hospital:
+            hospital_type_name = hospital.hospital_type.name if hospital.hospital_type else None
+            user_data.etc_details = {
+                "id": hospital.id,
+                "name": hospital.name,
+                "hospital_type": hospital_type_name,
+                "address1": hospital.address1,
+                "latitude": hospital.latitude,
+                "longitude": hospital.longitude
+            }
 
     return {
         "success": True,
