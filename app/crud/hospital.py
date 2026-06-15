@@ -13,7 +13,8 @@ class CRUDHospital:
             .options(
                 selectinload(Hospital.hospital_type),
                 selectinload(Hospital.state),
-                selectinload(Hospital.lga)
+                selectinload(Hospital.lga),
+                selectinload(Hospital.partner)
             )
         )
         return result.scalars().first()
@@ -24,7 +25,11 @@ class CRUDHospital:
         *, 
         name: Optional[str] = None,
         state_id: Optional[int] = None,
-        days: Optional[int] = None
+        days: Optional[int] = None,
+        status: Optional[str] = None,
+        added_by: Optional[int] = None,
+        skip: int = 0,
+        limit: Optional[int] = None
     ) -> tuple[List[Hospital], int]:
         from sqlalchemy import func
         from datetime import datetime, timedelta
@@ -39,17 +44,26 @@ class CRUDHospital:
             start_date = datetime.now() - timedelta(days=days)
             query = query.filter(Hospital.date_added >= start_date)
 
+        if status:
+            query = query.filter(Hospital.status == status)
+        if added_by is not None:
+            query = query.filter(Hospital.added_by == added_by)
+
         count_query = select(func.count()).select_from(query.subquery())
         count_result = await db.execute(count_query)
         total = count_result.scalar() or 0
 
+        query = query.order_by(Hospital.date_added.desc())
+        
+        if limit is not None:
+            query = query.offset(skip).limit(limit)
 
         result = await db.execute(
-            query.order_by(Hospital.date_added.desc())
-            .options(
+            query.options(
                 selectinload(Hospital.hospital_type),
                 selectinload(Hospital.state),
-                selectinload(Hospital.lga)
+                selectinload(Hospital.lga),
+                selectinload(Hospital.partner)
             )
         )
 
@@ -67,7 +81,9 @@ class CRUDHospital:
             address2=obj_in.address2,
             landmark=obj_in.landmark,
             nhia_or_shia=obj_in.nhia_or_shia,
-            date_added=obj_in.date_added
+            date_added=obj_in.date_added,
+            status=obj_in.status or "approved",
+            added_by=obj_in.added_by
         )
         db.add(db_obj)
         await db.commit()
@@ -82,7 +98,8 @@ class CRUDHospital:
             .options(
                 selectinload(Hospital.hospital_type),
                 selectinload(Hospital.state),
-                selectinload(Hospital.lga)
+                selectinload(Hospital.lga),
+                selectinload(Hospital.partner)
             )
         )
         return list(result.scalars().all())

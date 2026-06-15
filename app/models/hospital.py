@@ -18,8 +18,11 @@ class Hospital(Base):
     date_added = Column(DateTime(timezone=True), nullable=True)
     latitude = Column(String, nullable=True)
     longitude = Column(String, nullable=True)
+    status = Column(String, default="approved")
+    added_by = Column(Integer, ForeignKey("partner_users.id"), nullable=True)
 
     # Relationships
     hospital_type = relationship("HospitalType")
     state = relationship("State")
     lga = relationship("LGA")
+    partner = relationship("PartnerUser")

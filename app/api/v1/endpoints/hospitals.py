@@ -8,6 +8,10 @@ from app.models.user import User
 from datetime import datetime
 from typing import Any, List, Optional
 
+from sqlalchemy.future import select
+from app.partners.models import PartnerUser
+from sqlalchemy import func
+
 router = APIRouter()
 
 
@@ -17,6 +21,7 @@ async def read_hospitals(
     name: Optional[str] = None,
     stateId: Optional[int] = None,
     days: Optional[int] = None,
+    status: Optional[str] = None,
     current_user: User = Depends(deps.get_current_user),
 ):
     """
@@ -30,7 +35,8 @@ async def read_hospitals(
         db, 
         name=name,
         state_id=effective_state_id,
-        days=days
+        days=days,
+        status=status
     )
     from app.schemas.hospital import HospitalSummary
     return {
@@ -42,6 +48,111 @@ async def read_hospitals(
         "refreshTokenExpiryTime": "0001-01-01T00:00:00"
     }
     
+
+@router.get("/partner/stats")
+async def get_partner_hospital_stats(
+    db: AsyncSession = Depends(deps.get_db),
+    current_partner: PartnerUser = Depends(deps.get_current_partner_user)
+) -> Any:
+    """
+    Get hospital statistics for the current partner (showing all hospitals).
+    """
+    if not current_partner:
+        raise HTTPException(status_code=400, detail={"message": "Partner not found", "error": "NOT_PARTNER"})
+
+    from app.models.hospital import Hospital
+    
+    query = select(Hospital.status, func.count(Hospital.id)).group_by(Hospital.status)
+    res = await db.execute(query)
+    counts = res.all()
+    
+    stats = {"total": 0, "pending": 0, "approved": 0, "rejected": 0}
+    for status_val, count in counts:
+        stats["total"] += count
+        if status_val in stats:
+            stats[status_val] += count
+            
+    return {
+        "success": True,
+        "message": "Stats fetched successfully",
+        "data": stats,
+        "totalCount": 1
+    }
+
+@router.get("/partner", response_model=HospitalResponse)
+async def read_partner_hospitals(
+    db: AsyncSession = Depends(deps.get_db),
+    name: Optional[str] = None,
+    stateId: Optional[int] = None,
+    days: Optional[int] = None,
+    status: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 20,
+    current_partner: PartnerUser = Depends(deps.get_current_partner_user),
+) -> Any:
+    """
+    Retrieve hospitals for the partner dashboard (sees all).
+    """
+    if not current_partner:
+        raise HTTPException(status_code=400, detail={"message": "Partner not found", "error": "NOT_PARTNER"})
+
+    hospitals, total = await hospital_crud.get_multi_with_count(
+        db, 
+        name=name,
+        state_id=stateId,
+        days=days,
+        status=status,
+        skip=skip,
+        limit=limit
+    )
+    from app.schemas.hospital import HospitalSummary
+    return {
+        "success": True,
+        "message": "Hospital(s) successfully fetched",
+        "data": [HospitalSummary.model_validate(h) for h in hospitals],
+        "totalCount": total,
+        "refreshToken": None,
+        "refreshTokenExpiryTime": "0001-01-01T00:00:00"
+    }
+
+@router.post("/partner", response_model=HospitalResponse)
+async def create_partner_hospital(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    hospital_in: HospitalCreate,
+    current_partner: PartnerUser = Depends(deps.get_current_partner_user)
+) -> Any:
+    """
+    Create a new hospital by a partner. Status will be pending.
+    """
+    if not current_partner:
+        raise HTTPException(status_code=400, detail={"message": "Partner not found", "error": "NOT_PARTNER"})
+        
+    hospital_in.added_by = current_partner.id
+    hospital_in.status = "pending"
+    if not hospital_in.date_added:
+        hospital_in.date_added = datetime.now()
+        
+    try:
+        new_hospital = await hospital_crud.create(db, obj_in=hospital_in)
+        new_hospital = await hospital_crud.get(db, id=new_hospital.id)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Hospital creation failed",
+                "error": str(e)
+            }
+        )
+        
+    return {
+        "success": True,
+        "message": "Partner hospital successfully created",
+        "data": new_hospital,
+        "totalCount": 1,
+        "refreshToken": None,
+        "refreshTokenExpiryTime": "0001-01-01T00:00:00"
+    }
 
 @router.post("/", response_model=HospitalResponse)
 async def create_hospital(

@@ -21,6 +21,8 @@ class HospitalCreate(HospitalBase):
     state_id: Optional[int] = Field(None, alias="stateId")
     lga_id: Optional[int] = Field(None, alias="lgaId")
     date_added: Optional[datetime] = Field(None, alias="dateAdded")
+    status: Optional[str] = "approved"
+    added_by: Optional[int] = Field(None, alias="addedBy")
 
 class Hospital(HospitalBase):
     id: int
@@ -50,6 +52,9 @@ class HospitalSummary(HospitalBase):
     state_name: Optional[str] = Field(None, alias="stateName")
     lga_name: Optional[str] = Field(None, alias="lgaName")
     hospital_type_name: Optional[str] = Field(None, alias="hospitalTypeName")
+    status: Optional[str] = "approved"
+    added_by: Optional[int] = Field(None, alias="addedBy")
+    added_by_partner: Optional[Any] = Field(None, alias="addedByPartner")
 
     @model_validator(mode='before')
     @classmethod
@@ -60,6 +65,9 @@ class HospitalSummary(HospitalBase):
             data.lga_name = data.lga.name
         if hasattr(data, 'hospital_type') and data.hospital_type:
             data.hospital_type_name = data.hospital_type.name
+        if hasattr(data, 'partner') and data.partner:
+            from app.partners.schemas import PartnerUserResponse
+            data.added_by_partner = PartnerUserResponse.model_validate(data.partner)
         return data
 
     model_config = ConfigDict(

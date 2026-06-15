@@ -21,6 +21,7 @@ async def read_ambulances(
     stateId: Optional[int] = None,
     typeId: Optional[int] = None,
     days: Optional[int] = None,
+    status: Optional[str] = None,
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
@@ -37,7 +38,7 @@ async def read_ambulances(
         state_id=effective_state_id,
         ambulance_type_id=typeId,
         days=days,
-        status="approved"
+        status=status
     )
     from app.schemas.ambulance import AmbulanceSummary
     return {
@@ -181,7 +182,7 @@ async def get_partner_ambulance_stats(
     res = await db.execute(query)
     counts = res.all()
     
-    stats = {"total": 0, "pending": 0, "approved": 0, "rejected": 0}
+    stats = {"total": 0, "pending": 0, "approved": 0, "rejected": 0, "under_maintainance": 0, "out_of_service": 0}
     for status_val, count in counts:
         stats["total"] += count
         if status_val in stats:
