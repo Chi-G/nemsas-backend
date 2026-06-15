@@ -21,6 +21,8 @@ class AmbulanceBase(BaseModel):
     model: Optional[str] = Field(None, alias="model")
     accreditation_type: Optional[str] = Field(None, alias="accreditationType")
     vehicle_ownership_type: Optional[str] = Field(None, alias="vehicleOwnershipType")
+    status: Optional[str] = "approved"
+    added_by: Optional[int] = Field(None, alias="addedBy")
 
 
     model_config = ConfigDict(populate_by_name=True)
@@ -85,6 +87,9 @@ class AmbulanceSummary(BaseModel):
     ambulance_type_view_model: Optional[Any] = Field(None, alias="ambulanceTypeViewModel")
     runsheet_view_model: Optional[Any] = Field(None, alias="runsheetViewModel")
     event_status_type: Optional[str] = Field(None, alias="eventStatusType")
+    status: Optional[str] = "approved"
+    added_by: Optional[int] = Field(None, alias="addedBy")
+    added_by_partner: Optional[Any] = Field(None, alias="addedByPartner")
 
     @model_validator(mode='before')
     @classmethod
@@ -95,6 +100,10 @@ class AmbulanceSummary(BaseModel):
             data.lga_name = data.lga.name
         if hasattr(data, 'ambulance_type') and data.ambulance_type:
             data.ambulance_type_name = data.ambulance_type.name
+        if hasattr(data, 'partner') and data.partner:
+            from app.partners.schemas import PartnerUserResponse
+            # Provide partner details if loaded
+            data.added_by_partner = PartnerUserResponse.model_validate(data.partner)
         return data
 
     model_config = ConfigDict(from_attributes=True, populate_by_name=True)

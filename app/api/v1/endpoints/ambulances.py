@@ -1,10 +1,13 @@
 from typing import Any, Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from app.api import deps
 from app.schemas.ambulance import AmbulanceResponse, AmbulanceCreate, AmbulanceUpdate
 from app.crud.crud_ambulance import ambulance as ambulance_crud
 from app.models.user import User
+from app.models.partner import Partner
+from app.partners.models import PartnerUser
 import string
 import random
 
@@ -33,7 +36,8 @@ async def read_ambulances(
         name=name,
         state_id=effective_state_id,
         ambulance_type_id=typeId,
-        days=days
+        days=days,
+        status="approved"
     )
     from app.schemas.ambulance import AmbulanceSummary
     return {
@@ -45,6 +49,42 @@ async def read_ambulances(
         "refreshTokenExpiryTime": "0001-01-01T00:00:00"
     }
 
+@router.get("/all", response_model=AmbulanceResponse)
+async def read_all_ambulances(
+    db: AsyncSession = Depends(deps.get_db),
+    driverName: Optional[str] = None,
+    name: Optional[str] = None,
+    stateId: Optional[int] = None,
+    typeId: Optional[int] = None,
+    days: Optional[int] = None,
+    status: Optional[str] = None,
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Retrieve all ambulances with optional status filtering.
+    """
+    effective_state_id = stateId
+    if current_user.user_type in ["ADMINSEMSASUSER", "STATEVIEWER"]:
+        effective_state_id = current_user.state_id
+
+    ambulances, total_count = await ambulance_crud.get_multi_with_count(
+        db, 
+        driver_name=driverName,
+        name=name,
+        state_id=effective_state_id,
+        ambulance_type_id=typeId,
+        days=days,
+        status=status
+    )
+    from app.schemas.ambulance import AmbulanceSummary
+    return {
+        "success": True,
+        "message": "Ambulance(s) successfully fetched",
+        "data": [AmbulanceSummary.model_validate(a) for a in ambulances],
+        "totalCount": total_count,
+        "refreshToken": None,
+        "refreshTokenExpiryTime": "0001-01-01T00:00:00"
+    }
 
 @router.post("/", response_model=AmbulanceResponse)
 async def create_ambulance(
@@ -82,8 +122,117 @@ async def create_ambulance(
         "refreshTokenExpiryTime": "0001-01-01T00:00:00"
     }
 
+@router.post("/partner", response_model=AmbulanceResponse)
+async def create_partner_ambulance(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    ambulance_in: AmbulanceCreate,
+    current_partner: PartnerUser = Depends(deps.get_current_partner_user)
+) -> Any:
+    """
+    Create a new ambulance by a partner. Status will be pending.
+    """
+    if not current_partner:
+        raise HTTPException(status_code=400, detail={"message": "Partner not found", "error": "NOT_PARTNER"})
 
+    ambulance_in.status = "pending"
+    ambulance_in.added_by = current_partner.id
 
+    if not ambulance_in.code:
+        # Generate a random code like AMB-XXXXXX
+        random_str = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
+        ambulance_in.code = f"AMB-{random_str}"
+        
+    try:
+        new_ambulance = await ambulance_crud.create(db, obj_in=ambulance_in)
+    except Exception as e:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "message": "Ambulance creation failed",
+                "error": str(e)
+            }
+        )
+        
+    return {
+        "success": True,
+        "message": "Partner ambulance successfully created",
+        "data": new_ambulance,
+        "totalCount": 1,
+        "refreshToken": None,
+        "refreshTokenExpiryTime": "0001-01-01T00:00:00"
+    }
+
+@router.get("/partner/stats")
+async def get_partner_ambulance_stats(
+    db: AsyncSession = Depends(deps.get_db),
+    current_partner: PartnerUser = Depends(deps.get_current_partner_user)
+) -> Any:
+    """
+    Get ambulance statistics for the current partner.
+    """
+    if not current_partner:
+        raise HTTPException(status_code=400, detail={"message": "Partner not found", "error": "NOT_PARTNER"})
+
+    from sqlalchemy import func
+    from app.models.ambulance import Ambulance
+    
+    query = select(Ambulance.status, func.count(Ambulance.id)).group_by(Ambulance.status)
+    res = await db.execute(query)
+    counts = res.all()
+    
+    stats = {"total": 0, "pending": 0, "approved": 0, "rejected": 0}
+    for status_val, count in counts:
+        stats["total"] += count
+        if status_val in stats:
+            stats[status_val] += count
+            
+    return {
+        "success": True,
+        "message": "Stats fetched successfully",
+        "data": stats,
+        "totalCount": 1
+    }
+
+@router.get("/partner", response_model=AmbulanceResponse)
+async def read_partner_ambulances(
+    db: AsyncSession = Depends(deps.get_db),
+    driverName: Optional[str] = None,
+    name: Optional[str] = None,
+    stateId: Optional[int] = None,
+    typeId: Optional[int] = None,
+    days: Optional[int] = None,
+    status: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 20,
+    current_partner: PartnerUser = Depends(deps.get_current_partner_user),
+) -> Any:
+    """
+    Retrieve ambulances added by the current partner.
+    """
+    if not current_partner:
+        raise HTTPException(status_code=400, detail={"message": "Partner not found", "error": "NOT_PARTNER"})
+
+    ambulances, total_count = await ambulance_crud.get_multi_with_count(
+        db, 
+        driver_name=driverName,
+        name=name,
+        state_id=stateId,
+        ambulance_type_id=typeId,
+        days=days,
+        status=status,
+        skip=skip,
+        limit=limit
+    )
+    from app.schemas.ambulance import AmbulanceSummary
+    return {
+        "success": True,
+        "message": "Partner ambulance(s) successfully fetched",
+        "data": [AmbulanceSummary.model_validate(a) for a in ambulances],
+        "totalCount": total_count,
+        "refreshToken": None,
+        "refreshTokenExpiryTime": "0001-01-01T00:00:00"
+    }
 @router.get("/{id}", response_model=AmbulanceResponse)
 async def read_ambulance(
     *,

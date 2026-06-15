@@ -17,7 +17,8 @@ class CRUDAmbulance:
             .options(
                 selectinload(Ambulance.state),
                 selectinload(Ambulance.lga),
-                selectinload(Ambulance.ambulance_type)
+                selectinload(Ambulance.ambulance_type),
+                selectinload(Ambulance.partner)
             )
         )
         obj = result.scalars().first()
@@ -50,7 +51,8 @@ class CRUDAmbulance:
             .options(
                 selectinload(Ambulance.state),
                 selectinload(Ambulance.lga),
-                selectinload(Ambulance.ambulance_type)
+                selectinload(Ambulance.ambulance_type),
+                selectinload(Ambulance.partner)
             )
         )
         objs = list(result.scalars().all())
@@ -65,7 +67,11 @@ class CRUDAmbulance:
         name: Optional[str] = None,
         state_id: Optional[int] = None,
         ambulance_type_id: Optional[int] = None,
-        days: Optional[int] = None
+        days: Optional[int] = None,
+        status: Optional[str] = None,
+        added_by: Optional[int] = None,
+        skip: int = 0,
+        limit: Optional[int] = None
     ) -> Tuple[List[Ambulance], int]:
         query = select(Ambulance)
         
@@ -90,19 +96,28 @@ class CRUDAmbulance:
             from datetime import timedelta
             start_date = datetime.now() - timedelta(days=days)
             query = query.filter(Ambulance.date_added >= start_date)
+        if status:
+            query = query.filter(Ambulance.status == status)
+        if added_by is not None:
+            query = query.filter(Ambulance.added_by == added_by)
 
         # Get count
         count_query = select(func.count()).select_from(query.subquery())
         count_result = await db.execute(count_query)
         total_count = count_result.scalar_one()
 
+        query = query.order_by(Ambulance.date_added.desc())
+        
+        if limit is not None:
+            query = query.offset(skip).limit(limit)
+
         # Get data
         result = await db.execute(
-            query.order_by(Ambulance.date_added.desc())
-            .options(
+            query.options(
                 selectinload(Ambulance.state),
                 selectinload(Ambulance.lga),
-                selectinload(Ambulance.ambulance_type)
+                selectinload(Ambulance.ambulance_type),
+                selectinload(Ambulance.partner)
             )
         )
         objs = list(result.scalars().all())
@@ -117,7 +132,8 @@ class CRUDAmbulance:
             .options(
                 selectinload(Ambulance.state),
                 selectinload(Ambulance.lga),
-                selectinload(Ambulance.ambulance_type)
+                selectinload(Ambulance.ambulance_type),
+                selectinload(Ambulance.partner)
             )
         )
         objs = list(result.scalars().all())
@@ -136,7 +152,8 @@ class CRUDAmbulance:
             .options(
                 selectinload(Ambulance.state),
                 selectinload(Ambulance.lga),
-                selectinload(Ambulance.ambulance_type)
+                selectinload(Ambulance.ambulance_type),
+                selectinload(Ambulance.partner)
             )
         )
         obj = result.scalars().first()
@@ -159,7 +176,8 @@ class CRUDAmbulance:
             .options(
                 selectinload(Ambulance.state),
                 selectinload(Ambulance.lga),
-                selectinload(Ambulance.ambulance_type)
+                selectinload(Ambulance.ambulance_type),
+                selectinload(Ambulance.partner)
             )
         )
         obj = result.scalars().first()

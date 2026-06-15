@@ -27,6 +27,8 @@ class Ambulance(Base):
     model = Column(String, nullable=True)
     accreditation_type = Column(String, nullable=True)
     vehicle_ownership_type = Column(String, nullable=True)
+    status = Column(String, default="approved")
+    added_by = Column(Integer, ForeignKey("partner_users.id"), nullable=True)
     date_added = Column(DateTime(timezone=True), default=lambda: datetime.now())
 
 
@@ -36,5 +38,6 @@ class Ambulance(Base):
     state = relationship("State")
     lga = relationship("LGA")
     ward = relationship("Ward")
+    partner = relationship("PartnerUser")
 
     # Add back_populates to AmbulanceType model later
