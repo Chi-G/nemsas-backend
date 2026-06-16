@@ -42,3 +42,23 @@ async def change_partner_password(
         "message": "Password changed successfully",
         "data": None
     }
+
+from typing import List
+from sqlalchemy.future import select
+
+@router.get("/all", response_model=ResponseBase[List[PartnerUserResponse]])
+async def read_all_partners(
+    db: AsyncSession = Depends(deps.get_db),
+    current_admin=Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+):
+    """
+    Get all partner users (partners and organizations). Only accessible by admins.
+    """
+    result = await db.execute(select(PartnerUser))
+    partners = result.scalars().all()
+    
+    return {
+        "success": True,
+        "message": "All partners fetched successfully",
+        "data": partners
+    }

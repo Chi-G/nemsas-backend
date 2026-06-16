@@ -308,3 +308,16 @@ def send_password_reset_email(to_email: str, name: str, code: str):
     extra_content = f'<div class="code-box">{code}</div>'
     html_content = get_email_template(title, message_body, extra_content)
     send_email(to_email, "Reset Your NEMSAS Partner Password", html_content)
+
+
+def send_approval_email(to_email: str, name: str, entity_type: str, entity_name: str):
+    title = f"{entity_type.capitalize()} Approved"
+    message_body = (
+        f"Hello {name},<br><br>"
+        f"Thank you for adding <strong>{entity_name}</strong>. "
+        f"Your {entity_type.lower()} has been reviewed and approved by the NEMSAS administrative team. "
+        "It is now active on the platform."
+    )
+    html_content = get_email_template(title, message_body)
+    send_email(to_email, f"Your NEMSAS {entity_type.capitalize()} has been Approved", html_content)
+
