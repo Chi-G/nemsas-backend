@@ -66,6 +66,12 @@ class PartnerResetPassword(BaseModel):
 
     model_config = ConfigDict(populate_by_name=True)
 
+class PartnerChangePassword(BaseModel):
+    current_password: str = Field(..., alias="currentPassword")
+    new_password: str = Field(..., alias="newPassword")
+
+    model_config = ConfigDict(populate_by_name=True)
+
 class PartnerToken(BaseModel):
     access_token: str
     token_type: str = "bearer"

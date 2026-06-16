@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.api import deps
 from app.partners.models import PartnerUser
-from app.partners.schemas import PartnerUserResponse
+from app.partners.schemas import PartnerUserResponse, PartnerChangePassword
 from app.schemas.common import ResponseBase
+from app.core.security import verify_password, get_password_hash
 
 router = APIRouter()
 
@@ -17,4 +19,26 @@ async def read_partner_me(
         "success": True,
         "message": "Partner details successfully fetched",
         "data": current_partner
+    }
+
+@router.post("/change-password", response_model=ResponseBase)
+async def change_partner_password(
+    data: PartnerChangePassword,
+    db: AsyncSession = Depends(deps.get_db),
+    current_partner: PartnerUser = Depends(deps.get_current_partner_user),
+):
+    """
+    Change partner password
+    """
+    if not verify_password(data.current_password, current_partner.hashed_password):
+        raise HTTPException(status_code=400, detail={"message": "Incorrect current password", "error": "INVALID_PASSWORD"})
+    
+    current_partner.hashed_password = get_password_hash(data.new_password)
+    db.add(current_partner)
+    await db.commit()
+    
+    return {
+        "success": True,
+        "message": "Password changed successfully",
+        "data": None
     }
