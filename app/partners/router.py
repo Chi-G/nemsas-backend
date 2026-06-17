@@ -46,7 +46,12 @@ def map_added_by(user: PartnerUser) -> AddedBySchema:
         id=user.id,
         first_name=user.first_name,
         last_name=user.last_name,
-        middle_name=user.middle_name or ""
+        middle_name=user.middle_name or "",
+        email=user.email,
+        phone_number=user.phone_number,
+        organisation_name=user.organisation_name,
+        user_type=user.user_type,
+        created_at=user.created_at
     )
 
 # --- Auth ---
@@ -612,7 +617,7 @@ async def get_pledges(
     """Get partner pledges list and overview summaries."""
     skip = (page - 1) * pageSize
     pledges, total = await crud_partner_pledge.get_multi_with_count(
-        db, skip=skip, limit=pageSize, added_by_id=current_user.id
+        db, skip=skip, limit=pageSize, added_by_id=None
     )
     
     data_list = []
@@ -636,7 +641,7 @@ async def get_pledges(
             addedBy=map_added_by(plg.added_by) if plg.added_by else AddedBySchema(id=0, first_name="", last_name="")
         ))
         
-    counts = await crud_partner_pledge.get_summary(db, added_by_id=current_user.id)
+    counts = await crud_partner_pledge.get_summary(db, added_by_id=None)
     summary = PledgeSummary(
         total=counts["total"],
         pending=counts["pending"],
