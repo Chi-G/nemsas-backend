@@ -339,3 +339,17 @@ class PartnerDashboardResponse(BaseModel):
     success: bool = True
     message: str = "Fetched successfully"
     data: DashboardOverviewContainer
+
+class DashboardEntityStats(BaseModel):
+    total: int
+    growth_percentage: float
+    breakdown: dict
+
+class PartnerDashboardStatsData(BaseModel):
+    ambulances: DashboardEntityStats
+    hospitals: DashboardEntityStats
+
+class PartnerDashboardStatsResponse(BaseModel):
+    success: bool = True
+    message: str = "Dashboard stats fetched successfully"
+    data: PartnerDashboardStatsData
