@@ -49,11 +49,14 @@ from sqlalchemy.future import select
 @router.get("/all", response_model=ResponseBase[List[PartnerUserResponse]])
 async def read_all_partners(
     db: AsyncSession = Depends(deps.get_db),
-    current_admin=Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+    current_partner: PartnerUser = Depends(deps.get_current_partner_user),
 ):
     """
     Get all partner users (partners and organizations). Only accessible by admins.
     """
+    if current_partner.user_type not in ["SUPERADMINISTRATOR", "ADMINSEMSASUSER", "admin"]:
+        raise HTTPException(status_code=403, detail="The user doesn't have enough privileges")
+
     result = await db.execute(select(PartnerUser))
     partners = result.scalars().all()
     
