@@ -14,6 +14,11 @@ class AddedBySchema(BaseModel):
     firstName: str = Field(..., alias="first_name")
     lastName: str = Field(..., alias="last_name")
     middleName: Optional[str] = Field("", alias="middle_name")
+    email: Optional[str] = None
+    phoneNumber: Optional[str] = Field(None, alias="phone_number")
+    organisationName: Optional[str] = Field(None, alias="organisation_name")
+    userType: Optional[str] = Field(None, alias="user_type")
+    createdAt: Optional[datetime] = Field(None, alias="created_at")
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
 
@@ -334,3 +339,17 @@ class PartnerDashboardResponse(BaseModel):
     success: bool = True
     message: str = "Fetched successfully"
     data: DashboardOverviewContainer
+
+class DashboardEntityStats(BaseModel):
+    total: int
+    growth_percentage: float
+    breakdown: dict
+
+class PartnerDashboardStatsData(BaseModel):
+    ambulances: DashboardEntityStats
+    hospitals: DashboardEntityStats
+
+class PartnerDashboardStatsResponse(BaseModel):
+    success: bool = True
+    message: str = "Dashboard stats fetched successfully"
+    data: PartnerDashboardStatsData

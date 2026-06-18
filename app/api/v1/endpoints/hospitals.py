@@ -11,6 +11,8 @@ from typing import Any, List, Optional
 from sqlalchemy.future import select
 from app.partners.models import PartnerUser
 from sqlalchemy import func
+from app.schemas.status_update import HospitalStatusUpdate
+from app.core.email import send_approval_email
 
 router = APIRouter()
 
@@ -264,6 +266,58 @@ async def update_hospital(
         "success": True,
         "message": "Hospital successfully updated",
         "data": updated_hospital,
+        "totalCount": 1,
+        "refreshToken": None,
+        "refreshTokenExpiryTime": "0001-01-01T00:00:00"
+    }
+
+@router.patch("/{id}/status", response_model=HospitalResponse)
+async def update_hospital_status(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    id: int,
+    status_update: HospitalStatusUpdate,
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+) -> Any:
+    """
+    Update the status of a hospital.
+    Sends an email to the partner user who added the hospital if approved.
+    """
+    hospital_obj = await hospital_crud.get(db, id=id)
+    if not hospital_obj:
+        raise HTTPException(status_code=404, detail="Hospital not found")
+        
+    if current_user.user_type == "ADMINSEMSASUSER" and current_user.state_id != hospital_obj.state_id:
+        raise HTTPException(
+            status_code=403,
+            detail="You are not authorized to edit hospitals from other states"
+        )
+        
+    old_status = hospital_obj.status
+    hospital_obj.status = status_update.status
+    db.add(hospital_obj)
+    await db.commit()
+    await db.refresh(hospital_obj)
+    
+    # Send email if status is changed to approved
+    if status_update.status == "approved" and old_status != "approved" and hospital_obj.added_by:
+        # Fetch partner user
+        partner_result = await db.execute(
+            select(PartnerUser).where(PartnerUser.id == hospital_obj.added_by)
+        )
+        partner = partner_result.scalar_one_or_none()
+        if partner and partner.email:
+            send_approval_email(
+                to_email=partner.email,
+                name=partner.first_name,
+                entity_type="Hospital",
+                entity_name=hospital_obj.name
+            )
+
+    return {
+        "success": True,
+        "message": f"Hospital status successfully updated to {status_update.status}",
+        "data": hospital_obj,
         "totalCount": 1,
         "refreshToken": None,
         "refreshTokenExpiryTime": "0001-01-01T00:00:00"
