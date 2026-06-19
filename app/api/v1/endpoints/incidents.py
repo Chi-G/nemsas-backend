@@ -163,6 +163,89 @@ async def read_ambulance_incident(
         "data": incident
     }
 
+
+@router.get("/active-map", response_model=Any)
+async def get_active_map_incidents(
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Fetch active incidents with coordinates for live map tracking.
+    """
+    from sqlalchemy import select
+    from sqlalchemy.orm import selectinload
+    from app.models.incident import Incident
+    
+    from datetime import datetime, timedelta, timezone
+    
+    # Define active statuses where the ambulance is actively navigating
+    active_statuses = [
+        "Dispatch Accepted", "Accepted", "En Route", 
+        "Patient Picked Up", "Patient Loaded", "En Route to ETC"
+    ]
+    
+    # Only get incidents from the last 48 hours to avoid stuck/abandoned dispatches
+    time_threshold = datetime.now(timezone.utc) - timedelta(hours=48)
+    
+    query = select(Incident).options(
+        selectinload(Incident.ambulance),
+        selectinload(Incident.hospital)
+    ).filter(
+        (Incident.event_status_type.in_(active_statuses)) | 
+        (Incident.incident_status_type.in_(active_statuses))
+    ).filter(
+        (Incident.date_added >= time_threshold) | (Incident.date_added.is_(None))
+    )
+    
+    # State filtering
+    restricted_roles = {"STATEVIEWER", "ADMINSEMSASUSER", "SEMSASDISPATCH", "SEMSASPIUUSER", "SEMSASUSER"}
+    if current_user.user_type in restricted_roles:
+        if current_user.state_id is None:
+            return {"success": True, "data": []}
+        query = query.filter(Incident.state_id == current_user.state_id)
+        
+    result = await db.execute(query)
+    incidents = result.scalars().all()
+    
+    data = []
+    for inc in incidents:
+        # Build map item
+        item = {
+            "incident_id": inc.id,
+            "status": inc.event_status_type or inc.incident_status_type,
+            "incident_location": {
+                "name": inc.incident_location or "Incident Site",
+                "latitude": inc.latitude,
+                "longitude": inc.longitude
+            }
+        }
+        
+        if inc.ambulance:
+            item["ambulance"] = {
+                "id": inc.ambulance.id,
+                "name": inc.ambulance.name,
+                "driver_name": inc.ambulance.driver_name,
+                "plate_number": inc.ambulance.plate_number
+            }
+            
+        if inc.hospital:
+            item["hospital"] = {
+                "id": inc.hospital.id,
+                "name": inc.hospital.name,
+                "latitude": float(inc.hospital.latitude) if inc.hospital.latitude else None,
+                "longitude": float(inc.hospital.longitude) if inc.hospital.longitude else None,
+                "address": inc.hospital.address1 or inc.hospital.location
+            }
+            
+        data.append(item)
+        
+    return {
+        "success": True,
+        "message": "Map incidents fetched successfully",
+        "data": data
+    }
+
+
 @router.get("/{id}", response_model=IncidentSchema)
 async def read_incident(
     id: int,
