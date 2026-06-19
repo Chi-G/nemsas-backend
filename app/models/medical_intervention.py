@@ -29,7 +29,7 @@ class MedicalIntervention(Base):
     pulse = Column(Integer, nullable=True)
     blood_pressure = Column(String, nullable=True)
     resp = Column(Integer, nullable=True)
-    glucose = Column(Integer, nullable=True)
+    glucose = Column(String, nullable=True)
     sp02 = Column(Integer, nullable=True)
     
     notes = Column(String, nullable=True)
