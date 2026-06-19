@@ -69,7 +69,10 @@ async def handle_join_state_group(sid, data):
         if last_timestamp:
             await SocketManager.sync_missed_events(sid, state_id, last_timestamp)
     else:
-        await sio.emit("GroupJoinFailed", {"error": "stateId is required"}, to=sid)
+        # If no state_id is provided, assume it's a National User
+        print(f"[Socket] User {sid} joining room national")
+        await sio.enter_room(sid, "national")
+        await sio.emit("GroupJoined", {"stateId": None, "room": "national"}, to=sid)
 
 @sio.on("SyncRequest")
 async def handle_sync_request(sid, data):
@@ -90,7 +93,6 @@ async def handle_location_update(sid, data):
     """
     ambulance_id = data.get("ambulanceId")
     state_id = data.get("stateId")
-    
     # Broadcast to ambulance-specific room (e.g., for specific tracking)
     if ambulance_id:
         await sio.emit("AmbulanceLocation", data, room=f"ambulance-{ambulance_id}")
@@ -98,3 +100,6 @@ async def handle_location_update(sid, data):
     # Broadcast to state group (e.g., for dispatchers on the dashboard)
     if state_id:
         await sio.emit("AmbulanceLocation", data, room=f"state-{state_id}")
+        
+    # Broadcast to national group (for national users)
+    await sio.emit("AmbulanceLocation", data, room="national")

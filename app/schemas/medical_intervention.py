@@ -24,7 +24,7 @@ class MedicalInterventionBase(BaseModel):
     pulse: Optional[int] = None
     blood_pressure: Optional[str] = None
     resp: Optional[int] = None
-    glucose: Optional[int] = None
+    glucose: Optional[str] = None
     sp02: Optional[int] = None
     
     notes: Optional[str] = None
