@@ -1156,7 +1156,11 @@ async def submit_etc_claim(
         await db.commit()
 
     # Eagerly load the claim with all relations to prevent any downstream lazy-loading / greenlet errors
-    stmt = select(Claim).options(*crud_claim._get_claim_options()).where(Claim.id == item.id).execution_options(populate_existing=True)
+    try:
+        db.expunge(item)
+    except Exception:
+        pass
+    stmt = select(Claim).options(*crud_claim._get_claim_options()).where(Claim.id == item.id)
     result = await db.execute(stmt)
     item = result.scalars().first()
 
