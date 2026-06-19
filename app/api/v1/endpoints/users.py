@@ -44,7 +44,15 @@ async def read_user_me(
                 "hospital_type": hospital_type_name,
                 "address1": hospital.address1,
                 "latitude": hospital.latitude,
-                "longitude": hospital.longitude
+                "longitude": hospital.longitude,
+                "location": hospital.location,
+                "address2": hospital.address2,
+                "landmark": hospital.landmark,
+                "nhia_or_shia": hospital.nhia_or_shia,
+                "date_added": hospital.date_added,
+                "status": hospital.status,
+                "state_id": hospital.state_id,
+                "lga_id": hospital.lga_id
             }
 
     return {

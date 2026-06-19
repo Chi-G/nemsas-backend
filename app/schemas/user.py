@@ -98,6 +98,14 @@ class EtcDetails(BaseModel):
     address1: Optional[str] = None
     latitude: Optional[str] = None
     longitude: Optional[str] = None
+    location: Optional[str] = None
+    address2: Optional[str] = None
+    landmark: Optional[str] = None
+    nhia_or_shia: Optional[str] = Field(None, alias="nhiaOrShia")
+    date_added: Optional[datetime] = Field(None, alias="dateAdded")
+    status: Optional[str] = None
+    state_id: Optional[int] = Field(None, alias="stateId")
+    lga_id: Optional[int] = Field(None, alias="lgaId")
 
     class Config:
         populate_by_name = True
