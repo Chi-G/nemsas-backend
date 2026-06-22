@@ -342,8 +342,11 @@ class PartnerDashboardResponse(BaseModel):
 
 class DashboardEntityStats(BaseModel):
     total: int
+    this_month: int
+    last_month: int
     growth_percentage: float
     breakdown: dict
+    status_breakdown: Optional[dict] = None
 
 class PartnerDashboardStatsData(BaseModel):
     ambulances: DashboardEntityStats

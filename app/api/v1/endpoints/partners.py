@@ -129,22 +129,23 @@ async def get_partner_dashboard_stats(
     amb_query = (
         select(AmbulanceType.name, func.count(Ambulance.id))
         .select_from(AmbulanceType)
-        .outerjoin(Ambulance, and_(Ambulance.ambulance_type_id == AmbulanceType.id, Ambulance.added_by == current_partner.id))
+        .outerjoin(Ambulance, Ambulance.ambulance_type_id == AmbulanceType.id)
         .group_by(AmbulanceType.name)
     )
     amb_res = await db.execute(amb_query)
     amb_breakdown = {name: count for name, count in amb_res.all()}
-    amb_total = sum(amb_breakdown.values())
+    amb_total_res = await db.execute(select(func.count(Ambulance.id)))
+    amb_total = amb_total_res.scalar() or 0
     
     amb_current_month = await db.execute(
         select(func.count(Ambulance.id))
-        .where(Ambulance.added_by == current_partner.id, Ambulance.date_added >= current_month_start)
+        .where(Ambulance.date_added >= current_month_start)
     )
     amb_current_count = amb_current_month.scalar() or 0
     
     amb_last_month = await db.execute(
         select(func.count(Ambulance.id))
-        .where(Ambulance.added_by == current_partner.id, Ambulance.date_added >= last_month_start, Ambulance.date_added < current_month_start)
+        .where(Ambulance.date_added >= last_month_start, Ambulance.date_added < current_month_start)
     )
     amb_last_count = amb_last_month.scalar() or 0
     
@@ -154,26 +155,61 @@ async def get_partner_dashboard_stats(
     elif amb_current_count > 0:
         amb_growth = 100.0
         
+    amb_status_query = (
+        select(Ambulance.status, func.count(Ambulance.id))
+        .group_by(Ambulance.status)
+    )
+    amb_status_res = await db.execute(amb_status_query)
+    raw_status_counts = {status: count for status, count in amb_status_res.all() if status}
+    
+    def map_status(raw: str):
+        low = raw.lower()
+        if low == "approved":
+            return "active"
+        if low == "pending":
+            return "pending"
+        if low in ["out of service", "out_of_service", "outofservice"]:
+            return "out_of_service"
+        if low in ["under maintenance", "under_maintenance", "undermaintenance"]:
+            return "under_maintenance"
+        return low
+        
+    amb_status_breakdown = {
+        "active": 0,
+        "pending": 0,
+        "out_of_service": 0,
+        "under_maintenance": 0
+    }
+    
+    for st, cnt in raw_status_counts.items():
+        mapped = map_status(st)
+        if mapped in amb_status_breakdown:
+            amb_status_breakdown[mapped] += cnt
+        else:
+            amb_status_breakdown[mapped] = amb_status_breakdown.get(mapped, 0) + cnt
+        
+        
     # Hospital queries
     hosp_query = (
         select(HospitalType.name, func.count(Hospital.id))
         .select_from(HospitalType)
-        .outerjoin(Hospital, and_(Hospital.hospital_type_id == HospitalType.id, Hospital.added_by == current_partner.id))
+        .outerjoin(Hospital, Hospital.hospital_type_id == HospitalType.id)
         .group_by(HospitalType.name)
     )
     hosp_res = await db.execute(hosp_query)
     hosp_breakdown = {name: count for name, count in hosp_res.all()}
-    hosp_total = sum(hosp_breakdown.values())
+    hosp_total_res = await db.execute(select(func.count(Hospital.id)))
+    hosp_total = hosp_total_res.scalar() or 0
     
     hosp_current_month = await db.execute(
         select(func.count(Hospital.id))
-        .where(Hospital.added_by == current_partner.id, Hospital.date_added >= current_month_start)
+        .where(Hospital.date_added >= current_month_start)
     )
     hosp_current_count = hosp_current_month.scalar() or 0
     
     hosp_last_month = await db.execute(
         select(func.count(Hospital.id))
-        .where(Hospital.added_by == current_partner.id, Hospital.date_added >= last_month_start, Hospital.date_added < current_month_start)
+        .where(Hospital.date_added >= last_month_start, Hospital.date_added < current_month_start)
     )
     hosp_last_count = hosp_last_month.scalar() or 0
     
@@ -183,19 +219,52 @@ async def get_partner_dashboard_stats(
     elif hosp_current_count > 0:
         hosp_growth = 100.0
         
+    hosp_status_query = (
+        select(Hospital.status, func.count(Hospital.id))
+        .group_by(Hospital.status)
+    )
+    hosp_status_res = await db.execute(hosp_status_query)
+    raw_hosp_status_counts = {status: count for status, count in hosp_status_res.all() if status}
+    
+    def map_hosp_status(raw: str):
+        low = raw.lower()
+        if low == "approved":
+            return "active"
+        if low == "pending":
+            return "pending"
+        return low
+        
+    hosp_status_breakdown = {
+        "active": 0,
+        "pending": 0
+    }
+    
+    for st, cnt in raw_hosp_status_counts.items():
+        mapped = map_hosp_status(st)
+        if mapped in hosp_status_breakdown:
+            hosp_status_breakdown[mapped] += cnt
+        else:
+            hosp_status_breakdown[mapped] = hosp_status_breakdown.get(mapped, 0) + cnt
+        
     return {
         "success": True,
         "message": "Dashboard stats fetched successfully",
         "data": {
             "ambulances": {
                 "total": amb_total,
+                "this_month": amb_current_count,
+                "last_month": amb_last_count,
                 "growth_percentage": round(amb_growth, 2),
-                "breakdown": amb_breakdown
+                "breakdown": amb_breakdown,
+                "status_breakdown": amb_status_breakdown
             },
             "hospitals": {
                 "total": hosp_total,
+                "this_month": hosp_current_count,
+                "last_month": hosp_last_count,
                 "growth_percentage": round(hosp_growth, 2),
-                "breakdown": hosp_breakdown
+                "breakdown": hosp_breakdown,
+                "status_breakdown": hosp_status_breakdown
             }
         }
     }
