@@ -19,7 +19,7 @@ class MedicalInterventionBase(BaseModel):
     total_iv_fluid_volume_given: Optional[str] = None
     
     oxygen: Optional[str] = None
-    remarks: Optional[str] = None
+    remarks: Optional[str] = None 
     
     pulse: Optional[int] = None
     blood_pressure: Optional[str] = None

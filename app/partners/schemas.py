@@ -339,7 +339,7 @@ class PartnerDashboardResponse(BaseModel):
     success: bool = True
     message: str = "Fetched successfully"
     data: DashboardOverviewContainer
-
+ 
 class DashboardEntityStats(BaseModel):
     total: int
     this_month: int

@@ -17,14 +17,14 @@ class MedicalIntervention(Base):
     main_complaint = Column(String, nullable=True)
     primary_survey = Column(String, nullable=True)
     physical_examination_findings = Column(String, nullable=True)
-    
+     
     iv_fluid_type = Column(String, nullable=True)
     size_of_fluid = Column(String, nullable=True)
     location_of_iv_infusion = Column(String, nullable=True)
     total_iv_fluid_volume_given = Column(String, nullable=True)
     
     oxygen = Column(String, nullable=True)
-    remarks = Column(String, nullable=True)
+    remarks = Column(String, nullable=True) 
     
     pulse = Column(Integer, nullable=True)
     blood_pressure = Column(String, nullable=True)

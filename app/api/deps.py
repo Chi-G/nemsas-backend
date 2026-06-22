@@ -68,7 +68,7 @@ async def get_current_user(
 
 async def get_current_partner_user(
     db: AsyncSession = Depends(get_db),
-    token: HTTPAuthorizationCredentials = Depends(reusable_oauth2)
+    token: HTTPAuthorizationCredentials = Depends(reusable_oauth2) 
 ) -> PartnerUser:
     try:
         payload = jwt.decode(

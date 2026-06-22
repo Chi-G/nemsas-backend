@@ -109,7 +109,7 @@ async def read_all_partners(
 @router.get("/dashboard-stats", response_model=PartnerDashboardStatsResponse)
 async def get_partner_dashboard_stats(
     db: AsyncSession = Depends(deps.get_db),
-    current_partner: PartnerUser = Depends(deps.get_current_partner_user)
+    current_partner: PartnerUser = Depends(deps.get_current_partner_user) 
 ):
     """
     Get aggregated dashboard stats for ambulances and hospitals by their types, 
