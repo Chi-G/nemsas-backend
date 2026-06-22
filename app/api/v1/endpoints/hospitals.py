@@ -87,6 +87,7 @@ async def read_partner_hospitals(
     stateId: Optional[int] = None,
     days: Optional[int] = None,
     status: Optional[str] = None,
+    hospitalTypeId: Optional[int] = None,
     skip: int = 0,
     limit: int = 20,
     current_partner: PartnerUser = Depends(deps.get_current_partner_user),
@@ -103,6 +104,7 @@ async def read_partner_hospitals(
         state_id=stateId,
         days=days,
         status=status,
+        hospital_type_id=hospitalTypeId,
         skip=skip,
         limit=limit
     )

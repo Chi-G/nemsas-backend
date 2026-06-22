@@ -79,11 +79,13 @@ class PartnerChangePassword(BaseModel):
 
 class PartnerToken(BaseModel):
     access_token: str
+    refresh_token: str
     token_type: str = "bearer"
     status: str = "success"
     message: str = "Login successful"
     expires_in: int
-    user: PartnerUserResponse
+    refresh_expires_in: int
+    user: Optional[PartnerUserResponse] = None
 
 # Pledge Schemas
 class PartnerPledgeCreate(BaseModel):

@@ -25,6 +25,7 @@ from app.partners.schemas import (
     DashboardOverviewContainer, OverviewListData, OverviewCardsContainer,
     AmbOverviewItem, OverviewCardAmbulance, OverviewCardHealthFacility, OverviewCardRequired, OverviewCardGaps
 )
+from app.schemas.token import TokenRefreshRequest
 from app.partners.crud import (
     partner_user as crud_partner_user,
     partner_pledge as crud_partner_pledge,
@@ -226,14 +227,85 @@ async def login(
     
     # Generate tokens, setting role="PARTNER_CONNECT" or similar
     access_token = security.create_access_token(user.id, role="PARTNER_CONNECT")
+    refresh_token = security.create_refresh_token(user.id, role="PARTNER_CONNECT")
     expires_in = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    refresh_expires_in = settings.REFRESH_TOKEN_EXPIRE_MINUTES * 60
     
     return {
         "access_token": access_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer",
         "status": "success",
         "message": "Login successful",
         "expires_in": expires_in,
+        "refresh_expires_in": refresh_expires_in,
+        "user": user
+    }
+
+@router.post("/auth/refresh", response_model=PartnerToken)
+async def refresh(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    refresh_data: TokenRefreshRequest
+) -> Any:
+    """
+    Refresh access and refresh tokens using a valid refresh token.
+    """
+    payload = security.verify_token(refresh_data.refresh_token)
+    if not payload:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired refresh token",
+        )
+    
+    if payload.get("type") != "refresh":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token type",
+        )
+        
+    user_id = payload.get("sub")
+    if not user_id:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token payload",
+        )
+        
+    try:
+        partner_user_id = int(user_id)
+    except (ValueError, TypeError):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user ID format in token",
+        )
+        
+    user = await crud_partner_user.get(db, id=partner_user_id)
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Partner user not found",
+        )
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user",
+        )
+        
+    access_token = security.create_access_token(user.id, role="PARTNER_CONNECT")
+    new_refresh_token = security.create_refresh_token(user.id, role="PARTNER_CONNECT")
+    
+    expires_in = settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60
+    refresh_expires_in = settings.REFRESH_TOKEN_EXPIRE_MINUTES * 60
+    
+    return {
+        "access_token": access_token,
+        "refresh_token": new_refresh_token,
+        "token_type": "bearer",
+        "status": "success",
+        "message": "Token successfully refreshed",
+        "expires_in": expires_in,
+        "refresh_expires_in": refresh_expires_in,
         "user": user
     }
 

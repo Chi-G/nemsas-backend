@@ -27,6 +27,7 @@ class CRUDHospital:
         state_id: Optional[int] = None,
         days: Optional[int] = None,
         status: Optional[str] = None,
+        hospital_type_id: Optional[int] = None,
         added_by: Optional[int] = None,
         skip: int = 0,
         limit: Optional[int] = None
@@ -46,6 +47,8 @@ class CRUDHospital:
 
         if status:
             query = query.filter(Hospital.status == status)
+        if hospital_type_id:
+            query = query.filter(Hospital.hospital_type_id == hospital_type_id)
         if added_by is not None:
             query = query.filter(Hospital.added_by == added_by)
 
