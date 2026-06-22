@@ -28,6 +28,7 @@ class Ambulance(Base):
     accreditation_type = Column(String, nullable=True)
     vehicle_ownership_type = Column(String, nullable=True)
     status = Column(String, default="approved")
+    active_status = Column(String, default="active")
     added_by = Column(Integer, ForeignKey("partner_users.id"), nullable=True)
     date_added = Column(DateTime(timezone=True), default=lambda: datetime.now())
 

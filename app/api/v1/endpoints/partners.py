@@ -156,37 +156,29 @@ async def get_partner_dashboard_stats(
         amb_growth = 100.0
         
     amb_status_query = (
-        select(Ambulance.status, func.count(Ambulance.id))
-        .group_by(Ambulance.status)
+        select(Ambulance.status, Ambulance.active_status, func.count(Ambulance.id))
+        .group_by(Ambulance.status, Ambulance.active_status)
     )
     amb_status_res = await db.execute(amb_status_query)
-    raw_status_counts = {status: count for status, count in amb_status_res.all() if status}
+    raw_status_counts = amb_status_res.all()
     
-    def map_status(raw: str):
-        low = raw.lower()
-        if low == "approved":
-            return "active"
-        if low == "pending":
-            return "pending"
-        if low in ["out of service", "out_of_service", "outofservice"]:
-            return "out_of_service"
-        if low in ["under maintenance", "under_maintenance", "undermaintenance"]:
-            return "under_maintenance"
-        return low
-        
     amb_status_breakdown = {
         "active": 0,
         "pending": 0,
         "out_of_service": 0,
-        "under_maintenance": 0
+        "under_maintenance": 0,
+        "rejected": 0
     }
     
-    for st, cnt in raw_status_counts.items():
-        mapped = map_status(st)
-        if mapped in amb_status_breakdown:
-            amb_status_breakdown[mapped] += cnt
-        else:
-            amb_status_breakdown[mapped] = amb_status_breakdown.get(mapped, 0) + cnt
+    for st, ast, cnt in raw_status_counts:
+        if st and st.lower() == "rejected":
+            amb_status_breakdown["rejected"] = amb_status_breakdown.get("rejected", 0) + cnt
+        elif ast:
+            mapped = ast.lower().replace(" ", "_")
+            if mapped in amb_status_breakdown:
+                amb_status_breakdown[mapped] += cnt
+            else:
+                amb_status_breakdown[mapped] = cnt
         
         
     # Hospital queries

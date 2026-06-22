@@ -69,6 +69,7 @@ class CRUDAmbulance:
         ambulance_type_id: Optional[int] = None,
         days: Optional[int] = None,
         status: Optional[str] = None,
+        active_status: Optional[str] = None,
         added_by: Optional[int] = None,
         skip: int = 0,
         limit: Optional[int] = None
@@ -98,6 +99,8 @@ class CRUDAmbulance:
             query = query.filter(Ambulance.date_added >= start_date)
         if status:
             query = query.filter(Ambulance.status == status)
+        if active_status:
+            query = query.filter(Ambulance.active_status == active_status)
         if added_by is not None:
             query = query.filter(Ambulance.added_by == added_by)
 

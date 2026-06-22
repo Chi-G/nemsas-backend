@@ -22,6 +22,7 @@ class AmbulanceBase(BaseModel):
     accreditation_type: Optional[str] = Field(None, alias="accreditationType")
     vehicle_ownership_type: Optional[str] = Field(None, alias="vehicleOwnershipType")
     status: Optional[str] = "approved"
+    active_status: Optional[str] = Field("active", alias="activeStatus")
     added_by: Optional[int] = Field(None, alias="addedBy")
 
 
@@ -88,6 +89,7 @@ class AmbulanceSummary(BaseModel):
     runsheet_view_model: Optional[Any] = Field(None, alias="runsheetViewModel")
     event_status_type: Optional[str] = Field(None, alias="eventStatusType")
     status: Optional[str] = "approved"
+    active_status: Optional[str] = Field("active", alias="activeStatus")
     added_by: Optional[int] = Field(None, alias="addedBy")
     added_by_partner: Optional[Any] = Field(None, alias="addedByPartner")
 

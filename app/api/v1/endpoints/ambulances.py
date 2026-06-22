@@ -10,7 +10,7 @@ from app.models.partner import Partner
 from app.partners.models import PartnerUser
 import string
 import random
-from app.schemas.status_update import AmbulanceStatusUpdate
+from app.schemas.status_update import AmbulanceStatusUpdate, AmbulanceActiveStatusUpdate
 from app.core.email import send_approval_email
 
 router = APIRouter()
@@ -23,6 +23,7 @@ async def read_ambulances(
     stateId: Optional[int] = None,
     typeId: Optional[int] = None,
     days: Optional[int] = None,
+    active_status: Optional[str] = None,
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
@@ -39,7 +40,8 @@ async def read_ambulances(
         state_id=effective_state_id,
         ambulance_type_id=typeId,
         days=days,
-        status="approved"
+        status="approved",
+        active_status=active_status
     )
     from app.schemas.ambulance import AmbulanceSummary
     return {
@@ -60,6 +62,7 @@ async def read_all_ambulances(
     typeId: Optional[int] = None,
     days: Optional[int] = None,
     status: Optional[str] = None,
+    active_status: Optional[str] = None,
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
@@ -76,7 +79,8 @@ async def read_all_ambulances(
         state_id=effective_state_id,
         ambulance_type_id=typeId,
         days=days,
-        status=status
+        status=status,
+        active_status=active_status
     )
     from app.schemas.ambulance import AmbulanceSummary
     return {
@@ -138,6 +142,7 @@ async def create_partner_ambulance(
         raise HTTPException(status_code=400, detail={"message": "Partner not found", "error": "NOT_PARTNER"})
 
     ambulance_in.status = "pending"
+    ambulance_in.active_status = "pending"
     ambulance_in.added_by = current_partner.id
 
     if not ambulance_in.code:
@@ -179,23 +184,22 @@ async def get_partner_ambulance_stats(
     from sqlalchemy import func
     from app.models.ambulance import Ambulance
     
-    query = select(Ambulance.status, func.count(Ambulance.id)).group_by(Ambulance.status)
+    query = select(Ambulance.status, Ambulance.active_status, func.count(Ambulance.id)).group_by(Ambulance.status, Ambulance.active_status)
     res = await db.execute(query)
     counts = res.all()
     
-    stats = {"total": 0, "pending": 0, "approved": 0, "rejected": 0, "under_maintenance": 0, "out_of_service": 0}
-    for status_val, count in counts:
+    stats = {"total": 0, "pending": 0, "active": 0, "under_maintenance": 0, "out_of_service": 0, "rejected": 0}
+    for status_val, active_status_val, count in counts:
         stats["total"] += count
-        if not status_val:
-            continue
-            
-        key = status_val.lower()
-        if key in ["under maintenance", "under_maintainance", "under_maintenance"]:
-            stats["under_maintenance"] += count
-        elif key in ["out of service", "out_of_service"]:
-            stats["out_of_service"] += count
-        elif key in stats:
-            stats[key] += count
+        
+        if status_val and status_val.lower() == "rejected":
+            stats["rejected"] += count
+        else:
+            if not active_status_val:
+                continue
+            key = active_status_val.lower().replace(" ", "_")
+            if key in stats:
+                stats[key] += count
             
     return {
         "success": True,
@@ -213,6 +217,7 @@ async def read_partner_ambulances(
     typeId: Optional[int] = None,
     days: Optional[int] = None,
     status: Optional[str] = None,
+    active_status: Optional[str] = None,
     skip: int = 0,
     limit: int = 20,
     current_partner: PartnerUser = Depends(deps.get_current_partner_user),
@@ -231,6 +236,7 @@ async def read_partner_ambulances(
         ambulance_type_id=typeId,
         days=days,
         status=status,
+        active_status=active_status,
         skip=skip,
         limit=limit
     )
@@ -347,6 +353,8 @@ async def update_ambulance_status(
         
     old_status = ambulance_obj.status
     ambulance_obj.status = status_update.status
+    if status_update.status == "approved":
+        ambulance_obj.active_status = "active"
     db.add(ambulance_obj)
     await db.commit()
     await db.refresh(ambulance_obj)
@@ -374,3 +382,39 @@ async def update_ambulance_status(
         "refreshToken": None,
         "refreshTokenExpiryTime": "0001-01-01T00:00:00"
     }
+
+@router.patch("/{id}/active-status", response_model=AmbulanceResponse)
+async def update_ambulance_active_status(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    id: int,
+    status_update: AmbulanceActiveStatusUpdate,
+    current_user: Any = Depends(deps.get_current_any_user),
+) -> Any:
+    """
+    Update the active status of an ambulance.
+    """
+    ambulance_obj = await ambulance_crud.get(db, id=id)
+    if not ambulance_obj:
+        raise HTTPException(status_code=404, detail="Ambulance not found")
+        
+    if getattr(current_user, "user_type", None) == "ADMINSEMSASUSER" and current_user.state_id != ambulance_obj.state_id:
+        raise HTTPException(
+            status_code=403,
+            detail="You are not authorized to edit ambulances from other states"
+        )
+        
+    ambulance_obj.active_status = status_update.active_status
+    db.add(ambulance_obj)
+    await db.commit()
+    await db.refresh(ambulance_obj)
+    
+    return {
+        "success": True,
+        "message": f"Ambulance active status successfully updated to {status_update.active_status}",
+        "data": ambulance_obj,
+        "totalCount": 1,
+        "refreshToken": None,
+        "refreshTokenExpiryTime": "0001-01-01T00:00:00"
+    }
+
