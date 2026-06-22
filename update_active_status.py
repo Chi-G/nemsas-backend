@@ -2,9 +2,10 @@ import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy import text
 import os
+from app.core.config import settings
 
 async def migrate_data():
-    db_url = "postgresql+asyncpg://neondb_owner:npg_FslG9hT2QbMu@ep-curly-wind-apgk4cpp-pooler.c-7.us-east-1.aws.neon.tech/neondb"
+    db_url = str(settings.DATABASE_URL)
     engine = create_async_engine(db_url)
     async with engine.begin() as conn:
         # If status is pending, active_status is pending
