@@ -701,7 +701,7 @@ async def endorse_etc_claim(
 class ClaimBindingModel(BaseModel):
     title: Optional[str] = Field(None, alias="title")
     incidentId: int = Field(..., alias="incidentId")
-    runSheetId: int = Field(..., alias="runSheetId")
+    runSheetId: Optional[int] = Field(None, alias="runSheetId")
     ambulanceId: Optional[int] = Field(None, alias="ambulanceId")
     hospitalId: Optional[int] = Field(None, alias="hospitalId")
     totalPrice: float = Field(..., alias="totalPrice")

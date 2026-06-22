@@ -352,6 +352,77 @@ async def create_incident(
         "data": incident_data
     }
 
+@router.post("/walk-in", response_model=Any)
+async def create_walk_in_incident(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    incident_in: IncidentCreate,
+    current_user: User = Depends(deps.get_current_user)
+):
+    """
+    Create a Walk-in incident directly at an ETC.
+    
+    Only **EMERGENCYTREATMENTUSER** is allowed to create walk-in incidents.
+    This skips ambulance assignment and dispatch flows.
+    """
+    if current_user.user_type != "EMERGENCYTREATMENTUSER":
+        raise HTTPException(
+            status_code=403, 
+            detail="Only EMERGENCYTREATMENTUSER can create walk-in incidents"
+        )
+    
+    # Force Walk-in logic
+    incident_in.ambulance_id = None
+    
+    # Get ETC ID from current user
+    etc_id = current_user.etc_id or current_user.emergency_treatment_center_id
+    if not etc_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Current user does not have an assigned Emergency Treatment Center"
+        )
+    incident_in.etc_id = cast(int, etc_id)
+    
+    # Set status
+    incident_in.event_status_type = "Arrived at ETC"
+    incident_in.incident_status_type = "Arrived at ETC"
+    
+    # If state_id is not provided, use user's state_id
+    if not incident_in.state_id and current_user.state_id is not None:
+        incident_in.state_id = cast(int, current_user.state_id)
+        
+    # Resolve incident category name to ID if needed
+    if not incident_in.incident_category_id and incident_in.incident_category:
+        from app.models.incident_type import IncidentType
+        from sqlalchemy import select
+        category_result = await db.execute(
+            select(IncidentType).filter(IncidentType.name.ilike(incident_in.incident_category))
+        )
+        category = category_result.scalars().first()
+        if category:
+            incident_in.incident_category_id = cast(int, category.id)
+            
+    # Set creator details
+    incident_in.dispatcher_id = current_user.id
+    first_name = current_user.first_name or ""
+    last_name = current_user.last_name or ""
+    incident_in.dispatch_full_name = f"{first_name} {last_name}".strip()
+    from datetime import datetime
+    incident_in.dispatch_date = datetime.now().date()
+
+    new_incident = await incident_crud.create(db, obj_in=incident_in)
+    
+    # Broadcast incident via Websockets
+    from app.services.notification_service import notification_service
+    incident_data = IncidentSchema.model_validate(new_incident).model_dump(mode="json")
+    await notification_service.publish_incident(incident_data)
+    
+    return {
+        "success": True,
+        "message": "Walk-in incident successfully created",
+        "data": incident_data
+    }
+
 @router.patch("/{id}", response_model=Any)
 async def update_incident(
     id: int,

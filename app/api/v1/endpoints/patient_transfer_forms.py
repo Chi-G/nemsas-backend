@@ -26,6 +26,17 @@ async def add_transfer_form(
     """
     Create a new Transfer Form.
     """
+    from app.models.incident import Incident
+    incident = await db.get(Incident, obj_in.incident_id)
+    if not incident:
+        raise HTTPException(status_code=404, detail="Incident not found")
+        
+    if incident.ambulance_id is not None and not obj_in.run_sheet_id:
+        raise HTTPException(
+            status_code=400, 
+            detail="Run Sheet ID is required for incidents involving an ambulance"
+        )
+        
     # Always set medic_user_id from the signed-in user
     obj_in.medic_user_id = getattr(current_user, "id", None)
     db_obj = await crud_transfer_form.create(db, obj_in=obj_in)
