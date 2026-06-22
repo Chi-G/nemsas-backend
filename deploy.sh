@@ -154,6 +154,18 @@ $DOCKER_COMPOSE_CMD logs --tail 300 ${APP_SERVICE_NAME}
 echo -e "${BLUE}========================================${NC}"
 
 # ============================================================================
+# POST-DEPLOYMENT DATA MIGRATIONS
+# ============================================================================
+echo -e "\n${YELLOW}[5.5/6] Running data migrations...${NC}"
+if $DOCKER_COMPOSE_CMD exec -T ${APP_SERVICE_NAME} test -f update_active_status.py; then
+    echo "Found update_active_status.py, running backfill..."
+    $DOCKER_COMPOSE_CMD exec -T ${APP_SERVICE_NAME} python update_active_status.py
+    echo -e "${GREEN}✅ Data backfill completed${NC}"
+else
+    echo -e "${GREEN}✅ No update_active_status.py found to run.${NC}"
+fi
+
+# ============================================================================
 # CLEANUP
 # ============================================================================
 echo -e "\n${YELLOW}[6/6] Cleaning up...${NC}"

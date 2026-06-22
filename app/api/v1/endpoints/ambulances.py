@@ -189,10 +189,13 @@ async def get_partner_ambulance_stats(
     res = await db.execute(query)
     counts = res.all()
     
-    stats = {"total": 0, "pending": 0, "active": 0, "under_maintenance": 0, "out_of_service": 0, "rejected": 0}
+    stats = {"total": 0, "pending": 0, "active": 0, "under_maintenance": 0, "out_of_service": 0, "rejected": 0, "approved": 0}
     for status_val, active_status_val, count in counts:
         stats["total"] += count
         
+        if status_val and status_val.lower() == "approved":
+            stats["approved"] += count
+            
         if status_val and status_val.lower() == "rejected":
             stats["rejected"] += count
         else:
