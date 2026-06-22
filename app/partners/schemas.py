@@ -102,6 +102,9 @@ class PartnerPledgeCreate(BaseModel):
     delivery_date: Optional[datetime] = None
     status: Optional[str] = "pending"
 
+class PartnerPledgeStatusUpdate(BaseModel):
+    status: str
+
 class PartnerPledgeResponse(BaseModel):
     id: int
     pledgeId: str

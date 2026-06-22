@@ -14,7 +14,7 @@ from app.partners.models import PartnerUser, PartnerPledge, PartnerFacility, Par
 from app.partners.schemas import (
     PartnerRegister, PartnerLogin, PartnerToken, PartnerUserResponse,
     PartnerVerifyAccount, PartnerResendCode, PartnerForgotPassword, PartnerResetPassword,
-    PartnerPledgeCreate, PartnerPledgeResponse, PartnerPledgesListResponse,
+    PartnerPledgeCreate, PartnerPledgeStatusUpdate, PartnerPledgeResponse, PartnerPledgesListResponse,
     PartnerFacilityCreate, PartnerFacilityResponse, PartnerFacilitiesListResponse,
     PartnerAmbulanceCreate, PartnerAmbulanceResponse, PartnerAmbulancesListResponse,
     PartnerDashboardResponse, IdNameSchema, AddedBySchema,
@@ -757,3 +757,47 @@ async def create_pledge(
         dateAdded=plg.date_added.date().isoformat() if plg.date_added else "",
         addedBy=map_added_by(plg.added_by) if plg.added_by else AddedBySchema(id=0, first_name="", last_name="")
     )
+
+@router.patch("/pledges/{id}/status", response_model=PartnerPledgeResponse)
+async def update_pledge_status(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    id: int,
+    status_update: PartnerPledgeStatusUpdate,
+    current_user: Any = Depends(deps.PermissionCheckerAny(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+) -> Any:
+    """Update pledge status."""
+    stmt = select(PartnerPledge).options(
+        *crud_partner_pledge._get_pledge_options()
+    ).where(PartnerPledge.id == id)
+    
+    result = await db.execute(stmt)
+    plg = result.scalar_one_or_none()
+    
+    if not plg:
+        raise HTTPException(status_code=404, detail="Pledge not found")
+        
+    plg.status = status_update.status
+    db.add(plg)
+    await db.commit()
+    await db.refresh(plg)
+    
+    return PartnerPledgeResponse(
+        id=plg.id,
+        pledgeId=plg.pledge_id_str,
+        contactDetails=plg.contact_details,
+        donorName=plg.donor_name,
+        pledgeType=plg.pledge_type,
+        numberOfAmbulance=plg.number_of_ambulance,
+        ambulanceType=map_id_name(plg.ambulance_type),
+        ward=map_id_name(plg.ward),
+        state=map_id_name(plg.state),
+        lga=map_id_name(plg.lga),
+        facility=map_id_name(plg.facility),
+        pledgeDate=plg.pledge_date.date().isoformat() if plg.pledge_date else None,
+        deliveryDate=plg.delivery_date.date().isoformat() if plg.delivery_date else None,
+        status=plg.status,
+        dateAdded=plg.date_added.date().isoformat() if plg.date_added else "",
+        addedBy=map_added_by(plg.added_by) if plg.added_by else AddedBySchema(id=0, first_name="", last_name="")
+    )
+
