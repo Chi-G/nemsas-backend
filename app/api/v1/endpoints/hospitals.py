@@ -310,8 +310,8 @@ async def update_hospital_status(
             send_approval_email(
                 to_email=partner.email,
                 name=partner.first_name,
-                entity_type="Hospital",
-                entity_name=hospital_obj.name
+                entity_type="Hospital", 
+                entity_name=hospital_obj.name 
             )
 
     return {

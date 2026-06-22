@@ -356,7 +356,7 @@ async def update_ambulance_status(
         # Fetch partner user
         partner_result = await db.execute(
             select(PartnerUser).where(PartnerUser.id == ambulance_obj.added_by)
-        )
+        ) 
         partner = partner_result.scalar_one_or_none()
         if partner and partner.email:
             send_approval_email(

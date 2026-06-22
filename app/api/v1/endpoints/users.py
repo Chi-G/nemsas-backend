@@ -39,7 +39,7 @@ async def read_user_me(
         if hospital:
             hospital_type_name = hospital.hospital_type.name if hospital.hospital_type else None
             user_data.etc_details = {
-                "id": hospital.id,
+                "id": hospital.id, 
                 "name": hospital.name,
                 "hospital_type": hospital_type_name,
                 "address1": hospital.address1,

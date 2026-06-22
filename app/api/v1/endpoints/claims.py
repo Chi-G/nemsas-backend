@@ -23,7 +23,7 @@ from app.models.claim import Claim
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 router = APIRouter()
-
+ 
 @router.post("/upload")
 async def upload_claim_image(
     request: Request,

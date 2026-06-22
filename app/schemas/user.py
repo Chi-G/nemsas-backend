@@ -113,7 +113,7 @@ class EtcDetails(BaseModel):
 
 class User(UserBase):
     id: UUID
-    date_joined: datetime = Field(..., alias="dateJoined")
+    date_joined: datetime = Field(..., alias="dateJoined") 
     state: Optional[State] = None
     lga: Optional[LGA] = None
     ward: Optional[Ward] = None

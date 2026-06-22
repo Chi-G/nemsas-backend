@@ -20,7 +20,7 @@ class SocketManager:
         if room not in EVENT_BUFFER:
             EVENT_BUFFER[room] = deque(maxlen=50)
         
-        # Add timestamp to payload for sync tracking
+        # Add timestamp to payload for sync tracking 
         payload["timestamp"] = time.time()
         EVENT_BUFFER[room].append(payload)
 
