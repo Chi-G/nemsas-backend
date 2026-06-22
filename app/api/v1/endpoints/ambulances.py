@@ -23,7 +23,8 @@ async def read_ambulances(
     stateId: Optional[int] = None,
     typeId: Optional[int] = None,
     days: Optional[int] = None,
-    active_status: Optional[str] = None,
+    status: Optional[str] = None,
+    active_status: Optional[str] = "active",
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
@@ -40,7 +41,7 @@ async def read_ambulances(
         state_id=effective_state_id,
         ambulance_type_id=typeId,
         days=days,
-        status="approved",
+        status=status,
         active_status=active_status
     )
     from app.schemas.ambulance import AmbulanceSummary
