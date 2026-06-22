@@ -277,7 +277,7 @@ async def update_hospital_status(
     db: AsyncSession = Depends(deps.get_db),
     id: int,
     status_update: HospitalStatusUpdate,
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+    current_user: Any = Depends(deps.PermissionCheckerAny(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
 ) -> Any:
     """
     Update the status of a hospital.

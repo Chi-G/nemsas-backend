@@ -139,6 +139,74 @@ class PermissionChecker:
         return current_user
 
 
+async def get_current_any_user(
+    db: AsyncSession = Depends(get_db),
+    token: HTTPAuthorizationCredentials = Depends(reusable_oauth2)
+) -> any:
+    try:
+        payload = jwt.decode(
+            token.credentials, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
+        )
+        token_data = TokenPayload(**payload)
+        if token_data.sub is None:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Could not validate credentials",
+            )
+    except (JWTError, Exception):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+        )
+    
+    import uuid
+    try:
+        user_uuid = uuid.UUID(token_data.sub)
+        result = await db.execute(
+            select(User)
+            .where(User.id == user_uuid)
+            .options(
+                selectinload(User.state),
+                selectinload(User.lga),
+                selectinload(User.ward),
+                selectinload(User.partner)
+            )
+        )
+        user = result.scalar_one_or_none()
+        if not user or not user.is_active:
+            raise HTTPException(status_code=401, detail="User not found or inactive")
+        return user
+    except (ValueError, TypeError):
+        try:
+            partner_id = int(token_data.sub)
+            result = await db.execute(
+                select(PartnerUser).where(PartnerUser.id == partner_id)
+            )
+            partner = result.scalar_one_or_none()
+            if not partner or not partner.is_active:
+                raise HTTPException(status_code=401, detail="Partner not found or inactive")
+            return partner
+        except (ValueError, TypeError):
+            raise HTTPException(status_code=401, detail="Invalid token subject")
+
+
+class PermissionCheckerAny:
+    def __init__(self, allowed_roles: list[str] | None = None):
+        self.allowed_roles = allowed_roles
+
+    def __call__(self, current_user: any = Depends(get_current_any_user)) -> any:
+        if not self.allowed_roles:
+            return current_user
+        if current_user.user_type in self.allowed_roles:
+            return current_user
+            
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The user doesn't have enough privileges",
+        )
+
+
+
 async def get_current_partner(
     db: AsyncSession = Depends(get_db),
     token: HTTPAuthorizationCredentials = Depends(reusable_oauth2)

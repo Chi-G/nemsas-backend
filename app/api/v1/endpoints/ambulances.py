@@ -183,11 +183,19 @@ async def get_partner_ambulance_stats(
     res = await db.execute(query)
     counts = res.all()
     
-    stats = {"total": 0, "pending": 0, "approved": 0, "rejected": 0, "under_maintainance": 0, "out_of_service": 0}
+    stats = {"total": 0, "pending": 0, "approved": 0, "rejected": 0, "under_maintenance": 0, "out_of_service": 0}
     for status_val, count in counts:
         stats["total"] += count
-        if status_val in stats:
-            stats[status_val] += count
+        if not status_val:
+            continue
+            
+        key = status_val.lower()
+        if key in ["under maintenance", "under_maintainance", "under_maintenance"]:
+            stats["under_maintenance"] += count
+        elif key in ["out of service", "out_of_service"]:
+            stats["out_of_service"] += count
+        elif key in stats:
+            stats[key] += count
             
     return {
         "success": True,
@@ -321,7 +329,7 @@ async def update_ambulance_status(
     db: AsyncSession = Depends(deps.get_db),
     id: int,
     status_update: AmbulanceStatusUpdate,
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
+    current_user: Any = Depends(deps.PermissionCheckerAny(["SUPERADMINISTRATOR", "ADMINSEMSASUSER"])),
 ) -> Any:
     """
     Update the status of an ambulance.
