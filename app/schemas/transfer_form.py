@@ -10,7 +10,7 @@ class TransferFormBindingModel(BaseModel):
     patient_id: Optional[int] = Field(None, alias="patient_Id")
     patient_ids: Optional[list[int]] = Field(None, alias="patientIds")
     etc_id: int = Field(..., alias="etC_Id")
-    run_sheet_id: int = Field(..., alias="runSheetId")
+    run_sheet_id: Optional[int] = Field(None, alias="runSheetId")
     approve: Optional[bool] = Field(False, alias="approve")
 
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
@@ -28,7 +28,7 @@ class TransferFormModel(BaseModel):
     patient_id: Optional[int] = Field(None, alias="patient_Id")
     patient_ids: Optional[list[int]] = Field(None, alias="patientIds")
     etc_id: int = Field(..., alias="etC_Id")
-    run_sheet_id: int = Field(..., alias="runSheetId")
+    run_sheet_id: Optional[int] = Field(None, alias="runSheetId")
     approve: Optional[bool] = Field(None, alias="approve")
     created_at: Optional[datetime] = Field(None, alias="created_at")
     updated_at: Optional[datetime] = Field(None, alias="updated_at")

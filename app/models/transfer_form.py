@@ -13,7 +13,7 @@ class TransferForm(Base):
     patient_id = Column(Integer, ForeignKey("patients.id"), nullable=True, index=True)  # Legacy
     patient_ids = Column(JSON, nullable=True) # Replaces patient_id to support multiple patients
     etc_id = Column(Integer, ForeignKey("hospitals.id"), nullable=False, index=True)
-    run_sheet_id = Column(Integer, ForeignKey("run_sheets.id"), nullable=False, index=True)
+    run_sheet_id = Column(Integer, ForeignKey("run_sheets.id"), nullable=True, index=True)
     approve = Column(Boolean, default=False, nullable=True)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
