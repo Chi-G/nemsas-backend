@@ -25,14 +25,20 @@ async def read_ambulances(
     days: Optional[int] = None,
     status: Optional[str] = None,
     active_status: Optional[str] = "active",
-    current_user: User = Depends(deps.get_current_user),
+    current_user: Any = Depends(deps.get_current_any_user),
 ) -> Any:
     """
     Retrieve ambulances with filtering (SUPERADMINISTRATOR sees all, ADMINSEMSASUSER only their state).
     """
     effective_state_id = stateId
-    if current_user.user_type in ["ADMINSEMSASUSER", "STATEVIEWER"]:
+    if getattr(current_user, "user_type", None) in ["ADMINSEMSASUSER", "STATEVIEWER"]:
         effective_state_id = current_user.state_id
+
+    if status and status.lower() == "all":
+        active_status = "all"
+        status = None
+
+    effective_active_status = None if active_status and active_status.lower() == "all" else active_status
 
     ambulances, total_count = await ambulance_crud.get_multi_with_count(
         db, 
@@ -42,7 +48,7 @@ async def read_ambulances(
         ambulance_type_id=typeId,
         days=days,
         status=status,
-        active_status=active_status
+        active_status=effective_active_status
     )
     from app.schemas.ambulance import AmbulanceSummary
     return {
@@ -64,14 +70,20 @@ async def read_all_ambulances(
     days: Optional[int] = None,
     status: Optional[str] = None,
     active_status: Optional[str] = None,
-    current_user: User = Depends(deps.get_current_user),
+    current_user: Any = Depends(deps.get_current_any_user),
 ) -> Any:
     """
     Retrieve all ambulances with optional status filtering.
     """
     effective_state_id = stateId
-    if current_user.user_type in ["ADMINSEMSASUSER", "STATEVIEWER"]:
+    if getattr(current_user, "user_type", None) in ["ADMINSEMSASUSER", "STATEVIEWER"]:
         effective_state_id = current_user.state_id
+
+    if status and status.lower() == "all":
+        active_status = "all"
+        status = None
+
+    effective_active_status = None if active_status and active_status.lower() == "all" else active_status
 
     ambulances, total_count = await ambulance_crud.get_multi_with_count(
         db, 
@@ -81,7 +93,7 @@ async def read_all_ambulances(
         ambulance_type_id=typeId,
         days=days,
         status=status,
-        active_status=active_status
+        active_status=effective_active_status
     )
     from app.schemas.ambulance import AmbulanceSummary
     return {
@@ -232,6 +244,12 @@ async def read_partner_ambulances(
     if not current_partner:
         raise HTTPException(status_code=400, detail={"message": "Partner not found", "error": "NOT_PARTNER"})
 
+    if status and status.lower() == "all":
+        active_status = "all"
+        status = None
+
+    effective_active_status = None if active_status and active_status.lower() == "all" else active_status
+
     ambulances, total_count = await ambulance_crud.get_multi_with_count(
         db, 
         driver_name=driverName,
@@ -240,7 +258,7 @@ async def read_partner_ambulances(
         ambulance_type_id=typeId,
         days=days,
         status=status,
-        active_status=active_status,
+        active_status=effective_active_status,
         skip=skip,
         limit=limit
     )
