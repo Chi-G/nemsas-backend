@@ -119,3 +119,15 @@ class AmbulanceResponse(BaseModel):
     refreshToken: Optional[str] = None
     refreshTokenExpiryTime: str = "0001-01-01T00:00:00"
 
+class AmbulanceLiveStatus(BaseModel):
+    id: int
+    name: str
+    location: Optional[str] = None
+    ambulance_type_id: Optional[int] = Field(None, alias="ambulanceTypeId")
+    state_id: Optional[int] = Field(None, alias="stateId")
+    online: Optional[bool] = True
+    driver_name: Optional[str] = Field(None, alias="driverName")
+    contact_number: Optional[str] = Field(None, alias="contactNumber")
+    plate_number: Optional[str] = Field(None, alias="plateNumber")
+    ambulanceUserStatus: Optional[bool] = None
+    ambulanceStatus: Optional[str] = "active"

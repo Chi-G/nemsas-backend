@@ -18,6 +18,7 @@ class UserBase(BaseModel):
     street2: Optional[str] = None
     city: Optional[str] = None
     is_active: bool = Field(True, alias="isActive")
+    status: bool = Field(True)
     profile_picture: Optional[str] = Field(None, alias="profilePicture")
     is_password_changed: bool = Field(False, alias="isPasswordChanged")
 
@@ -59,6 +60,7 @@ class UserUpdate(BaseModel):
     street2: Optional[str] = None
     city: Optional[str] = None
     is_active: Optional[bool] = Field(None, alias="isActive")
+    status: Optional[bool] = None
     profile_picture: Optional[str] = Field(None, alias="profilePicture")
     is_password_changed: Optional[bool] = Field(None, alias="isPasswordChanged")
     password: Optional[str] = None

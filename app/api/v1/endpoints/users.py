@@ -61,6 +61,33 @@ async def read_user_me(
         "data": user_data
     }
 
+from pydantic import BaseModel
+
+class StatusUpdate(BaseModel):
+    status: bool
+
+@router.patch("/me/status", response_model=ResponseBase[UserSchema])
+async def update_my_status(
+    *,
+    db: AsyncSession = Depends(deps.get_db),
+    status_in: StatusUpdate,
+    current_user: User = Depends(deps.get_current_user),
+):
+    """
+    Update the general status of the current user
+    """
+    current_user.status = status_in.status
+    db.add(current_user)
+    await db.commit()
+    await db.refresh(current_user)
+    
+    user_data = UserSchema.model_validate(current_user)
+    return {
+        "success": True,
+        "message": "User status successfully updated",
+        "data": user_data
+    }
+
 @router.get("/", response_model=PaginatedResponse[UserSchema])
 async def read_users(
     db: AsyncSession = Depends(deps.get_db),
