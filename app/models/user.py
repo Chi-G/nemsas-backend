@@ -23,6 +23,7 @@ class User(Base):
     city = Column(String, nullable=True)
     
     is_active = Column(Boolean, default=True)
+    status = Column(Boolean, default=True)
     profile_picture = Column(String, nullable=True, default=None)
     is_password_changed = Column(Boolean, default=False, nullable=False)
     date_joined = Column(DateTime(timezone=True), server_default=func.now())
