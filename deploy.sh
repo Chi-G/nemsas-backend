@@ -157,6 +157,15 @@ echo -e "${BLUE}========================================${NC}"
 # POST-DEPLOYMENT DATA MIGRATIONS
 # ============================================================================
 echo -e "\n${YELLOW}[5.5/6] Running data migrations...${NC}"
+
+echo "Running alembic database migrations..."
+if $DOCKER_COMPOSE_CMD exec -T ${APP_SERVICE_NAME} alembic upgrade head; then
+    echo -e "${GREEN}✅ Alembic migrations completed successfully${NC}"
+else
+    echo -e "${RED}❌ Alembic migrations failed!${NC}"
+    exit 1
+fi
+
 if $DOCKER_COMPOSE_CMD exec -T ${APP_SERVICE_NAME} test -f update_active_status.py; then
     echo "Found update_active_status.py, running backfill..."
     $DOCKER_COMPOSE_CMD exec -T ${APP_SERVICE_NAME} python update_active_status.py
