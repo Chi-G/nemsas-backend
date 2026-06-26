@@ -199,6 +199,47 @@ class CRUDIncident:
         await db.commit()
         await db.refresh(db_obj)
         
+        import asyncio
+        from app.core.socket_manager import SocketManager
+        
+        # BROADCAST: New Incident (Immediately, before loading relationships)
+        if db_obj.state_id:
+            asyncio.create_task(SocketManager.broadcast_incident_update(
+                cast(int, db_obj.state_id), 
+                {
+                    "type": "NEW_INCIDENT",
+                    "incidentId": db_obj.id,
+                    "serialNo": db_obj.serial_no,
+                    "status": db_obj.event_status_type or db_obj.incident_status_type,
+                    "triage": db_obj.triage_category
+                }
+            ))
+            
+        # PUSH NOTIFICATION: If ambulance is assigned (Immediately)
+        if db_obj.ambulance_id:
+            from app.core.notifications import notification_service
+            from app.db.session import SessionLocal
+
+            async def send_push_in_bg(ambulance_id: int, serial_no: str, incident_id: int):
+                try:
+                    async with SessionLocal() as bg_db:
+                        await notification_service.send_to_ambulance(
+                            bg_db, 
+                            ambulance_id, 
+                            title="New Incident Assigned", 
+                            body=f"Incident {serial_no} has been assigned to your ambulance.",
+                            data={"incidentId": incident_id, "type": "NEW_ASSIGNMENT"},
+                            sound="incident_sound"
+                        )
+                except Exception as e:
+                    print(f"[Notification Error] Failed to send push on creation: {e}")
+
+            asyncio.create_task(send_push_in_bg(
+                cast(int, db_obj.ambulance_id), 
+                db_obj.serial_no, 
+                db_obj.id
+            ))
+        
         # Load relationships for the return
         from app.models.hospital import Hospital as HospitalModel
         from app.models.claim import Claim as ClaimModel
@@ -222,34 +263,6 @@ class CRUDIncident:
             )
         )
         final_obj = result.scalars().first()
-
-        # BROADCAST: New Incident
-        if final_obj and final_obj.state_id:
-            await SocketManager.broadcast_incident_update(
-                cast(int, final_obj.state_id), 
-                {
-                    "type": "NEW_INCIDENT",
-                    "incidentId": final_obj.id,
-                    "serialNo": final_obj.serial_no,
-                    "status": final_obj.event_status_type or final_obj.incident_status_type,
-                    "triage": final_obj.triage_category
-                }
-            )
-        
-        # PUSH NOTIFICATION: If ambulance is assigned
-        if final_obj and final_obj.ambulance_id:
-            try:
-                from app.core.notifications import notification_service
-                await notification_service.send_to_ambulance(
-                    db, 
-                    cast(int, final_obj.ambulance_id), 
-                    title="New Incident Assigned", 
-                    body=f"Incident {final_obj.serial_no} has been assigned to your ambulance.",
-                    data={"incidentId": final_obj.id, "type": "NEW_ASSIGNMENT"},
-                    sound="incident_sound"
-                )
-            except Exception as e:
-                print(f"[Notification Error] Failed to send push on creation: {e}")
 
         return final_obj
 
