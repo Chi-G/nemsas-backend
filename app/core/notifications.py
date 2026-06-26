@@ -178,7 +178,7 @@ class NotificationService:
             log_fcm(f"[Notification] APNs exchange error: {e}")
         return []
 
-    async def _push_to_fcm(self, tokens: List[str], title: str, body: str, data: Optional[Dict[str, str]] = None, sound: Optional[str] = None):
+    async def _push_to_fcm(self, db: AsyncSession, tokens: List[str], title: str, body: str, data: Optional[Dict[str, str]] = None, sound: Optional[str] = None):
         if not tokens:
             return
         
@@ -250,7 +250,18 @@ class NotificationService:
                 log_fcm(f"[Notification] Failed to send {response.failure_count} messages")
                 for index, resp in enumerate(response.responses):
                     if not resp.success:
+                        failed_token = fcm_tokens[index]
+                        err_str = str(resp.exception).lower()
                         log_fcm(f"  Failed token index {index} response: {resp.exception}")
+                        if any(x in err_str for x in ["unregistered", "mismatch", "invalid registration", "notregistered"]):
+                            log_fcm(f"  [Cleanup] Deleting dead token: {failed_token}")
+                            try:
+                                from sqlalchemy import delete
+                                from app.models.device import Device
+                                await db.execute(delete(Device).where(Device.push_token == failed_token))
+                                await db.commit()
+                            except Exception as delete_err:
+                                log_fcm(f"  [Cleanup Error] Failed to delete token: {delete_err}")
         except Exception as e:
             log_fcm(f"[Notification] FCM error: {e}")
 
@@ -286,7 +297,7 @@ class NotificationService:
         fcm_data = {k: str(v) for k, v in (data or {}).items()}
         fcm_data["notificationId"] = notification_id
         
-        await self._push_to_fcm(tokens, title, body, fcm_data, sound=sound)
+        await self._push_to_fcm(db, tokens, title, body, fcm_data, sound=sound)
 
     async def send_to_ambulance(self, db: AsyncSession, ambulance_id: int, title: str, body: str, data: Optional[Dict[str, Any]] = None, sound: Optional[str] = None):
         # Find all devices linked to this ambulance
@@ -316,7 +327,7 @@ class NotificationService:
         fcm_data = {k: str(v) for k, v in (data or {}).items()}
         fcm_data["notificationId"] = notification_id
         
-        await self._push_to_fcm(tokens, title, body, fcm_data, sound=sound)
+        await self._push_to_fcm(db, tokens, title, body, fcm_data, sound=sound)
 
     async def get_pending_notifications(self, user_id: str) -> List[Dict[str, Any]]:
         key = f"notifications:{user_id}"
