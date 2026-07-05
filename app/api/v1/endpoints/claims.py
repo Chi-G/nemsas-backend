@@ -134,7 +134,7 @@ async def read_claims(
 @router.get("/summary", response_model=ClaimSummaryResponse)
 async def read_claim_summary(
     db: AsyncSession = Depends(deps.get_db),
-    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "EMERGENCYTREATMENTUSER", "AMBULANCEUSER", "STATEVIEWER", "NATIONALVIEWER"]))
+    current_user: User = Depends(deps.PermissionChecker(["SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "EMERGENCYTREATMENTUSER", "AMBULANCEUSER", "STATEVIEWER", "NATIONALVIEWER",'PERMSEC']))
 ) -> Any:
     """
     Get aggregated summary counts of all claims.
@@ -186,7 +186,7 @@ async def read_ambulance_claims(
     Get claims specifically for the signed-in ambulance user or all ambulance claims for administrators.
     """
     user_ambulance_id = getattr(current_user, "ambulance_id", None)
-    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "NATIONALVIEWER", "STATEVIEWER"}
+    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "NATIONALVIEWER", "STATEVIEWER",'PERMSEC'}
     user_role = getattr(current_user, "user_type", None)
     is_admin = user_role in admin_roles
 
@@ -321,7 +321,7 @@ async def get_all_ambulance_claims(
         filter_state_id = user_state_id
 
     user_ambulance_id = getattr(current_user, "ambulance_id", None)
-    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "NATIONALVIEWER", "STATEVIEWER"}
+    admin_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "ADMINSEMSASUSER", "NEMSASUSER", "SEMSASUSER", "NATIONALVIEWER", "STATEVIEWER",'PERMSEC'}
     is_admin = user_type in admin_roles
 
     filter_ambulance_id = None
@@ -399,7 +399,7 @@ async def get_all_etc_claims(
             raise HTTPException(status_code=403, detail="State ID is required for state-level users")
         filter_state_id = user_state_id
     elif user_type == "EMERGENCYTREATMENTUSER":
-        filter_is_etc = None  # Fetch all claims for this ETC, ignoring claim_type
+        # Keep filter_is_etc = True to ensure "Not Applicable" ambulance claims are filtered out
         filter_etc_id = getattr(current_user, "etc_id", None)
         if filter_etc_id is None:
             filter_etc_id = getattr(current_user, "emergency_treatment_center_id", None)

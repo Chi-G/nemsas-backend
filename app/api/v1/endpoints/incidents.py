@@ -63,7 +63,7 @@ async def read_incidents(
     **Role-based Access:**
     - **Restricted Roles** (STATEVIEWER, ADMINSEMSASUSER, SEMSASDISPATCH, SEMSASPIUUSER, SEMSASUSER): 
       Automatically filtered by the user's assigned state.
-    - **Global Roles** (NEMSASUSER, NATIONALVIEWER, SUPERADMINISTRATOR, NEMSASADMIN): 
+    - **Global Roles** (NEMSASUSER, NATIONALVIEWER, PERMSEC, SUPERADMINISTRATOR, NEMSASADMIN): 
       Can see incidents from all states and use the `state_id` filter.
     """
     restricted_roles = {"STATEVIEWER", "ADMINSEMSASUSER", "SEMSASDISPATCH", "SEMSASPIUUSER", "SEMSASUSER"}
@@ -309,6 +309,18 @@ async def create_incident(
         category = category_result.scalars().first()
         if category:
             incident_in.incident_category_id = cast(int, category.id)
+        else:
+            others_cat = await db.execute(
+                select(IncidentType).filter(IncidentType.name.ilike("Others"))
+            )
+            others = others_cat.scalars().first()
+            if others:
+                incident_in.incident_category_id = cast(int, others.id)
+            
+            # Save the entered custom category text to description
+            custom_cat = incident_in.incident_category.strip()
+            desc = incident_in.description or ""
+            incident_in.description = f"Category: {custom_cat}\n{desc}"
 
     # Check if assigned ambulance is busy
     if incident_in.ambulance_id:
@@ -540,6 +552,9 @@ async def pick_up_patient(
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
         
+    if incident.event_status_type in ["Patient Picked Up", "Patient Dropped Off"]:
+        raise HTTPException(status_code=400, detail=f"Incident is already in state: {incident.event_status_type}")
+        
     if incident.event_status_type != "Dispatch Accepted":
         raise HTTPException(status_code=400, detail="Patient can only be picked up after dispatch is accepted")
         
@@ -581,6 +596,9 @@ async def drop_off_patient(
     incident = await incident_crud.get(db, id=id)
     if not incident:
         raise HTTPException(status_code=404, detail="Incident not found")
+        
+    if incident.event_status_type == "Patient Dropped Off":
+        raise HTTPException(status_code=400, detail=f"Incident is already in state: {incident.event_status_type}")
         
     if incident.event_status_type != "Patient Picked Up":
         raise HTTPException(status_code=400, detail="Patient can only be dropped off after being picked up")

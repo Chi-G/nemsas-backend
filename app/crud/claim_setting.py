@@ -20,7 +20,7 @@ class CRUDClaimSetting:
                 existing.updated_by_id = user_id
             db.add(existing)
             await db.commit()
-            await db.refresh(existing)
+            # Removed db.refresh to prevent TimeoutError / deadlocks
             return existing
         else:
             new_setting = ClaimSetting(
@@ -30,7 +30,6 @@ class CRUDClaimSetting:
             )
             db.add(new_setting)
             await db.commit()
-            await db.refresh(new_setting)
             return new_setting
 
 claim_setting = CRUDClaimSetting()

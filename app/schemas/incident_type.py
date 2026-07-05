@@ -5,6 +5,7 @@ from datetime import datetime
 class IncidentTypeBase(BaseModel):
     name: str
     description: Optional[str] = None
+    is_active: Optional[bool] = True
 
 class IncidentTypeCreate(IncidentTypeBase):
     id: Optional[int] = None
@@ -12,6 +13,7 @@ class IncidentTypeCreate(IncidentTypeBase):
 class IncidentTypeUpdate(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
+    is_active: Optional[bool] = None
 
 class IncidentType(IncidentTypeBase):
     id: int

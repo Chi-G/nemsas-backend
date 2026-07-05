@@ -87,7 +87,7 @@ class NotificationService:
         State roles only see incidents matching their state_id.
         """
         incident_state_id = incident_data.get("state_id")
-        global_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "NATIONALVIEWER", "NEMSASUSER"}
+        global_roles = {"SUPERADMINISTRATOR", "NEMSASADMIN", "NATIONALVIEWER", "NEMSASUSER",'PERMSEC'}
         
         dead_connections = []
 

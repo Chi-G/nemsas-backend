@@ -24,6 +24,26 @@ async def lifespan(app: FastAPI):
             f"[Redis] Failed to connect to Redis on startup: {e}. "
             "Real-time pub-sub notifications will be disabled."
         )
+    
+    try:
+        from app.db.session import SessionLocal
+        from app.crud.claim_setting import claim_setting
+        from app.schemas.claim_setting import ClaimSettingCreate
+        import logging
+        logger = logging.getLogger(__name__)
+        async with SessionLocal() as db:
+            existing = await claim_setting.get_by_key(db, "ETCClaimExpirationInHours")
+            if not existing:
+                class DummyObj:
+                    key = "ETCClaimExpirationInHours"
+                    value = "48"
+                await claim_setting.create_or_update(db, obj_in=DummyObj())
+                logger.info("Initialized default claim setting ETCClaimExpirationInHours")
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to initialize claim setting: {e}")
+
     yield
     # Shutdown
     try:

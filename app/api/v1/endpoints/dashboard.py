@@ -98,7 +98,7 @@ async def get_dashboard_stats(
     role = getattr(current_user, "user_type", "")
 
     # Determine effective state scoping
-    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER"]:
+    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER",'PERMSEC']:
         effective_state_id = state_id
     else:
         effective_state_id = current_user.state_id
@@ -213,7 +213,7 @@ async def get_dashboard_monthly(
     role = getattr(current_user, "user_type", "")
 
     # Determine effective state scoping
-    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER"]:
+    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER",'PERMSEC']:
         effective_state_id = stateId
     else:
         effective_state_id = current_user.state_id

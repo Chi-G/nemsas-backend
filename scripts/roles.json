@@ -10,6 +10,7 @@
     {"id": "ADMINSEMSASUSER", "name": "ADMINSEMSASUSER"},
     {"id": "NEMSASUSER", "name": "NEMSASUSER"},
     {"id": "NATIONALVIEWER", "name": "NATIONALVIEWER"},
-    {"id": "STATEVIEWER", "name": "STATEVIEWER"}
+    {"id": "STATEVIEWER", "name": "STATEVIEWER"},
+    {"id": "PERMSEC", "name": "PERMSEC"}
 ]
  

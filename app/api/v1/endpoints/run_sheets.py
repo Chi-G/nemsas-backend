@@ -23,7 +23,7 @@ async def read_runsheets(
 ) -> Any:
     """
     Get list of runsheets matching the authenticated user's permissions and scope.
-    - SUPERADMINISTRATOR, NEMSASADMIN, NEMSASUSER, NATIONALVIEWER can list globally and filter by state_id.
+    - SUPERADMINISTRATOR, NEMSASADMIN, NEMSASUSER, NATIONALVIEWER, PERMSEC can list globally and filter by state_id.
     - SEMSAS users list runsheets strictly within their own state.
     - AMBULANCEUSER list runsheets strictly matching their ambulance_id.
     - Other staff (medic/hospice/etc.) list runsheets matching their medic_user_id.
@@ -34,7 +34,7 @@ async def read_runsheets(
     
     role = getattr(current_user, "user_type", "")
     
-    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER"]:
+    if role in ["SUPERADMINISTRATOR", "NEMSASADMIN", "NEMSASUSER", "NATIONALVIEWER", "PERMSEC"]:
         effective_state_id = state_id
     elif role in ["ADMINSEMSASUSER", "SEMSASUSER", "SEMSASDISPATCH", "SEMSASPIUUSER", "STATEVIEWER"]:
         effective_state_id = cast(Optional[int], current_user.state_id)
