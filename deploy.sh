@@ -174,6 +174,18 @@ else
     echo -e "${GREEN}✅ No update_active_status.py found to run.${NC}"
 fi
 
+if $DOCKER_COMPOSE_CMD exec -T ${APP_SERVICE_NAME} test -f update_active_status_incident_types.py; then
+    echo "Found update_active_status_incident_types.py, running backfill..."
+    $DOCKER_COMPOSE_CMD exec -T ${APP_SERVICE_NAME} python update_active_status_incident_types.py
+    echo -e "${GREEN}✅ Incident types backfill completed${NC}"
+fi
+
+if $DOCKER_COMPOSE_CMD exec -T ${APP_SERVICE_NAME} test -f update_db.py; then
+    echo "Found update_db.py, running db patches..."
+    $DOCKER_COMPOSE_CMD exec -T ${APP_SERVICE_NAME} python update_db.py
+    echo -e "${GREEN}✅ DB patch completed${NC}"
+fi
+
 # ============================================================================
 # CLEANUP
 # ============================================================================
