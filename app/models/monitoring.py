@@ -14,8 +14,10 @@ class Monitoring(Base):
     no_of_transport = Column(Integer, default=0)
     no_of_mamii_lgas = Column(Integer, default=0)
     by_tricycle_ambulance = Column(Integer, default=0)
-    by_nurtw_driver = Column(Integer, default=0)
     bls = Column(Integer, default=0)
+    als = Column(Integer, default=0)
+    helicopters = Column(Integer, default=0)
+    community_volunteers = Column(Integer, default=0)
     
     # Classification stats
     labor_transportation = Column(Integer, default=0)

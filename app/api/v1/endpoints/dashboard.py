@@ -34,8 +34,8 @@ class DashboardStats(BaseModel):
     noOfStates: int
     noOfMamiiLgas: int
     noOfIncidents: int
-    noOfAmbulances: int
-    noOfEmergendyCenters: int
+    noOfAmbulanceRuns: int
+    noOfTreatments: int
     
     # ETC-specific stats
     noOfPatients: Optional[int] = None
@@ -43,6 +43,10 @@ class DashboardStats(BaseModel):
     thisMonthIncidents: Optional[int] = None
     lastMonthPatients: Optional[int] = None
     thisMonthPatients: Optional[int] = None
+    thisMonthAmbulanceRuns: Optional[int] = None
+    lastMonthAmbulanceRuns: Optional[int] = None
+    thisMonthTreatments: Optional[int] = None
+    lastMonthTreatments: Optional[int] = None
 
 
 class DashboardStatsResponse(BaseModel):
@@ -126,24 +130,68 @@ async def get_dashboard_stats(
     stmt_incidents = _incident_period_filter(stmt_incidents, period)
     no_of_incidents = (await db.execute(stmt_incidents)).scalar() or 0
 
-    # 4. Count Ambulances
-    stmt_ambulances = select(func.count(Ambulance.id))
+    # 4. Count Ambulance Runs
+    stmt_ambulance_runs = select(func.count(Incident.id)).where(
+        Incident.ambulance_id.isnot(None),
+        Incident.event_status_type.isnot(None)
+    )
     if effective_state_id is not None:
-        stmt_ambulances = stmt_ambulances.where(Ambulance.state_id == effective_state_id)
-    no_of_ambulances = (await db.execute(stmt_ambulances)).scalar() or 0
+        stmt_ambulance_runs = stmt_ambulance_runs.where(Incident.state_id == effective_state_id)
+    stmt_ambulance_runs = _incident_period_filter(stmt_ambulance_runs, period)
+    no_of_ambulance_runs = (await db.execute(stmt_ambulance_runs)).scalar() or 0
 
-    # 5. Count Emergency Centers (Hospitals)
-    stmt_hospitals = select(func.count(Hospital.id))
+    # 5. Count Emergency Treatments in Facilities
+    stmt_treatments = select(func.count(Claim.id)).join(Incident).where(Claim.etc_claim_status != "Not Applicable")
     if effective_state_id is not None:
-        stmt_hospitals = stmt_hospitals.where(Hospital.state_id == effective_state_id)
-    no_of_hospitals = (await db.execute(stmt_hospitals)).scalar() or 0
+        stmt_treatments = stmt_treatments.where(Incident.state_id == effective_state_id)
+    if period == "this_year":
+        stmt_treatments = stmt_treatments.where(Incident.date_added >= datetime(date.today().year, 1, 1, tzinfo=timezone.utc))
+    elif period == "this_month":
+        stmt_treatments = stmt_treatments.where(Incident.date_added >= datetime(date.today().year, date.today().month, 1, tzinfo=timezone.utc))
+    elif period == "this_week":
+        start_week = datetime.combine(date.today() - timedelta(days=date.today().weekday()), datetime.min.time()).replace(tzinfo=timezone.utc)
+        stmt_treatments = stmt_treatments.where(Incident.date_added >= start_week)
+    no_of_treatments = (await db.execute(stmt_treatments)).scalar() or 0
+
+    # Calculate global trends
+    today = date.today()
+    this_month_start = datetime(today.year, today.month, 1, tzinfo=timezone.utc)
+    if today.month == 1:
+        last_month_start = datetime(today.year - 1, 12, 1, tzinfo=timezone.utc)
+    else:
+        last_month_start = datetime(today.year, today.month - 1, 1, tzinfo=timezone.utc)
+    last_month_end = this_month_start
+
+    # Trend: Ambulance Runs
+    stmt_amb_this = select(func.count(Incident.id)).where(
+        Incident.ambulance_id.isnot(None), Incident.event_status_type.isnot(None), Incident.date_added >= this_month_start)
+    stmt_amb_last = select(func.count(Incident.id)).where(
+        Incident.ambulance_id.isnot(None), Incident.event_status_type.isnot(None), Incident.date_added >= last_month_start, Incident.date_added < last_month_end)
+    if effective_state_id is not None:
+        stmt_amb_this = stmt_amb_this.where(Incident.state_id == effective_state_id)
+        stmt_amb_last = stmt_amb_last.where(Incident.state_id == effective_state_id)
+    this_month_ambulance_runs = (await db.execute(stmt_amb_this)).scalar() or 0
+    last_month_ambulance_runs = (await db.execute(stmt_amb_last)).scalar() or 0
+
+    # Trend: Treatments
+    stmt_treat_this = select(func.count(Claim.id)).join(Incident).where(Claim.etc_claim_status != "Not Applicable", Incident.date_added >= this_month_start)
+    stmt_treat_last = select(func.count(Claim.id)).join(Incident).where(Claim.etc_claim_status != "Not Applicable", Incident.date_added >= last_month_start, Incident.date_added < last_month_end)
+    if effective_state_id is not None:
+        stmt_treat_this = stmt_treat_this.where(Incident.state_id == effective_state_id)
+        stmt_treat_last = stmt_treat_last.where(Incident.state_id == effective_state_id)
+    this_month_treatments = (await db.execute(stmt_treat_this)).scalar() or 0
+    last_month_treatments = (await db.execute(stmt_treat_last)).scalar() or 0
 
     response_data = {
         "noOfStates": no_of_states,
         "noOfMamiiLgas": no_of_lgas,
         "noOfIncidents": no_of_incidents,
-        "noOfAmbulances": no_of_ambulances,
-        "noOfEmergendyCenters": no_of_hospitals,
+        "noOfAmbulanceRuns": no_of_ambulance_runs,
+        "noOfTreatments": no_of_treatments,
+        "thisMonthAmbulanceRuns": this_month_ambulance_runs,
+        "lastMonthAmbulanceRuns": last_month_ambulance_runs,
+        "thisMonthTreatments": this_month_treatments,
+        "lastMonthTreatments": last_month_treatments,
     }
 
     # 6. Additional Stats for EMERGENCYTREATMENTUSER
@@ -160,15 +208,7 @@ async def get_dashboard_stats(
             stmt_patients = _incident_period_filter(stmt_patients, period)
             response_data["noOfPatients"] = (await db.execute(stmt_patients)).scalar() or 0
 
-            today = date.today()
-            this_month_start = datetime(today.year, today.month, 1, tzinfo=timezone.utc)
-            
-            # Determine last month's start and end
-            if today.month == 1:
-                last_month_start = datetime(today.year - 1, 12, 1, tzinfo=timezone.utc)
-            else:
-                last_month_start = datetime(today.year, today.month - 1, 1, tzinfo=timezone.utc)
-            last_month_end = this_month_start
+            # The dates are already computed globally above
             
             # Incidents: This month & Last month
             stmt_inc_this = select(func.count(Incident.id)).where(Incident.etc_id == etc_id, Incident.date_added >= this_month_start)
@@ -238,8 +278,10 @@ async def get_dashboard_monthly(
             "noOfTransport": int(row.noOfTransport or 0),
             "noOfMamiiLGAs": int(row.noOfMamiiLGAs or 0),
             "byTricycleAmbulance": int(row.byTricycleAmbulance or 0),
-            "byNurtwDriver": int(row.byNurtwDriver or 0),
             "bls": int(row.bls or 0),
+            "als": int(row.als or 0),
+            "helicopters": int(row.helicopters or 0),
+            "communityVolunteers": int(row.communityVolunteers or 0),
             "laborTransportation": int(row.laborTransportation or 0),
             "obstetricTransportation": int(row.obstetricTransportation or 0),
             "neonatalTransportation": int(row.neonatalTransportation or 0),
