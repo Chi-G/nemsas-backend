@@ -93,6 +93,15 @@ class ChangePasswordRequest(BaseModel):
     current_password: str = Field(..., alias="currentPassword")
     new_password: str = Field(..., alias="newPassword")
 
+class ForgotPasswordRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    code: str
+    new_password: str = Field(..., alias="newPassword")
+
+
 class EtcDetails(BaseModel):
     id: int
     name: str

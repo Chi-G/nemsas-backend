@@ -297,7 +297,7 @@ def send_verification_email(to_email: str, name: str, code: str):
     send_email(to_email, "Verify Your NEMSAS Partner Account", html_content)
 
 
-def send_password_reset_email(to_email: str, name: str, code: str):
+def send_password_reset_email(to_email: str, name: str, code: str, is_partner: bool = False):
     title = "Password Reset"
     message_body = (
         f"Hello {name}, seems like you forgot your password for NEMSAS. "
@@ -307,7 +307,8 @@ def send_password_reset_email(to_email: str, name: str, code: str):
     )
     extra_content = f'<div class="code-box">{code}</div>'
     html_content = get_email_template(title, message_body, extra_content)
-    send_email(to_email, "Reset Your NEMSAS Partner Password", html_content)
+    subject = "Reset Your NEMSAS Partner Password" if is_partner else "Reset Your NEMSAS Password"
+    send_email(to_email, subject, html_content)
 
 
 def send_approval_email(to_email: str, name: str, entity_type: str, entity_name: str):

@@ -27,6 +27,8 @@ class User(Base):
     profile_picture = Column(String, nullable=True, default=None)
     is_password_changed = Column(Boolean, default=False, nullable=False)
     date_joined = Column(DateTime(timezone=True), server_default=func.now())
+    reset_password_code = Column(String(50), nullable=True)
+    reset_password_code_expires_at = Column(DateTime(timezone=True), nullable=True)
 
     
     user_type = Column(String, nullable=True) # Role ID or Enum

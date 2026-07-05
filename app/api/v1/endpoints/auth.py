@@ -6,9 +6,12 @@ from sqlalchemy import select
 from app.api.deps import get_db, get_current_user
 from app.core import security
 from app.core.config import settings
+from app.core.email import send_password_reset_email
+import random
+from datetime import datetime, timezone, timedelta
 from app.models.user import User
 from app.schemas.token import Token, LoginRequest, TokenRefreshRequest
-from app.schemas.user import ChangePasswordRequest
+from app.schemas.user import ChangePasswordRequest, ForgotPasswordRequest, ResetPasswordRequest
 
 router = APIRouter()
 
@@ -145,4 +148,91 @@ async def change_password(
     return {
         "success": True,
         "message": "Password successfully changed"
+    }
+
+
+@router.post("/forgot-password")
+async def forgot_password(
+    *,
+    db: AsyncSession = Depends(get_db),
+    body: ForgotPasswordRequest
+) -> Any:
+    """
+    Request password reset email
+    """
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Account with this email does not exist."
+        )
+        
+    # Generate 6-digit OTP
+    code = str(random.randint(100000, 999999))
+    user.reset_password_code = code
+    user.reset_password_code_expires_at = datetime.now(timezone.utc) + timedelta(seconds=90)
+    
+    db.add(user)
+    await db.commit()
+    
+    # Send email
+    name = user.first_name
+    send_password_reset_email(to_email=user.email, name=name, code=code)
+    
+    return {
+        "success": True,
+        "message": "We have sent a reset password code to your email."
+    }
+
+@router.post("/reset-password")
+async def reset_password(
+    *,
+    db: AsyncSession = Depends(get_db),
+    body: ResetPasswordRequest
+) -> Any:
+    """
+    Reset password using OTP code
+    """
+    result = await db.execute(select(User).where(User.email == body.email))
+    user = result.scalar_one_or_none()
+    
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid code or email",
+        )
+        
+    if not user.reset_password_code or user.reset_password_code != body.code:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid code",
+        )
+        
+    if user.reset_password_code_expires_at:
+        # Check if naive or aware and compare correctly
+        # The column is timezone aware
+        expires_at = user.reset_password_code_expires_at
+        if expires_at.tzinfo is None:
+            expires_at = expires_at.replace(tzinfo=timezone.utc)
+            
+        if expires_at < datetime.now(timezone.utc):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Reset code has expired",
+            )
+            
+    # Update password
+    hashed_password = security.get_password_hash(body.new_password)
+    user.hashed_password = hashed_password
+    user.reset_password_code = None
+    user.reset_password_code_expires_at = None
+    
+    db.add(user)
+    await db.commit()
+    
+    return {
+        "success": True,
+        "message": "Password has been successfully reset"
     }
