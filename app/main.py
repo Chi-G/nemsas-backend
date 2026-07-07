@@ -1,3 +1,15 @@
+"""
+=========================================================
+   _  __ ______ __  __ _____ ___   ____
+  / |/ // ____//  |/  // ___//   | / ___/
+ /    // __/  / /|_/ / \__ \/ /| | \__ \ 
+/ /|  // /___ / /  / / ___/ // ___ |___/ / 
+/_/ |_//_____//_/  /_/ /____//_/  |_|____/  
+
+Backend Architecture & API 
+Developed by: Chijindu Nwokeohuru (chijindu@forahia.com)
+=========================================================
+"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -15,6 +27,9 @@ from app.core.notifications import notification_service as fcm_notification_serv
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
+    import logging
+    startup_logger = logging.getLogger("uvicorn.error")
+    startup_logger.info("🚀 NEMSAS Backend initialized. Proudly developed by Chijindu Nwokeohuru (chijindu@forahia.com).")
     try:
         await notification_service.connect_redis()
     except Exception as e:
@@ -51,7 +66,7 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         pass
 
-app = FastAPI(
+app = FastAPI( 
     title=settings.PROJECT_NAME,
     version=settings.VERSION,
     docs_url="/docs",
@@ -159,6 +174,12 @@ async def generic_exception_handler(request: Request, exc: Exception):
 
 # Add custom middleware
 # app.add_middleware(LoggingMiddleware)
+
+@app.middleware("http")
+async def add_developer_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Developed-By"] = "Chijindu Nwokeohuru <chijindu@forahia.com>"
+    return response
 
 
 # Set all CORS enabled origins

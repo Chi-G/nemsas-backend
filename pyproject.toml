@@ -4,6 +4,9 @@ version = "0.1.0"
 description = "NEMSAS Backend"
 readme = "README.md"
 requires-python = ">=3.11"
+authors = [
+  { name = "Chijindu Nwokeohuru", email = "chijindu@forahia.com" }
+]
 dependencies = [
     "alembic==1.13.1",
     "asyncpg==0.29.0",
