@@ -21,7 +21,7 @@ async def read_ambulances(
     driverName: Optional[str] = None,
     name: Optional[str] = None,
     stateId: Optional[int] = None,
-    typeId: Optional[int] = None,
+    typeId: Optional[str] = None,
     days: Optional[int] = None,
     status: Optional[str] = None,
     active_status: Optional[str] = "active",
@@ -66,7 +66,7 @@ from app.schemas.common import ResponseBase
 async def get_ambulances_live_status(
     db: AsyncSession = Depends(deps.get_db),
     state_id: Optional[int] = None,
-    type_id: Optional[int] = None,
+    type_id: Optional[str] = None,
     current_user: User = Depends(deps.get_current_user),
 ):
     """
@@ -131,7 +131,15 @@ async def get_ambulances_live_status(
         query = query.filter(Ambulance.state_id == effective_state_id)
         
     if type_id is not None:
-        query = query.filter(Ambulance.ambulance_type_id == type_id)
+        if isinstance(type_id, str) and ',' in str(type_id):
+            type_ids = [int(tid.strip()) for tid in str(type_id).split(',') if tid.strip().isdigit()]
+            if type_ids:
+                query = query.filter(Ambulance.ambulance_type_id.in_(type_ids))
+        else:
+            try:
+                query = query.filter(Ambulance.ambulance_type_id == int(type_id))
+            except ValueError:
+                pass
 
     result = await db.execute(query)
     
@@ -164,7 +172,7 @@ async def read_all_ambulances(
     driverName: Optional[str] = None,
     name: Optional[str] = None,
     stateId: Optional[int] = None,
-    typeId: Optional[int] = None,
+    typeId: Optional[str] = None,
     days: Optional[int] = None,
     status: Optional[str] = None,
     active_status: Optional[str] = None,
@@ -328,7 +336,7 @@ async def read_partner_ambulances(
     driverName: Optional[str] = None,
     name: Optional[str] = None,
     stateId: Optional[int] = None,
-    typeId: Optional[int] = None,
+    typeId: Optional[str] = None,
     days: Optional[int] = None,
     status: Optional[str] = None,
     active_status: Optional[str] = None,

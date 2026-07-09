@@ -66,7 +66,7 @@ class CRUDAmbulance:
         driver_name: Optional[str] = None,
         name: Optional[str] = None,
         state_id: Optional[int] = None,
-        ambulance_type_id: Optional[int] = None,
+        ambulance_type_id: Optional[str] = None,
         days: Optional[int] = None,
         status: Optional[str] = None,
         active_status: Optional[str] = None,
@@ -91,8 +91,16 @@ class CRUDAmbulance:
                 query = query.filter(Ambulance.name.ilike(f"%{name}%"))
         if state_id:
             query = query.filter(Ambulance.state_id == state_id)
-        if ambulance_type_id:
-            query = query.filter(Ambulance.ambulance_type_id == ambulance_type_id)
+        if ambulance_type_id is not None:
+            if isinstance(ambulance_type_id, str) and ',' in str(ambulance_type_id):
+                type_ids = [int(tid.strip()) for tid in str(ambulance_type_id).split(',') if tid.strip().isdigit()]
+                if type_ids:
+                    query = query.filter(Ambulance.ambulance_type_id.in_(type_ids))
+            else:
+                try:
+                    query = query.filter(Ambulance.ambulance_type_id == int(ambulance_type_id))
+                except ValueError:
+                    pass
         if days:
             from datetime import timedelta
             start_date = datetime.now() - timedelta(days=days)

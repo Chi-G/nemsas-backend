@@ -23,6 +23,7 @@ async def read_hospitals(
     name: Optional[str] = None,
     stateId: Optional[int] = None,
     days: Optional[int] = None,
+    hospitalTypeId: Optional[int] = None,
     current_user: User = Depends(deps.get_current_user),
 ):
     """
@@ -37,6 +38,7 @@ async def read_hospitals(
         name=name,
         state_id=effective_state_id,
         days=days,
+        hospital_type_id=hospitalTypeId,
         status="approved"
     )
     from app.schemas.hospital import HospitalSummary
