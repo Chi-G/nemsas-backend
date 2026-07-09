@@ -636,3 +636,181 @@ async def post_dashboard_mobile(
         limit=8,
         activities_only=False
     )
+
+from sqlalchemy import extract, case
+
+@router.get("/chart")
+async def get_dashboard_chart(
+    view: str = Query(..., description="View type: ambulance runs, emergency types, claims"),
+    stateId: Optional[int] = None,
+    year: Optional[str] = None,
+    emergencyType: Optional[str] = None,
+    claimsType: Optional[str] = None,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Get aggregated data for the NEMSAS Bar Chart.
+    Supports filtering by view, stateId, year, emergencyType, and claimsType.
+    """
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    target_year = int(year) if year else datetime.now(timezone.utc).year
+    
+    def init_months():
+        return {m: 0 for m in range(1, 13)}
+
+    datasets = []
+    view_lower = view.lower()
+    
+    if view_lower in ["ambulance", "ambulance runs", "ambulance & response"]:
+        from app.models.ambulance_type import AmbulanceType
+        from app.models.incident_type import IncidentType
+        
+        stmt = select(
+            extract('month', Incident.date_added).label('month'),
+            func.count(Incident.id).label('incidents'),
+            func.count(case((Incident.ambulance_id.isnot(None) & Incident.event_status_type.isnot(None), 1))).label('ambulance_runs'),
+            func.count(case((AmbulanceType.name.ilike('%ALS%'), 1))).label('als'),
+            func.count(case((AmbulanceType.name.ilike('%BLS%'), 1))).label('bls'),
+            func.count(case((AmbulanceType.name.ilike('%Tricycle%'), 1))).label('tricycle'),
+            func.count(case((AmbulanceType.name.ilike('%Boat%'), 1))).label('boat'),
+            func.count(case((AmbulanceType.name.ilike('%Helicopter%'), 1))).label('helicopter'),
+        ).outerjoin(Ambulance, Incident.ambulance_id == Ambulance.id)\
+         .outerjoin(AmbulanceType, Ambulance.ambulance_type_id == AmbulanceType.id)\
+         .where(extract('year', Incident.date_added) == target_year)
+         
+        if emergencyType and emergencyType != "All":
+            stmt = stmt.join(IncidentType, Incident.incident_category_id == IncidentType.id).where(IncidentType.name == emergencyType)
+         
+        if stateId:
+            stmt = stmt.where(Incident.state_id == stateId)
+            
+        stmt = stmt.group_by(extract('month', Incident.date_added))
+        
+        res = await db.execute(stmt)
+        rows = res.all()
+        
+        data = {
+            'Incidents': init_months(),
+            'Ambulance runs': init_months(),
+            'ALS': init_months(),
+            'BLS': init_months(),
+            'Tricycle': init_months(),
+            'Boat': init_months(),
+            'Helicopter': init_months(),
+        }
+        
+        for row in rows:
+            if row.month is None: continue
+            m = int(row.month)
+            if 1 <= m <= 12:
+                data['Incidents'][m] = row.incidents or 0
+                data['Ambulance runs'][m] = row.ambulance_runs or 0
+                data['ALS'][m] = row.als or 0
+                data['BLS'][m] = row.bls or 0
+                data['Tricycle'][m] = row.tricycle or 0
+                data['Boat'][m] = row.boat or 0
+                data['Helicopter'][m] = row.helicopter or 0
+                
+        # Incidents first, then Ambulance runs
+        order = ['Incidents', 'Ambulance runs', 'ALS', 'BLS', 'Tricycle', 'Boat', 'Helicopter']
+        datasets = [
+            {"name": k, "data": [data[k][m] for m in range(1, 13)]} for k in order
+        ]
+
+    elif view_lower in ["emergency", "emergency types", "incidents"]:
+        # If "All" or none is selected, return total incidents grouped by month
+        from app.models.incident_type import IncidentType
+
+        stmt = select(
+            extract('month', Incident.date_added).label('month'),
+            func.count(Incident.id).label('count')
+        ).where(extract('year', Incident.date_added) == target_year)
+
+        name_label = "All Incidents"
+        if emergencyType and emergencyType != "All":
+            name_label = emergencyType
+            stmt = stmt.join(IncidentType, Incident.incident_category_id == IncidentType.id)\
+                       .where(IncidentType.name == emergencyType)
+        
+        if stateId:
+            stmt = stmt.where(Incident.state_id == stateId)
+            
+        stmt = stmt.group_by(extract('month', Incident.date_added))
+        res = await db.execute(stmt)
+        
+        month_data = init_months()
+        for row in res.all():
+            if row.month is None: continue
+            m = int(row.month)
+            if 1 <= m <= 12:
+                month_data[m] = row.count or 0
+                
+        datasets = [
+            {"name": name_label, "data": [month_data[m] for m in range(1, 13)]}
+        ]
+
+    elif view_lower == "claims":
+        from app.models.claim import Claim
+        from app.models.incident_type import IncidentType
+
+        if claimsType == "ambulance":
+            status_col = Claim.ambulance_claim_status
+        else:
+            status_col = Claim.etc_claim_status
+
+        stmt = select(
+            extract('month', Incident.date_added).label('month'),
+            func.count(Claim.id).label('total'),
+            func.count(case((status_col.ilike('%Pending%') | status_col.ilike('%New%'), 1))).label('pending'),
+            func.count(case((status_col.ilike('%Endorsed%'), 1))).label('endorsed'),
+            func.count(case((status_col.ilike('%Approved%'), 1))).label('approved'),
+            func.count(case((status_col.ilike('%Rejected%'), 1))).label('rejected'),
+        ).join(Incident, Claim.incident_id == Incident.id)\
+         .where(extract('year', Incident.date_added) == target_year)\
+         .where(status_col != "Not Applicable")
+
+        if claimsType == "ambulance":
+            stmt = stmt.where(Incident.ambulance_id.isnot(None))
+        else:
+            stmt = stmt.where(Incident.etc_id.isnot(None))
+        
+        if emergencyType and emergencyType != "All":
+            stmt = stmt.join(IncidentType, Incident.incident_category_id == IncidentType.id).where(IncidentType.name == emergencyType)
+
+        if stateId:
+            stmt = stmt.where(Incident.state_id == stateId)
+            
+        stmt = stmt.group_by(extract('month', Incident.date_added))
+        res = await db.execute(stmt)
+        
+        data = {
+            'Total': init_months(),
+            'Pending': init_months(),
+            'Endorsed': init_months(),
+            'Approved': init_months(),
+            'Rejected': init_months(),
+        }
+        for row in res.all():
+            if row.month is None: continue
+            m = int(row.month)
+            if 1 <= m <= 12:
+                data['Total'][m] = row.total or 0
+                data['Pending'][m] = row.pending or 0
+                data['Endorsed'][m] = row.endorsed or 0
+                data['Approved'][m] = row.approved or 0
+                data['Rejected'][m] = row.rejected or 0
+                
+        order = ['Total', 'Pending', 'Endorsed', 'Approved', 'Rejected']
+        datasets = [
+            {"name": k, "data": [data[k][m] for m in range(1, 13)]} for k in order
+        ]
+
+    return {
+        "success": True,
+        "message": "Chart data fetched successfully",
+        "data": {
+            "categories": months,
+            "series": datasets
+        }
+    }
