@@ -182,7 +182,7 @@ async def generic_exception_handler(request: Request, exc: Exception):
     response.headers["Access-Control-Allow-Headers"] = "*"
     return response
 
-
+ 
 
 
 

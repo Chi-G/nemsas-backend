@@ -18,7 +18,7 @@ async def seed_incident_types():
 
     async with SessionLocal() as session:
         print(f"🏷️  Seeding {len(data)} Incident Types...")
-
+ 
         for item in data:
             date_added = None
             if item.get("dateAdded"):

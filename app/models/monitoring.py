@@ -17,7 +17,7 @@ class Monitoring(Base):
     bls = Column(Integer, default=0)
     als = Column(Integer, default=0)
     helicopters = Column(Integer, default=0)
-    community_volunteers = Column(Integer, default=0)
+    community_volunteers = Column(Integer, default=0) 
     
     # Classification stats
     labor_transportation = Column(Integer, default=0)

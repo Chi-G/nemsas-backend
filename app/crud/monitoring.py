@@ -14,7 +14,7 @@ class CRUDMonitoring:
         year: Optional[int] = None, 
         month: Optional[int] = None, 
         state_id: Optional[int] = None,
-        remark: Optional[str] = None
+        remark: Optional[str] = None 
     ) -> List[Monitoring]:
         stmt = select(Monitoring).options(selectinload(Monitoring.state))
         if year is not None:

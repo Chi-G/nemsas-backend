@@ -14,7 +14,7 @@ async def read_incident_types(
     db: AsyncSession = Depends(deps.get_db)
 ):
     """
-    Retrieve all incident types.
+    Retrieve all incident types. 
     """
     types, total = await incident_type_crud.get_multi_with_count(db, status=status)
     from app.crud.incident import incident_crud

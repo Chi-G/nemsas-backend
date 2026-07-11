@@ -14,7 +14,7 @@ class CRUDIncidentType:
         
         count_stmt = select(func.count()).select_from(IncidentType)
         query_stmt = select(IncidentType)
-        
+         
         if status != "all":
             count_stmt = count_stmt.where(IncidentType.is_active == True)
             query_stmt = query_stmt.where(IncidentType.is_active == True)

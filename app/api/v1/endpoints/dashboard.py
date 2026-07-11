@@ -14,7 +14,7 @@ from app.models.ambulance import Ambulance
 from app.models.hospital import Hospital
 from app.models.incident import Incident 
 from app.models.claim import Claim 
-from app.models.patient import Patient
+from app.models.patient import Patient 
 from app.models.lga import LGA
 from app.models.state import State
 from app.models.user import User
@@ -284,6 +284,16 @@ async def get_dashboard_monthly(
             "laborTransportation": int(row.laborTransportation or 0),
             "obstetricTransportation": int(row.obstetricTransportation or 0),
             "neonatalTransportation": int(row.neonatalTransportation or 0),
+            "paediatricOver5": int(row.paediatricOver5 or 0),
+            "drowning": int(row.drowning or 0),
+            "snakeBite": int(row.snakeBite or 0),
+            "otherWeapons": int(row.otherWeapons or 0),
+            "gunshot": int(row.gunshot or 0),
+            "others": int(row.others or 0),
+            "paediatricUnder5": int(row.paediatricUnder5 or 0),
+            "neonatalUnder5": int(row.neonatalUnder5 or 0),
+            "obstetricAccident": int(row.obstetricAccident or 0),
+            "rta": int(row.rta or 0),
             "bemonc": int(row.bemonc or 0),
             "cemonc": int(row.cemonc or 0),
             "maternalMortalities": int(row.maternalMortalities or 0),
