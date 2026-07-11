@@ -59,6 +59,20 @@ async def lifespan(app: FastAPI):
         logger = logging.getLogger(__name__)
         logger.error(f"Failed to initialize claim setting: {e}")
 
+    # seed incident types, it should be temporary. it should be removed after first deployment.
+    try:
+        from scripts.seed_incident_types import seed_incident_types
+        import logging
+        logger = logging.getLogger(__name__)
+        await seed_incident_types()
+        logger.info("Incident types seeded successfully during startup")
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.error(f"Failed to seed incident types on startup: {e}")
+
+        
+
     yield
     # Shutdown
     try:

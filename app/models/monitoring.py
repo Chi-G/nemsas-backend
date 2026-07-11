@@ -24,6 +24,18 @@ class Monitoring(Base):
     obstetric_transportation = Column(Integer, default=0)
     neonatal_transportation = Column(Integer, default=0)
     
+    # Incident Types Stats
+    paediatric_over_5 = Column(Integer, default=0)
+    drowning = Column(Integer, default=0)
+    snake_bite = Column(Integer, default=0)
+    other_weapons = Column(Integer, default=0)
+    gunshot = Column(Integer, default=0)
+    others = Column(Integer, default=0)
+    paediatric_under_5 = Column(Integer, default=0)
+    neonatal_under_5 = Column(Integer, default=0)
+    obstetric_accident = Column(Integer, default=0)
+    rta = Column(Integer, default=0)
+    
     # Capabilities
     bemonc = Column(Integer, default=0)
     cemonc = Column(Integer, default=0)

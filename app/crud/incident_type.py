@@ -9,16 +9,21 @@ class CRUDIncidentType:
         result = await db.execute(select(IncidentType).filter(IncidentType.id == id))
         return result.scalars().first()
 
-    async def get_multi_with_count(self, db: AsyncSession) -> Tuple[List[IncidentType], int]:
+    async def get_multi_with_count(self, db: AsyncSession, status: Optional[str] = None) -> Tuple[List[IncidentType], int]:
         from sqlalchemy import func
-        count_stmt = select(func.count()).select_from(IncidentType).where(IncidentType.is_active == True)
+        
+        count_stmt = select(func.count()).select_from(IncidentType)
+        query_stmt = select(IncidentType)
+        
+        if status != "all":
+            count_stmt = count_stmt.where(IncidentType.is_active == True)
+            query_stmt = query_stmt.where(IncidentType.is_active == True)
+            
         count_result = await db.execute(count_stmt)
         total = count_result.scalar() or 0
 
         result = await db.execute(
-            select(IncidentType)
-            .where(IncidentType.is_active == True)
-            .order_by(IncidentType.id.desc())
+            query_stmt.order_by(IncidentType.id.desc())
         )
         return list(result.scalars().all()), total
 

@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
+from typing import List, Optional
 from app.api import deps
 from app.models.user import User
 from app.schemas.incident_type import IncidentTypeResponse, IncidentTypeCreate, IncidentTypeUpdate
@@ -10,12 +10,13 @@ router = APIRouter()
 
 @router.get("/", response_model=IncidentTypeResponse)
 async def read_incident_types(
+    status: Optional[str] = Query(None, description="Set to 'all' to return both active and inactive"),
     db: AsyncSession = Depends(deps.get_db)
 ):
     """
     Retrieve all incident types.
     """
-    types, total = await incident_type_crud.get_multi_with_count(db)
+    types, total = await incident_type_crud.get_multi_with_count(db, status=status)
     from app.crud.incident import incident_crud
     for t in types:
         t.last_event_status = await incident_crud.get_last_event_status(db, incident_category_id=t.id)

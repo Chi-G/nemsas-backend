@@ -116,12 +116,11 @@ async def get_dashboard_stats(
         else:
             no_of_states = 29
 
-    # 2. Count distinct LGAs where ambulances (Mamii transport assets) are registered
-    stmt_amb_lgas = select(distinct(Ambulance.lga_id)).where(Ambulance.lga_id.isnot(None))
+    # 2. Count LGAs for the effective state (or globally)
+    stmt_all_lgas = select(func.count(LGA.id))
     if effective_state_id is not None:
-        stmt_amb_lgas = stmt_amb_lgas.where(Ambulance.state_id == effective_state_id)
-    amb_lgas_res = await db.execute(stmt_amb_lgas)
-    no_of_lgas = len(set(amb_lgas_res.scalars().all()))
+        stmt_all_lgas = stmt_all_lgas.where(LGA.state_id == effective_state_id)
+    no_of_lgas = (await db.execute(stmt_all_lgas)).scalar() or 0
 
     # 3. Count Incidents (with optional period filter)
     stmt_incidents = select(func.count(Incident.id))
