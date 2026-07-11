@@ -31,13 +31,15 @@ async def seed_incident_types():
                 id=item["id"],
                 name=item["name"],
                 description=item.get("description"),
-                date_added=date_added
+                date_added=date_added,
+                is_active=item.get("isActive", True)
             ).on_conflict_do_update(
                 index_elements=['id'],
                 set_={
                     'name': item['name'],
                     'description': item.get('description'),
-                    'date_added': date_added
+                    'date_added': date_added,
+                    'is_active': item.get('isActive', True)
                 }
             )
             await session.execute(stmt)
