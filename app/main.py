@@ -71,7 +71,7 @@ async def lifespan(app: FastAPI):
         logger = logging.getLogger(__name__)
         logger.error(f"Failed to seed incident types on startup: {e}")
 
-        
+
 
     yield
     # Shutdown
