@@ -12,6 +12,7 @@ on:
         description: 'Deployment environment'
         required: true
         type: choice
+        default: 'dev'
         options:
           - dev
           - prod
@@ -444,5 +445,5 @@ jobs:
           exit 1
 
 concurrency:
-  group: deploy-${{ github.event.inputs.environment }}
+  group: deploy-${{ inputs.environment }}
   cancel-in-progress: false
