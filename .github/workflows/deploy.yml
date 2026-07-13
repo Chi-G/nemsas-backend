@@ -82,7 +82,7 @@ jobs:
               echo "${{ secrets.PROD_SSH_KEY }}"
               echo "EOF"
             } >> $GITHUB_ENV
-            echo "SSH_PASSPHRASE=" >> $GITHUB_ENV
+            echo "SSH_PASSPHRASE=${{ secrets.PROD_SSH_KEY_PASSPHRASE }}" >> $GITHUB_ENV
             echo "DEPLOY_PATH=/var/www/nemsas-backend" >> $GITHUB_ENV
             echo "DEPLOY_PORT=${{ github.event.inputs.port }}" >> $GITHUB_ENV
           fi
@@ -135,14 +135,17 @@ jobs:
           # Start SSH agent
           eval "$(ssh-agent -s)"
           
-          # Add key (handle passphrase for staging, no passphrase for prod)
+          # Add key (handle passphrase securely without interactive prompt)
           if [ -z "${{ env.SSH_PASSPHRASE }}" ]; then
-            # Production - no passphrase
+            # No passphrase
             ssh-add ~/.ssh/deploy_key
             echo "✅ SSH key added (no passphrase)"
           else
-            # Development (staging) - with passphrase
-            echo "${{ env.SSH_PASSPHRASE }}" | ssh-add ~/.ssh/deploy_key
+            # With passphrase (using SSH_ASKPASS workaround)
+            echo 'echo "${{ env.SSH_PASSPHRASE }}"' > ~/.ssh/askpass
+            chmod +x ~/.ssh/askpass
+            DISPLAY=none SSH_ASKPASS=~/.ssh/askpass ssh-add ~/.ssh/deploy_key < /dev/null
+            rm ~/.ssh/askpass
             echo "✅ SSH key added (with passphrase)"
           fi
           
