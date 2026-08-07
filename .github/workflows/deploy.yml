@@ -343,7 +343,7 @@ jobs:
           DEPLOY_PATH="${{ env.DEPLOY_PATH }}"
           DEPLOY_PORT="${{ env.DEPLOY_PORT }}"
           
-          ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o TCPKeepAlive=yes "${SSH_USER}@${SERVER_IP}" << ENDSSH
+          ssh -o StrictHostKeyChecking=no -o ServerAliveInterval=15 -o ServerAliveCountMax=4 -o TCPKeepAlive=yes "${SSH_USER}@${SERVER_IP}" "DEPLOY_PORT=${DEPLOY_PORT} DEPLOY_PATH=${DEPLOY_PATH} bash -s" << 'ENDSSH'
             set -x
             cd "${DEPLOY_PATH}"
             
@@ -352,18 +352,17 @@ jobs:
             
             # Run deployment with environment variables
             DEPLOY_PORT="${DEPLOY_PORT}" bash deploy.sh < /dev/null
+            DEPLOYMENT_RESULT=$?
             
-            DEPLOYMENT_RESULT=\$?
-            
-            if [ \$DEPLOYMENT_RESULT -eq 0 ]; then
+            if [ $DEPLOYMENT_RESULT -eq 0 ]; then
               echo "✅ Deployment completed successfully"
             else
-              echo "❌ Deployment failed with exit code: \$DEPLOYMENT_RESULT"
+              echo "❌ Deployment failed with exit code: $DEPLOYMENT_RESULT"
               echo "📋 Printing docker compose logs (last 100 lines) for diagnostics:"
               docker compose logs --tail 100 || docker-compose logs --tail 100
-              exit 1
+              exit $DEPLOYMENT_RESULT
             fi
-          ENDSSH
+ENDSSH
           
           echo "========================================"
       
