@@ -38,6 +38,13 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: Optional[str] = None
     CLOUDINARY_API_SECRET: Optional[str] = None
 
+    # S3 / Hetzner Object Storage Settings
+    S3_ACCESS_KEY: Optional[str] = None
+    S3_SECRET_KEY: Optional[str] = None
+    S3_ENDPOINT_URL: Optional[str] = None
+    S3_REGION: Optional[str] = None
+    S3_BUCKET_NAME: Optional[str] = None
+
     # SMTP / Email Settings
     EMAIL_HOST: str = "mail.privateemail.com"
     EMAIL_HOST_USER: str = "demo@sydanitechnologies.com"

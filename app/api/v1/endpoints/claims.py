@@ -11,6 +11,7 @@ from fastapi import UploadFile, File
 import cloudinary
 import cloudinary.uploader
 from app.core.config import settings 
+from app.services.upload import upload_file_helper 
 from sqlalchemy.future import select
 from sqlalchemy import func
 from sqlalchemy.orm import selectinload
@@ -30,63 +31,18 @@ async def upload_claim_image(
     file: UploadFile = File(...)
 ) -> Any:
     """
-    Upload an image/receipt to Cloudinary or local storage and return the URL.
+    Upload an image/receipt to S3, Cloudinary or local storage and return the URL.
     """
-    # Check if Cloudinary should be used
-    use_cloudinary = settings.UPLOAD_PROVIDER.lower() == "cloudinary"
-    
-    # Check if Cloudinary credentials are fully configured
-    if use_cloudinary:
-        if not all([settings.CLOUDINARY_CLOUD_NAME, settings.CLOUDINARY_API_KEY, settings.CLOUDINARY_API_SECRET]):
-            print("[Upload] Cloudinary credentials missing. Falling back to local upload.")
-            use_cloudinary = False
-            
     contents = await file.read()
-    url = None
-    message = ""
-    
-    if use_cloudinary:
-        try:
-            cloudinary.config(
-                cloud_name=settings.CLOUDINARY_CLOUD_NAME,
-                api_key=settings.CLOUDINARY_API_KEY,
-                api_secret=settings.CLOUDINARY_API_SECRET,
-                secure=True
-            )
-            upload_result = cloudinary.uploader.upload(contents)
-            url = upload_result.get("secure_url")
-            message = "File successfully uploaded to Cloudinary"
-        except Exception as e:
-            print(f"[Upload] Cloudinary upload failed: {e}. Falling back to local upload.")
-            use_cloudinary = False
-            
-    if not use_cloudinary:
-        # Local upload logic
-        import uuid
-        import os
-        
-        # Ensure uploads folder exists in local context
-        upload_dir = "static/uploads"
-        os.makedirs(upload_dir, exist_ok=True)
-        
-        # Generate a unique safe filename
-        safe_filename = f"{uuid.uuid4().hex}_{os.path.basename(file.filename or 'upload.jpg')}"
-        file_path = os.path.join(upload_dir, safe_filename)
-        
-        # Write file content locally
-        with open(file_path, "wb") as f:
-            f.write(contents)
-            
-        # Construct absolute URL using incoming request
-        base_url = str(request.base_url)
-        if not base_url.endswith("/"):
-            base_url += "/"
-        url = f"{base_url}static/uploads/{safe_filename}"
-        message = "File successfully uploaded locally"
-        
+    url = await upload_file_helper(
+        file_bytes=contents,
+        filename=file.filename or "upload.jpg",
+        content_type=file.content_type or "application/octet-stream",
+        request=request
+    )
     return {
         "success": True,
-        "message": message,
+        "message": "File successfully uploaded",
         "url": url
     }
 
@@ -850,7 +806,8 @@ async def add_claim_legacy(
         run_sheet_res = await db.execute(run_sheet_stmt)
         run_sheet_obj = run_sheet_res.scalars().first()
         if run_sheet_obj:
-            patient_id = run_sheet_obj.patient_id
+            raw_pid = getattr(run_sheet_obj, "patient_id", None)
+            patient_id = int(raw_pid) if raw_pid is not None else None
             patient_name = str(run_sheet_obj.patient_name) if run_sheet_obj.patient_name is not None else None
             if patient_id:
                 patient_stmt = select(Patient).where(Patient.id == patient_id)
@@ -864,7 +821,7 @@ async def add_claim_legacy(
             location = str(run_sheet_obj.route_to) if run_sheet_obj.route_to is not None else None
 
     if incident_id:
-        incident_stmt = select(Incident).where(Incident.id == incident_id)
+        incident_stmt = select(Incident).options(selectinload(Incident.incident_type)).where(Incident.id == incident_id)
         incident_res = await db.execute(incident_stmt)
         incident_obj = incident_res.scalars().first()
         if incident_obj:
@@ -881,38 +838,13 @@ async def add_claim_legacy(
     # Handle image upload if a file was supplied
     image_url = None
     if image and image.filename:
-        use_cloudinary = settings.UPLOAD_PROVIDER.lower() == "cloudinary"
-        if use_cloudinary and not all([settings.CLOUDINARY_CLOUD_NAME, settings.CLOUDINARY_API_KEY, settings.CLOUDINARY_API_SECRET]):
-            use_cloudinary = False
-            
         contents = await image.read()
-        if use_cloudinary:
-            try:
-                cloudinary.config(
-                    cloud_name=settings.CLOUDINARY_CLOUD_NAME,
-                    api_key=settings.CLOUDINARY_API_KEY,
-                    api_secret=settings.CLOUDINARY_API_SECRET,
-                    secure=True
-                )
-                upload_result = cloudinary.uploader.upload(contents)
-                image_url = upload_result.get("secure_url")
-            except Exception as e:
-                print(f"[addClaim] Cloudinary upload failed: {e}. Falling back to local upload.")
-                use_cloudinary = False
-                
-        if not use_cloudinary:
-            import uuid
-            import os
-            upload_dir = "static/uploads"
-            os.makedirs(upload_dir, exist_ok=True)
-            safe_filename = f"{uuid.uuid4().hex}_{os.path.basename(image.filename)}"
-            file_path = os.path.join(upload_dir, safe_filename)
-            with open(file_path, "wb") as f:
-                f.write(contents)
-            base_url = str(request.base_url)
-            if not base_url.endswith("/"):
-                base_url += "/"
-            image_url = f"{base_url}static/uploads/{safe_filename}"
+        image_url = await upload_file_helper(
+            file_bytes=contents,
+            filename=image.filename,
+            content_type=image.content_type or "application/octet-stream",
+            request=request
+        )
 
     # Prepare ClaimCreate pydantic schema
     claim_in = ClaimCreate(
@@ -1062,48 +994,14 @@ async def submit_etc_claim(
         if len(valid_images) > 3:
             raise HTTPException(status_code=400, detail="Maximum of 3 images allowed")
             
-        use_cloudinary = settings.UPLOAD_PROVIDER.lower() == "cloudinary"
-        if use_cloudinary and not all([settings.CLOUDINARY_CLOUD_NAME, settings.CLOUDINARY_API_KEY, settings.CLOUDINARY_API_SECRET]):
-            use_cloudinary = False
-
-        if use_cloudinary:
-            import cloudinary.uploader
-            try:
-                cloudinary.config(
-                    cloud_name=settings.CLOUDINARY_CLOUD_NAME,
-                    api_key=settings.CLOUDINARY_API_KEY,
-                    api_secret=settings.CLOUDINARY_API_SECRET,
-                    secure=True
-                )
-            except Exception:
-                use_cloudinary = False
-                
         for img in valid_images:
             contents = await img.read()
-            img_url = None
-            
-            if use_cloudinary:
-                try:
-                    upload_result = cloudinary.uploader.upload(contents)
-                    img_url = upload_result.get("secure_url")
-                except Exception as e:
-                    print(f"[submitEtcClaim] Cloudinary upload failed: {e}. Falling back to local upload.")
-                    use_cloudinary = False
-                    
-            if not use_cloudinary:
-                import uuid
-                import os
-                upload_dir = "static/uploads"
-                os.makedirs(upload_dir, exist_ok=True)
-                safe_filename = f"{uuid.uuid4().hex}_{os.path.basename(img.filename)}"
-                file_path = os.path.join(upload_dir, safe_filename)
-                with open(file_path, "wb") as f:
-                    f.write(contents)
-                base_url = str(request.base_url)
-                if not base_url.endswith("/"):
-                    base_url += "/"
-                img_url = f"{base_url}static/uploads/{safe_filename}"
-                
+            img_url = await upload_file_helper(
+                file_bytes=contents,
+                filename=img.filename,
+                content_type=img.content_type or "application/octet-stream",
+                request=request
+            )
             if img_url:
                 uploaded_image_urls.append(img_url)
 
@@ -1194,7 +1092,8 @@ async def add_claim_list(
             run_sheet_res = await db.execute(run_sheet_stmt)
             run_sheet_obj = run_sheet_res.scalars().first()
             if run_sheet_obj:
-                patient_id = run_sheet_obj.patient_id
+                raw_pid = getattr(run_sheet_obj, "patient_id", None)
+                patient_id = int(raw_pid) if raw_pid is not None else None
                 patient_name = str(run_sheet_obj.patient_name) if run_sheet_obj.patient_name is not None else None
                 if patient_id:
                     patient_stmt = select(Patient).where(Patient.id == patient_id)

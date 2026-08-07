@@ -191,15 +191,16 @@ async def get_patient_details(
         results = await db.execute(stmt_etc)
         for e_inv, service, is_medicine in results.all():
             e_dict = obj_to_dict(e_inv)
-            drug_dict = obj_to_dict(service)
-            if drug_dict is not None:
-                drug_dict["isMedicine"] = is_medicine if is_medicine is not None else False
-                e_dict["code"] = drug_dict.get("code")
-            e_dict["drug"] = drug_dict
-            etc_invs.append(e_dict)
+            if e_dict is not None:
+                drug_dict = obj_to_dict(service)
+                if drug_dict is not None:
+                    drug_dict["isMedicine"] = is_medicine if is_medicine is not None else False
+                    e_dict["code"] = drug_dict.get("code")
+                e_dict["drug"] = drug_dict
+                etc_invs.append(e_dict)
 
     patient_dict = obj_to_dict(patient)
-    if patient.incident_id:
+    if patient.incident_id and patient_dict is not None:
         stmt_inc = select(Incident).where(Incident.id == patient.incident_id)
         incident = (await db.execute(stmt_inc)).scalar_one_or_none()
         if incident:
@@ -212,9 +213,10 @@ async def get_patient_details(
     claim_dict = None
     if claim:
         claim_dict = obj_to_dict(claim)
-        stmt_images = select(ClaimImage).where(ClaimImage.claim_id == claim.id)
-        images = (await db.execute(stmt_images)).scalars().all()
-        claim_dict["images"] = [obj_to_dict(img) for img in images]
+        if claim_dict is not None:
+            stmt_images = select(ClaimImage).where(ClaimImage.claim_id == claim.id)
+            images = (await db.execute(stmt_images)).scalars().all()
+            claim_dict["images"] = [obj_to_dict(img) for img in images]
 
     # 7. Fetch Transfer Form creation time
     transfer_form_created_at = None
@@ -367,65 +369,35 @@ async def add_etc_interventions(
     await db.commit()
     await db.refresh(new_claim)
 
-    # Process Images
-    from app.core.config import settings 
-    import cloudinary
-    import cloudinary.uploader
-    import uuid
-    import os
-    
-    use_cloudinary = settings.UPLOAD_PROVIDER.lower() == "cloudinary"
-    if use_cloudinary:
-        if not all([settings.CLOUDINARY_CLOUD_NAME, settings.CLOUDINARY_API_KEY, settings.CLOUDINARY_API_SECRET]):
-            use_cloudinary = False
-
-    if use_cloudinary:
-        cloudinary.config(
-            cloud_name=settings.CLOUDINARY_CLOUD_NAME,
-            api_key=settings.CLOUDINARY_API_KEY,
-            api_secret=settings.CLOUDINARY_API_SECRET,
-            secure=True
-        )
+    from fastapi import UploadFile
+    from app.services.upload import upload_file_helper
 
     for file_obj in images:
-        contents = await file_obj.read()
-        url = None
-        
-        if use_cloudinary:
-            try:
-                upload_result = cloudinary.uploader.upload(contents)
-                url = upload_result.get("secure_url")
-            except Exception:
-                use_cloudinary = False
-                
-        if not use_cloudinary:
-            upload_dir = "static/uploads"
-            os.makedirs(upload_dir, exist_ok=True)
-            safe_filename = f"{uuid.uuid4().hex}_{os.path.basename(file_obj.filename or 'upload.jpg')}"
-            file_path = os.path.join(upload_dir, safe_filename)
-            with open(file_path, "wb") as f:
-                f.write(contents)
-            base_url = str(request.base_url)
-            if not base_url.endswith("/"):
-                base_url += "/"
-            url = f"{base_url}static/uploads/{safe_filename}"
-            
-        if url:
-            # Find next image ID
-            max_img_stmt = select(func.max(ClaimImage.id))
-            max_img_id = await db.scalar(max_img_stmt) or 0
-            new_image_id = max_img_id + 1
-            
-            db_image = ClaimImage(
-                id=new_image_id,
-                claim_id=new_claim.id,
-                claim_title=new_claim.title,
-                incident_id=patient.incident_id,
-                image_url=url,
-                is_etc=True
+        if isinstance(file_obj, UploadFile):
+            contents = await file_obj.read()
+            url = await upload_file_helper(
+                file_bytes=contents,
+                filename=file_obj.filename or "upload.jpg",
+                content_type=file_obj.content_type or "application/octet-stream",
+                request=request
             )
-            db.add(db_image)
-            await db.commit()
+            
+            if url:
+                # Find next image ID
+                max_img_stmt = select(func.max(ClaimImage.id))
+                max_img_id = await db.scalar(max_img_stmt) or 0
+                new_image_id = max_img_id + 1
+                
+                db_image = ClaimImage(
+                    id=new_image_id,
+                    claim_id=new_claim.id,
+                    claim_title=new_claim.title,
+                    incident_id=patient.incident_id,
+                    image_url=url,
+                    is_etc=True
+                )
+                db.add(db_image)
+                await db.commit()
     
     return {
         "success": True,

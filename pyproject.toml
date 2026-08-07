@@ -31,6 +31,7 @@ dependencies = [
     "cloudinary==1.44.2",
     "firebase-admin==7.4.0",
     "python-socketio==5.16.1",
+    "boto3>=1.43.66",
 ]
 
 

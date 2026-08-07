@@ -3,6 +3,7 @@ import calendar
 import os
 import sys
 from datetime import datetime, timezone
+from typing import Any
 
 sys.path.append(os.getcwd())
 
@@ -39,14 +40,16 @@ async def seed():
             if not month_int:
                 continue
 
-            record = {
+            record: dict[str, Any] = {
                 "year": SEED_YEAR,
                 "month": month_int,
                 "no_of_transport": item.get("noOfTransport", 0),
                 "no_of_mamii_lgas": item.get("noOfMamiiLGAs", 0),
                 "by_tricycle_ambulance": item.get("byTricycleAmbulance", 0),
-                "by_nurtw_driver": item.get("byNurtwDriver", 0),
                 "bls": item.get("bls", 0),
+                "als": item.get("als", 0),
+                "helicopters": item.get("helicopters", 0),
+                "community_volunteers": item.get("communityVolunteers", 0),
                 "labor_transportation": item.get("laborTransportation", 0),
                 "obstetric_transportation": item.get("obstetricTransportation", 0),
                 "neonatal_transportation": item.get("neonatalTransportation", 0),
@@ -74,8 +77,10 @@ async def seed():
                 existing_obj.no_of_transport = record["no_of_transport"]
                 existing_obj.no_of_mamii_lgas = record["no_of_mamii_lgas"]
                 existing_obj.by_tricycle_ambulance = record["by_tricycle_ambulance"]
-                existing_obj.by_nurtw_driver = record["by_nurtw_driver"]
                 existing_obj.bls = record["bls"]
+                existing_obj.als = record["als"]
+                existing_obj.helicopters = record["helicopters"]
+                existing_obj.community_volunteers = record["community_volunteers"]
                 existing_obj.labor_transportation = record["labor_transportation"]
                 existing_obj.obstetric_transportation = record["obstetric_transportation"]
                 existing_obj.neonatal_transportation = record["neonatal_transportation"]
@@ -84,8 +89,8 @@ async def seed():
                 existing_obj.maternal_mortalities = record["maternal_mortalities"]
                 existing_obj.neonatal_mortalities = record["neonatal_mortalities"]
                 existing_obj.remark = record["remark"]
-                existing_obj.updated_at = datetime.now(timezone.utc)
-                existing_obj.updated_by = "System"
+                existing_obj.updated_at = datetime.now(timezone.utc)  # type: ignore
+                existing_obj.updated_by = "System"  # type: ignore
                 updated += 1
             else:
                 db_obj = Monitoring(**record)
